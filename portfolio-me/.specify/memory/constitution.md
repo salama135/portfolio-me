@@ -18,7 +18,7 @@ When given a feature to implement first create a design document of what will be
 <!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
 
 ### impicible style 
-When given a feature or change request enhance the UI using /impeccable design skills they can be found /.claude/skills/impeccable/reference
+When given a feature or change request enhance the UI using /impeccable design skills and use the PRODUCT.md and DESIGN.md files as a playbook for your design
 
 ## Tech Stack
 <!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
