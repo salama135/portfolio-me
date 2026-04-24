@@ -24,7 +24,7 @@ export default async function RootLayout({ children }) {
   return (
     <html className={figtree.variable} lang="en">
       <head>
-        <link rel="icon" href="/favicon.svg" sizes="any" />
+        <link rel="icon" href="/site.webmanifest" sizes="any" />
       </head>
       <body className="min-h-screen antialiased">
         <a
