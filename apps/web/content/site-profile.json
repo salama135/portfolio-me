@@ -1,0 +1,16 @@
+{
+  "title": "Portfolio",
+  "tagline": "Software engineer · Instructor · Game developer",
+  "roles": ["Software engineer", "Instructor", "Game developer"],
+  "locale": "en",
+  "social": {
+    "github": "https://github.com/salama135",
+    "linkedin": "https://linkedin.com/in/",
+    "email": "mailto:salamaa135@gmail.com",
+    "calendar": ""
+  },
+  "seo": {
+    "description": "Portfolio, projects, writing, and live demos.",
+    "ogImage": "/favicon.svg"
+  }
+}
