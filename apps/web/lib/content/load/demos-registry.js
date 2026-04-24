@@ -2,9 +2,13 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { demoExperienceListSchema } from '../schemas/demo-experience.js';
 
+const FILE = join(process.cwd(), 'content', 'demos.json');
+
 export async function loadDemosRegistry() {
-  const path = join(process.cwd(), 'content', 'demos.json');
-  const raw = await readFile(path, 'utf8');
-  const json = JSON.parse(raw);
-  return demoExperienceListSchema.parse(json);
+  try {
+    const raw = await readFile(FILE, 'utf8');
+    return demoExperienceListSchema.parse(JSON.parse(raw));
+  } catch {
+    return [];
+  }
 }

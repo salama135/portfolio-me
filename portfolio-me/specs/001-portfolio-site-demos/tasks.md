@@ -111,17 +111,17 @@
 
 ### Implementation for User Story 3
 
-- [ ] T039 [US3] Add demos segment layout `D:\personal\portfolio-me\apps\web\app\demos\layout.jsx` (lightweight wrapper; no heavy imports)
-- [ ] T040 [US3] Implement hub page `D:\personal\portfolio-me\apps\web\app\demos\page.jsx` listing demos from `D:\personal\portfolio-me\apps\web\content\demos.json` with device and duration hints
-- [ ] T041 [P] [US3] Author `D:\personal\portfolio-me\apps\web\content\demos.json` registry rows matching `DemoExperience` fields in `data-model.md`
-- [ ] T042 [US3] Create `D:\personal\portfolio-me\apps\web\components\demo-error-boundary.jsx` implementing per-demo isolation per `contracts\demo-module-interface.md`
-- [ ] T043 [US3] Create `D:\personal\portfolio-me\apps\web\components\demo-launcher.jsx` using `next/dynamic` with `ssr: false` and explicit “Start” for heavy bundles
-- [ ] T044 [US3] Ship minimal `D:\personal\portfolio-me\apps\web\app\demos\hello\page.jsx` hello-world client demo to validate launcher pipeline
-- [ ] T045 [P] [US3] Implement creative demo `D:\personal\portfolio-me\apps\web\app\demos\creative-sketch\page.jsx` with p5 instance mode and cleanup on unmount per contract
-- [ ] T046 [P] [US3] Implement three.js demo `D:\personal\portfolio-me\apps\web\app\demos\three-showcase\page.jsx` with renderer dispose on unmount and WebGL unsupported messaging
-- [ ] T047 [P] [US3] Implement AR demo `D:\personal\portfolio-me\apps\web\app\demos\ar-overlay\page.jsx` with AR.js and camera-permission denied UX copy
-- [ ] T048 [US3] Implement A-Frame demo `D:\personal\portfolio-me\apps\web\app\demos\vr-room\page.jsx` with enter-VR prompts and WebXR unsupported fallback
-- [ ] T049 [US3] Wire `D:\personal\portfolio-me\apps\web\lib\config\feature-flags.ts` to hide or show demo slugs in `D:\personal\portfolio-me\apps\web\app\demos\page.jsx` and document vars in `D:\personal\portfolio-me\apps\web\.env.example`
+- [x] T039 [US3] Add demos segment layout `D:\personal\portfolio-me\apps\web\app\demos\layout.jsx` (lightweight wrapper; no heavy imports)
+- [x] T040 [US3] Implement hub page `D:\personal\portfolio-me\apps\web\app\demos\page.jsx` listing demos from `D:\personal\portfolio-me\apps\web\content\demos.json` with device and duration hints
+- [x] T041 [P] [US3] Author `D:\personal\portfolio-me\apps\web\content\demos.json` registry rows matching `DemoExperience` fields in `data-model.md`
+- [x] T042 [US3] Create `D:\personal\portfolio-me\apps\web\components\demo-error-boundary.jsx` implementing per-demo isolation per `contracts\demo-module-interface.md`
+- [x] T043 [US3] Create `D:\personal\portfolio-me\apps\web\components\demo-launcher.jsx` using `next/dynamic` with `ssr: false` and explicit “Start” for heavy bundles
+- [x] T044 [US3] Ship minimal `D:\personal\portfolio-me\apps\web\app\demos\hello\page.jsx` hello-world client demo to validate launcher pipeline
+- [x] T045 [P] [US3] Implement creative demo `D:\personal\portfolio-me\apps\web\app\demos\creative-sketch\page.jsx` with p5 instance mode and cleanup on unmount per contract
+- [x] T046 [P] [US3] Implement three.js demo `D:\personal\portfolio-me\apps\web\app\demos\three-showcase\page.jsx` with renderer dispose on unmount and WebGL unsupported messaging
+- [x] T047 [P] [US3] Implement AR demo `D:\personal\portfolio-me\apps\web\app\demos\ar-overlay\page.jsx` with AR.js and camera-permission denied UX copy
+- [x] T048 [US3] Implement A-Frame demo `D:\personal\portfolio-me\apps\web\app\demos\vr-room\page.jsx` with enter-VR prompts and WebXR unsupported fallback
+- [x] T049 [US3] Wire `D:\personal\portfolio-me\apps\web\lib\config\feature-flags.ts` to hide or show demo slugs in `D:\personal\portfolio-me\apps\web\app\demos\page.jsx` and document vars in `D:\personal\portfolio-me\apps\web\.env.example`
 
 **Checkpoint**: Each demo category has a happy path under five minutes on reference devices; turning off a flag removes demo without build failure.
 
@@ -249,3 +249,4 @@ Serial finish: T048 (vr-room), then T049 feature-flag wiring
 - Remove or archive starter Netlify demo routes under `D:\personal\portfolio-me\apps\web\app\blobs\` etc., when portfolio routes replace them, to avoid duplicate IA noise.
 - **2026-04-24 `/speckit.implement`**: Phases 1–3 **T001–T026**; moved `utils.js` and `data/` into `apps/web` for T004; stub marketing routes; ESLint in `apps/web/eslint.config.mjs`.
 - **2026-04-24 (continued)**: Phase 4 **T027–T038** (US2). Added `gray-matter`, project/blog/adventure/highlight/interest loaders and content, `public/media/`, removed `/blog` → `/classics` **rewrite** in `apps/web/next.config.js` so `/blog` is editorial.
+- **2026-04-24 Phase 5**: **T039–T049** (US3). Demos layout, hub + `content/demos.json`, `DemoErrorBoundary`, `DemoLauncher` + per-route `next/dynamic` (`ssr: false`), `DemoPageShell` gate, demos `hello`, `creative-sketch` (p5), `three-showcase` (three), `ar-overlay` (getUserMedia + overlay; AR.js-ready copy), `vr-room` (aframe), `feature-flags.js` + `.env.example`, deps `p5` `three` `aframe`.

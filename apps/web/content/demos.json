@@ -1,1 +1,48 @@
-[]
+[
+  {
+    "slug": "hello",
+    "title": "Hello pipeline",
+    "category": "creative",
+    "summary": "Smallest client bundle to prove the launcher, error boundary, and deferred import path.",
+    "deviceNeeds": "Any current desktop or mobile browser.",
+    "durationHint": "~30 sec",
+    "entryPath": "/demos/hello",
+    "featureFlag": "HELLO"
+  },
+  {
+    "slug": "creative-sketch",
+    "title": "Creative sketch (p5)",
+    "category": "creative",
+    "summary": "Instance-mode p5 canvas with deterministic motion and clean teardown on exit.",
+    "deviceNeeds": "Pointer or touch for interaction.",
+    "durationHint": "~2 min",
+    "entryPath": "/demos/creative-sketch"
+  },
+  {
+    "slug": "three-showcase",
+    "title": "Three.js showcase",
+    "category": "three_d",
+    "summary": "Rotating mesh with WebGL capability detection and renderer disposal on unmount.",
+    "deviceNeeds": "WebGL-capable GPU (integrated graphics OK).",
+    "durationHint": "~2 min",
+    "entryPath": "/demos/three-showcase"
+  },
+  {
+    "slug": "ar-overlay",
+    "title": "AR-style camera overlay",
+    "category": "augmented",
+    "summary": "Camera preview with overlay framing and clear copy when permission is denied.",
+    "deviceNeeds": "Webcam and HTTPS or localhost.",
+    "durationHint": "~2 min",
+    "entryPath": "/demos/ar-overlay"
+  },
+  {
+    "slug": "vr-room",
+    "title": "VR room (A-Frame)",
+    "category": "immersive",
+    "summary": "Simple A-Frame scene with enter-VR messaging when WebXR is unavailable.",
+    "deviceNeeds": "WebXR-capable browser optional; desktop fallback is pointer orbit.",
+    "durationHint": "~3 min",
+    "entryPath": "/demos/vr-room"
+  }
+]
