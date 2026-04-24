@@ -30,6 +30,11 @@
       "source": "JuliusBrussee/caveman",
       "sourceType": "github",
       "computedHash": "f71138e885d3e0df8c78b4814554ae146a1a6dbe76bafcc32e95f2ba6d4073c9"
+    },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "6894a8e7c14df9b063925cb134c73b2ca8c912c015710ac36f2f250d7c7ab998"
     }
   }
 }
