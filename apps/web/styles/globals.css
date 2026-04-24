@@ -1,46 +1,63 @@
 @import 'tailwindcss';
 
-/* ── Design tokens (OKLCH). Neutrals tinted toward 265° hue; no pure black/white. ── */
+/*
+  Apple web language (DESIGN.md): neutral triad, single blue accent family,
+  SF Pro stack on Apple hardware, Figtree elsewhere. Motion: opacity + transform
+  only (no layout animation). Binary chapters: black hero, pale gray bands, white interiors.
+*/
+
 :root {
-  --hue-base: 268;
-  --surface-0: oklch(0.14 0.045 268);
-  --surface-1: oklch(0.18 0.055 268);
-  --surface-2: oklch(0.22 0.06 268);
-  --text-0: oklch(0.94 0.02 268);
-  --text-1: oklch(0.78 0.03 270);
-  --text-2: oklch(0.62 0.04 272);
-  --border: oklch(0.38 0.06 272 / 0.35);
-  --accent: oklch(0.78 0.14 198);
-  --accent-fg: oklch(0.18 0.04 268);
-  --accent-2: oklch(0.74 0.17 158);
-  --focus-ring: oklch(0.82 0.12 198);
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --page-pad-x: clamp(1rem, 3.5vw, 2rem);
-  --page-pad-y: clamp(2.5rem, 6vw, 4.5rem);
+  --apple-black: #000000;
+  --apple-gray: #f5f5f7;
+  --apple-white: #ffffff;
+  --apple-ink: #1d1d1f;
+  --apple-blue: #0071e3;
+  --apple-blue-hover: #0077ed;
+  --apple-link: #0066cc;
+  --apple-link-bright: #2997ff;
+  --apple-gray-secondary: #6e6e73;
+  --apple-border-soft: #d2d2d7;
+  --apple-border-mid: #86868b;
+  --apple-graphite-a: #272729;
+  --apple-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --font-apple: var(--font-figtree), -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --page-pad-x: clamp(1.25rem, 4vw, 2.5rem);
+  --page-pad-y: clamp(3rem, 8vw, 6rem);
+  --focus-ring: var(--apple-blue);
 }
 
 @theme {
-  --color-surface-0: var(--surface-0);
-  --color-surface-1: var(--surface-1);
-  --color-surface-2: var(--surface-2);
-  --color-text-0: var(--text-0);
-  --color-text-1: var(--text-1);
-  --color-text-2: var(--text-2);
-  --color-border: var(--border);
-  --color-accent: var(--accent);
-  --color-accent-fg: var(--accent-fg);
-  --color-accent-2: var(--accent-2);
-  --color-focus-ring: var(--focus-ring);
-  --font-sans: var(--font-portfolio-body), ui-sans-serif, system-ui, sans-serif;
+  --color-apple-black: #000000;
+  --color-apple-gray: #f5f5f7;
+  --color-apple-white: #ffffff;
+  --color-apple-ink: #1d1d1f;
+  --color-apple-blue: #0071e3;
+  --color-apple-link: #0066cc;
+  --color-apple-link-bright: #2997ff;
+  --color-apple-gray-secondary: #6e6e73;
+  --color-apple-border-soft: #d2d2d7;
+  --color-apple-border-mid: #86868b;
+  --font-sans: var(--font-figtree), -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --background-image-noise: linear-gradient(
       to bottom,
-      color-mix(in oklab, var(--color-surface-0) 0%, transparent),
-      color-mix(in oklab, var(--color-surface-0) 100%, transparent)
+      color-mix(in oklab, #f5f5f7 0%, transparent),
+      color-mix(in oklab, #f5f5f7 100%, transparent)
     ),
     url('/images/noise.png');
-  --color-primary: oklch(0.78 0.14 198);
-  --color-primary-content: oklch(0.18 0.04 268);
-  --color-secondary: oklch(0.55 0.1 198);
+  --color-primary: #0071e3;
+  --color-primary-content: #ffffff;
+  --color-secondary: #1d1d1f;
+  /* Legacy utility names mapped to Apple tokens (inner pages, demos) */
+  --color-text-0: #1d1d1f;
+  --color-text-1: #424245;
+  --color-text-2: #6e6e73;
+  --color-accent: #0071e3;
+  --color-accent-2: #2997ff;
+  --color-accent-fg: #ffffff;
+  --color-border: #d2d2d7;
+  --color-surface-0: #ffffff;
+  --color-surface-1: #f5f5f7;
+  --color-surface-2: #e8e8ed;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -51,43 +68,173 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+
+  .apple-reveal,
+  .hero-device-shimmer,
+  .hero-device-glow {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
-/* Ambient field (no layout animation; opacity-only keyframes allowed) */
-@keyframes ambient-drift {
+/* ── Launch motion (hero lines + device) ── */
+@keyframes apple-reveal-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.apple-reveal {
+  opacity: 0;
+  animation: apple-reveal-up 1s var(--apple-ease) forwards;
+}
+
+.apple-reveal-1 {
+  animation-delay: 0.06s;
+}
+.apple-reveal-2 {
+  animation-delay: 0.14s;
+}
+.apple-reveal-3 {
+  animation-delay: 0.22s;
+}
+.apple-reveal-4 {
+  animation-delay: 0.3s;
+}
+.apple-reveal-5 {
+  animation-delay: 0.38s;
+}
+.apple-reveal-6 {
+  animation-delay: 0.46s;
+}
+
+@keyframes hero-glow-breathe {
   0%,
   100% {
-    opacity: 0.45;
-    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.55;
+    transform: scale(1);
   }
   50% {
-    opacity: 0.62;
-    transform: translate3d(2%, -1.5%, 0) scale(1.03);
+    opacity: 0.85;
+    transform: scale(1.04);
   }
 }
 
-.site-backdrop {
-  background-color: var(--surface-0);
-  background-image:
-    radial-gradient(ellipse 55% 45% at 78% 22%, oklch(0.32 0.12 290 / 0.35), transparent 60%),
-    radial-gradient(ellipse 40% 35% at 12% 88%, oklch(0.28 0.1 198 / 0.22), transparent 55%),
-    radial-gradient(ellipse 30% 28% at 42% 48%, oklch(0.26 0.08 158 / 0.12), transparent 50%);
+@keyframes hero-shimmer {
+  0% {
+    transform: translate3d(-120%, 0, 0) skewX(-12deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: translate3d(220%, 0, 0) skewX(-12deg);
+    opacity: 0;
+  }
 }
 
-.site-backdrop-orb {
+@keyframes hero-border-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.hero-device-glow {
   position: absolute;
+  inset: -18%;
   border-radius: 50%;
-  filter: blur(72px);
+  background: radial-gradient(circle, rgba(0, 113, 227, 0.35) 0%, transparent 68%);
+  filter: blur(32px);
   pointer-events: none;
-  will-change: transform, opacity;
-  animation: ambient-drift 18s var(--ease-out) infinite;
+  animation: hero-glow-breathe 5s var(--apple-ease) infinite;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .site-backdrop-orb {
-    animation: none;
-    opacity: 0.4;
-  }
+.hero-device-frame {
+  position: relative;
+  border-radius: 2.75rem;
+  padding: 3px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(0, 113, 227, 0.45) 35%,
+    rgba(255, 255, 255, 0.25) 55%,
+    rgba(41, 151, 255, 0.5) 100%
+  );
+  background-size: 200% 200%;
+  animation: hero-border-shift 8s linear infinite;
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+}
+
+.hero-device-screen {
+  position: relative;
+  border-radius: 2.55rem;
+  background: linear-gradient(165deg, #101010 0%, #050505 45%, #0c0c0c 100%);
+  overflow: hidden;
+  aspect-ratio: 9 / 19.5;
+}
+
+.hero-device-shimmer {
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(105deg, transparent 0%, rgba(255, 255, 255, 0.14) 45%, transparent 90%);
+  animation: hero-shimmer 4.5s var(--apple-ease) infinite;
+  pointer-events: none;
+}
+
+.hero-device-island {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  z-index: 2;
+  height: 28px;
+  width: 88px;
+  border-radius: 9999px;
+  transform: translateX(-50%);
+  background: #000000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.hero-device-caption {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* Chapters */
+.apple-chapter-dark {
+  background-color: var(--apple-black);
+  color: var(--apple-white);
+}
+
+.apple-chapter-gray {
+  background-color: var(--apple-gray);
+  color: var(--apple-ink);
+}
+
+.apple-chapter-white {
+  background-color: var(--apple-white);
+  color: var(--apple-ink);
 }
 
 .page-shell {
@@ -98,57 +245,66 @@
 
 .page-shell-wide {
   margin-inline: auto;
-  max-width: min(120rem, 100%);
-  padding: var(--page-pad-y) var(--page-pad-x);
+  max-width: min(106rem, 100%);
+  padding-left: var(--page-pad-x);
+  padding-right: var(--page-pad-x);
 }
 
 @layer base {
   body {
-    font-family: var(--font-portfolio-body), ui-sans-serif, system-ui, sans-serif;
-    background-color: var(--surface-0);
-    color: var(--text-0);
-    line-height: 1.65;
+    font-family: var(--font-apple);
+    background-color: var(--apple-white);
+    color: var(--apple-ink);
+    font-size: 17px;
+    line-height: 1.47059;
+    -webkit-font-smoothing: antialiased;
   }
 
   h1,
   h2,
   h3 {
-    font-family: var(--font-portfolio-display), var(--font-portfolio-body), ui-sans-serif, system-ui, sans-serif;
     font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.12;
-    color: var(--text-0);
+    letter-spacing: -0.028em;
+    color: inherit;
   }
 
   h1 {
-    font-size: clamp(2rem, 4.5vw, 3.25rem);
+    font-size: clamp(2.5rem, 6vw, 3.5rem);
+    line-height: 1.07;
   }
 
   h2 {
-    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.1;
   }
 
   h3 {
-    font-size: clamp(1.2rem, 2vw, 1.35rem);
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    line-height: 1.15;
   }
 
   .markdown a:not(.btn) {
-    color: var(--accent);
+    color: var(--apple-link);
     text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
-    transition: color 0.2s var(--ease-out), opacity 0.2s var(--ease-out);
+    text-underline-offset: 2px;
+    transition: opacity 0.2s var(--apple-ease);
   }
 
   .markdown a:not(.btn):hover {
-    opacity: 0.88;
+    opacity: 0.85;
   }
 
   :not(pre) > code {
     font-size: 0.9em;
-    padding: 0.15em 0.4em;
-    border-radius: 0.25rem;
-    background: color-mix(in oklab, var(--surface-2) 85%, transparent);
-    color: oklch(0.88 0.08 95);
+    padding: 0.12em 0.35em;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--apple-ink);
+  }
+
+  .apple-chapter-dark :not(pre) > code {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.92);
   }
 }
 
@@ -172,28 +328,28 @@
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 font-bold text-center no-underline transition-colors cursor-pointer bg-primary text-primary-content;
-    padding: var(--btn-py, 0.875rem) var(--btn-px, 1.25rem);
+    @apply inline-flex items-center justify-center gap-2 text-center no-underline transition-colors cursor-pointer bg-primary text-primary-content font-semibold;
+    padding: var(--btn-py, 0.55rem) var(--btn-px, 1.15rem);
     font-size: var(--btn-font-size, 0.875rem);
-    border-radius: var(--btn-border-radius, 9999px);
+    border-radius: var(--btn-border-radius, 980px);
 
     &:hover {
-      @apply bg-primary/85;
+      background-color: var(--apple-blue-hover);
     }
 
     &:disabled {
-      @apply cursor-default text-text-2 bg-surface-2;
+      @apply cursor-default text-apple-gray-secondary bg-apple-gray;
     }
   }
 
   .btn-lg {
-    --btn-font-size: 1.125rem;
+    --btn-font-size: 1.0625rem;
     --btn-px: 1.5rem;
-    --btn-py: 1.125rem;
+    --btn-py: 0.75rem;
   }
 
   .input {
-    @apply px-4 py-3 text-sm border rounded-sm border-border text-text-0 bg-surface-1 focus:border-accent focus:outline-3 focus:outline-accent/30;
+    @apply px-4 py-3 text-sm border bg-apple-white text-apple-ink rounded-md border-apple-border-mid focus:border-apple-blue focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-apple-blue;
   }
 
   .diff {
@@ -204,7 +360,7 @@
     &:focus-visible,
     &:has(.diff-item-1:focus),
     &:has(.diff-item-2:focus) {
-      outline: 2px solid var(--border);
+      outline: 2px solid var(--apple-border-mid);
       outline-offset: 1px;
     }
     &:focus-visible {
@@ -228,8 +384,8 @@
     transform-origin: 100% 100%;
     clip-path: inset(calc(100% - 0.75rem) 0 0 calc(100% - 0.75rem));
     transition:
-      min-width 0.3s var(--ease-out),
-      max-width 0.3s var(--ease-out);
+      min-width 0.3s var(--apple-ease),
+      max-width 0.3s var(--apple-ease);
   }
 
   .diff-item-2 {
@@ -242,15 +398,15 @@
       right: 1px;
       bottom: 0;
       translate: 50% -50%;
-      background: color-mix(in oklab, var(--color-text-0) 35%, transparent);
+      background: rgba(29, 29, 31, 0.2);
       border-radius: 9999px;
-      border: 2px solid color-mix(in oklab, var(--color-text-0) 60%, transparent);
+      border: 2px solid rgba(29, 29, 31, 0.35);
       backdrop-filter: blur(8px);
       pointer-events: none;
       z-index: 2;
       box-shadow:
-        inset 0 0 0 1px color-mix(in oklab, var(--surface-0) 8%, transparent),
-        0 1px 3px 0 color-mix(in oklab, var(--surface-0) 25%, transparent);
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+        0 1px 3px rgba(0, 0, 0, 0.12);
     }
     @supports (-webkit-overflow-scrolling: touch) and (overflow: -webkit-paged-x) {
       &:after {
