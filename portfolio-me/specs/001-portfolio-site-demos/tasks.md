@@ -25,14 +25,14 @@
 
 **Purpose**: npm workspaces, `apps/web` host for Next.js, Netlify-aware layout per `plan.md` / `research.md`.
 
-- [ ] T001 Add npm `workspaces` (`apps/*`, `packages/*`) and private root metadata in `D:\personal\portfolio-me\package.json`
-- [ ] T002 [P] Create `D:\personal\portfolio-me\apps\web\package.json` extending workspace (name, scripts: dev, build, lint)
-- [ ] T003 [P] Create shared `D:\personal\portfolio-me\packages\tsconfig\package.json` and `D:\personal\portfolio-me\packages\tsconfig\base.json` for `extends` from `apps/web`
-- [ ] T004 Move existing Next `app/`, `components/`, `public/`, `next.config.*`, `postcss.config.*`, `eslint.config.*`, `jsconfig.json`/`tsconfig.json` from `D:\personal\portfolio-me\` into `D:\personal\portfolio-me\apps\web\` and fix relative imports
-- [ ] T005 Update Netlify configuration (`D:\personal\portfolio-me\netlify.toml` or dashboard doc in `D:\personal\portfolio-me\README.md`) so build runs from `apps/web` with correct publish directory
-- [ ] T006 [P] Add root orchestration scripts (`dev`, `build`, `lint`) in `D:\personal\portfolio-me\package.json` targeting workspace `apps/web`
-- [ ] T007 [P] Update `D:\personal\portfolio-me\README.md` with workspace install, dev URL, and Netlify base-directory notes
-- [ ] T008 Align `D:\personal\portfolio-me\apps\web\next.config.js` with static/Netlify deployment assumptions from plan (no server DB features)
+- [x] T001 Add npm `workspaces` (`apps/*`, `packages/*`) and private root metadata in `D:\personal\portfolio-me\package.json`
+- [x] T002 [P] Create `D:\personal\portfolio-me\apps\web\package.json` extending workspace (name, scripts: dev, build, lint)
+- [x] T003 [P] Create shared `D:\personal\portfolio-me\packages\tsconfig\package.json` and `D:\personal\portfolio-me\packages\tsconfig\base.json` for `extends` from `apps/web`
+- [x] T004 Move existing Next `app/`, `components/`, `public/`, `next.config.*`, `postcss.config.*`, `eslint.config.*`, `jsconfig.json`/`tsconfig.json` from `D:\personal\portfolio-me\` into `D:\personal\portfolio-me\apps\web\` and fix relative imports
+- [x] T005 Update Netlify configuration (`D:\personal\portfolio-me\netlify.toml` or dashboard doc in `D:\personal\portfolio-me\README.md`) so build runs from `apps/web` with correct publish directory
+- [x] T006 [P] Add root orchestration scripts (`dev`, `build`, `lint`) in `D:\personal\portfolio-me\package.json` targeting workspace `apps/web`
+- [x] T007 [P] Update `D:\personal\portfolio-me\README.md` with workspace install, dev URL, and Netlify base-directory notes
+- [x] T008 Align `D:\personal\portfolio-me\apps\web\next.config.js` with static/Netlify deployment assumptions from plan (no server DB features)
 
 ---
 
@@ -42,16 +42,16 @@
 
 **⚠️ CRITICAL**: No user story phase work until this checkpoint passes.
 
-- [ ] T009 Create editorial folders `D:\personal\portfolio-me\apps\web\content\` with subfolders `projects\`, `blog\`, and file `D:\personal\portfolio-me\apps\web\content\site-profile.json` (stub)
-- [ ] T010 [P] Implement Zod schemas under `D:\personal\portfolio-me\apps\web\lib\content\schemas\` for `SiteProfile`, `Project`, `Article`, `DemoExperience` per `data-model.md`
-- [ ] T011 [P] Implement build-time loaders under `D:\personal\portfolio-me\apps\web\lib\content\load\` (read JSON/MDX, validate with schemas from T010)
-- [ ] T012 Add env-driven feature flags in `D:\personal\portfolio-me\apps\web\lib\config\feature-flags.ts` for demo families (immersive, augmented, three_d, creative)
-- [ ] T013 Refactor root layout in `D:\personal\portfolio-me\apps\web\app\layout.jsx` for skip-link, default metadata, and shell-wide providers only (no demo-heavy imports)
-- [ ] T014 [P] Extend `D:\personal\portfolio-me\apps\web\app\globals.css` with CSS variables / Tailwind tokens mirroring `D:\personal\portfolio-me\poc\index.html` palette intent
-- [ ] T015 Implement `D:\personal\portfolio-me\apps\web\components\site-header.jsx` with nav items from `contracts\public-site-ia.md` (href placeholders allowed until pages exist)
-- [ ] T016 [P] Implement `D:\personal\portfolio-me\apps\web\components\site-footer.jsx` with secondary links and colophon
-- [ ] T017 Add canonical route constants in `D:\personal\portfolio-me\apps\web\lib\constants\routes.ts` (no magic path strings in components)
-- [ ] T018 Add marketing-shell error UI in `D:\personal\portfolio-me\apps\web\app\error.jsx` (and optional `D:\personal\portfolio-me\apps\web\app\not-found.jsx`) without impacting demo routes
+- [x] T009 Create editorial folders `D:\personal\portfolio-me\apps\web\content\` with subfolders `projects\`, `blog\`, and file `D:\personal\portfolio-me\apps\web\content\site-profile.json` (stub)
+- [x] T010 [P] Implement Zod schemas under `D:\personal\portfolio-me\apps\web\lib\content\schemas\` for `SiteProfile`, `Project`, `Article`, `DemoExperience` per `data-model.md`
+- [x] T011 [P] Implement build-time loaders under `D:\personal\portfolio-me\apps\web\lib\content\load\` (read JSON/MDX, validate with schemas from T010)
+- [x] T012 Add env-driven feature flags in `D:\personal\portfolio-me\apps\web\lib\config\feature-flags.ts` for demo families (immersive, augmented, three_d, creative)
+- [x] T013 Refactor root layout in `D:\personal\portfolio-me\apps\web\app\layout.jsx` for skip-link, default metadata, and shell-wide providers only (no demo-heavy imports)
+- [x] T014 [P] Extend `D:\personal\portfolio-me\apps\web\app\globals.css` with CSS variables / Tailwind tokens mirroring `D:\personal\portfolio-me\poc\index.html` palette intent
+- [x] T015 Implement `D:\personal\portfolio-me\apps\web\components\site-header.jsx` with nav items from `contracts\public-site-ia.md` (href placeholders allowed until pages exist)
+- [x] T016 [P] Implement `D:\personal\portfolio-me\apps\web\components\site-footer.jsx` with secondary links and colophon
+- [x] T017 Add canonical route constants in `D:\personal\portfolio-me\apps\web\lib\constants\routes.ts` (no magic path strings in components)
+- [x] T018 Add marketing-shell error UI in `D:\personal\portfolio-me\apps\web\app\error.jsx` (and optional `D:\personal\portfolio-me\apps\web\app\not-found.jsx`) without impacting demo routes
 
 **Checkpoint**: `npm run dev` from workspace root serves shell with header/footer and loads stub content without errors.
 
@@ -65,14 +65,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T019 [US1] Replace starter home with portfolio hero in `D:\personal\portfolio-me\apps\web\app\page.jsx` using `content/site-profile.json` (roles, tagline, CTAs) per FR-001
-- [ ] T020 [P] [US1] Fill real copy in `D:\personal\portfolio-me\apps\web\content\site-profile.json` (roles array, social keys, SEO fields)
-- [ ] T021 [US1] Implement hiring/contact page `D:\personal\portfolio-me\apps\web\app\contact\page.jsx` with mailto, calendar, and outbound profile links per FR-006
-- [ ] T022 [P] [US1] Implement `D:\personal\portfolio-me\apps\web\app\links\page.jsx` listing outbound professional links
-- [ ] T023 [US1] Wire `D:\personal\portfolio-me\apps\web\components\site-header.jsx` active states and CTA button to `routes.ts` entries for `/`, `/contact`, `/demos`
-- [ ] T024 [US1] Verify keyboard focus order and visible focus styles across header, main, and footer in `D:\personal\portfolio-me\apps\web\app\layout.jsx` and `D:\personal\portfolio-me\apps\web\app\page.jsx` per US1 acceptance scenario 3
-- [ ] T025 [P] [US1] Export route-level `metadata` in `D:\personal\portfolio-me\apps\web\app\page.jsx` and `D:\personal\portfolio-me\apps\web\app\contact\page.jsx` per `contracts\public-site-ia.md` SEO contract
-- [ ] T026 [US1] Extract reusable primary CTA component `D:\personal\portfolio-me\apps\web\components\cta-hire.jsx` used by hero and nav
+- [x] T019 [US1] Replace starter home with portfolio hero in `D:\personal\portfolio-me\apps\web\app\page.jsx` using `content/site-profile.json` (roles, tagline, CTAs) per FR-001
+- [x] T020 [P] [US1] Fill real copy in `D:\personal\portfolio-me\apps\web\content\site-profile.json` (roles array, social keys, SEO fields)
+- [x] T021 [US1] Implement hiring/contact page `D:\personal\portfolio-me\apps\web\app\contact\page.jsx` with mailto, calendar, and outbound profile links per FR-006
+- [x] T022 [P] [US1] Implement `D:\personal\portfolio-me\apps\web\app\links\page.jsx` listing outbound professional links
+- [x] T023 [US1] Wire `D:\personal\portfolio-me\apps\web\components\site-header.jsx` active states and CTA button to `routes.ts` entries for `/`, `/contact`, `/demos`
+- [x] T024 [US1] Verify keyboard focus order and visible focus styles across header, main, and footer in `D:\personal\portfolio-me\apps\web\app\layout.jsx` and `D:\personal\portfolio-me\apps\web\app\page.jsx` per US1 acceptance scenario 3
+- [x] T025 [P] [US1] Export route-level `metadata` in `D:\personal\portfolio-me\apps\web\app\page.jsx` and `D:\personal\portfolio-me\apps\web\app\contact\page.jsx` per `contracts\public-site-ia.md` SEO contract
+- [x] T026 [US1] Extract reusable primary CTA component `D:\personal\portfolio-me\apps\web\components\cta-hire.jsx` used by hero and nav
 
 **Checkpoint**: US1 manual walkthrough passes without visiting `/projects` or `/demos/*`.
 
@@ -240,10 +240,11 @@ Serial finish: T048 (vr-room), then T049 feature-flag wiring
 
 ## Format validation
 
-- All 60 lines use `- [ ]`, sequential `T001`–`T060`, and **file paths** in descriptions.
+- Task lines use sequential `T001`–`T060` and **file paths** in descriptions; completed items use `- [x]`.
 - `[P]` only where parallel-safe; `[US1]`–`[US4]` only on user-story phases; Setup (1–2) and Polish (7) omit story labels per rules.
 
 ## Notes
 
 - If migration (T004) is too large for one change set, split into sub-PRs: (a) copy tree to `apps/web`, (b) fix imports, (c) delete old root duplicates—still satisfy T004 acceptance before Phase 2.
 - Remove or archive starter Netlify demo routes under `D:\personal\portfolio-me\apps\web\app\blobs\` etc., when portfolio routes replace them, to avoid duplicate IA noise.
+- **2026-04-24 `/speckit.implement` session**: Completed **T001–T026** (Phases 1–3). Also moved `utils.js` and `data/` into `apps/web` (required for T004 build). Stub marketing routes added for nav parity; **T027+** not started. ESLint: `apps/web/eslint.config.mjs` + `eslint app components lib`; first full run can be slow—tune ignores if needed.

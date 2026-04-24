@@ -1,4 +1,25 @@
-# Next.js on Netlify Platform Starter
+# portfolio-me (monorepo)
+
+This repository uses **npm workspaces**. The Next.js site lives in `apps/web`.
+
+## Quick commands (from repo root)
+
+```bash
+npm install          # installs all workspaces (hoisted to root node_modules)
+npm run dev          # runs next dev for apps/web
+npm run build        # production build for apps/web
+npm run lint         # eslint for apps/web
+```
+
+Local dev URL when using `npm run dev`: [http://localhost:3000](http://localhost:3000).
+
+## Netlify
+
+Build runs from the **repository root** (`npm install && npm run build`) so npm workspaces resolve. Publish directory is `apps/web/.next` (see `netlify.toml`). Do not set Netlify “base directory” to `apps/web` unless you change the build command to install from the monorepo root.
+
+---
+
+# Next.js on Netlify Platform Starter (legacy readme body)
 
 [Live Demo](https://nextjs-platform-starter.netlify.app/)
 

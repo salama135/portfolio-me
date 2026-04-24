@@ -19,23 +19,15 @@ npm install
 
 > Until workspace migration merges, `npm install` at repo root already installs the existing Next app.
 
-## Run web (current root layout)
+## Run web (npm workspaces)
 
 ```powershell
 cd D:\personal\portfolio-me
+npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
-
-## Run web (after `apps/web` workspace migration)
-
-```powershell
-cd D:\personal\portfolio-me
-npm run dev --workspace apps/web
-```
-
-(Exact script names may be `dev:web`—align with root `package.json` when tasks implement migration.)
+This runs the `web` workspace (`apps\web`). Open `http://localhost:3000`.
 
 ## POC reference
 
