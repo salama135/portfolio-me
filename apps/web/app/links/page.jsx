@@ -17,7 +17,7 @@ export default async function LinksPage() {
         {entries.map(([key, href]) => (
           <li key={key}>
             <a
-              className="text-lg font-medium capitalize text-accent transition-opacity duration-200 ease-out hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+              className="text-lg font-medium capitalize text-apple-link transition-opacity duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
               href={href}
               rel="noreferrer"
               target="_blank"

@@ -20,7 +20,7 @@ export default async function ContactPage() {
         {social?.email ? (
           <li>
             <a
-              className="font-medium text-accent transition-opacity duration-200 ease-out hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+              className="font-medium text-apple-link transition-opacity duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
               href={social.email}
             >
               Email
@@ -30,7 +30,7 @@ export default async function ContactPage() {
         {social?.linkedin ? (
           <li>
             <a
-              className="font-medium text-accent transition-opacity duration-200 ease-out hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+              className="font-medium text-apple-link transition-opacity duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
               href={social.linkedin}
               rel="noreferrer"
               target="_blank"
@@ -42,7 +42,7 @@ export default async function ContactPage() {
         {social?.github ? (
           <li>
             <a
-              className="font-medium text-accent transition-opacity duration-200 ease-out hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+              className="font-medium text-apple-link transition-opacity duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
               href={social.github}
               rel="noreferrer"
               target="_blank"
@@ -54,7 +54,7 @@ export default async function ContactPage() {
         {social?.calendar ? (
           <li>
             <a
-              className="font-medium text-accent transition-opacity duration-200 ease-out hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+              className="font-medium text-apple-link transition-opacity duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
               href={social.calendar}
               rel="noreferrer"
               target="_blank"
@@ -66,7 +66,7 @@ export default async function ContactPage() {
       </ul>
       <p className="mt-16 text-sm text-text-2">
         Edit copy in <code>content/site-profile.json</code>.{' '}
-        <a className="text-accent hover:opacity-90" href={ROUTES.links}>
+        <a className="text-apple-link hover:opacity-90" href={ROUTES.links}>
           More links
         </a>
       </p>
