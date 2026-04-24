@@ -17,6 +17,9 @@ When given a change request to an exisitng feature be sure to not break the self
 When given a feature to implement first create a design document of what will be added in terms of (files, components, npm package imports, code updates). This design is a High level design no implementation details like code should be provided just archarchitecture decisions. Keep it simple stupid no need to over complicate the UI or codebase.
 <!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
 
+### impicible style 
+When given a feature or change request enhance the UI using /impeccable design skills they can be found /.claude/skills/impeccable/reference
+
 ## Tech Stack
 <!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
 
