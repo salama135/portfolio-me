@@ -1,50 +1,42 @@
-# [PROJECT_NAME] Constitution
+#  portfolio-me Constitution
 <!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
+### ask-if-not-sure
+When given a vauge or unclear feature request or change request ask questions to clarify any unclear points.
+
+### small-componenets
+When given a feature to implement implement it as a detachable or flagable feature so it can be toggled on or off based on the need. 
+
+### feature change requests 
+When given a change request to an exisitng feature be sure to not break the self contained component you can make smaller compoenets as part of the whole feature. 
+
+### design before implement
 <!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
+When given a feature to implement first create a design document of what will be added in terms of (files, components, npm package imports, code updates). This design is a High level design no implementation details like code should be provided just archarchitecture decisions. Keep it simple stupid no need to over complicate the UI or codebase.
 <!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
-
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
-
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
-
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
-
-## [SECTION_2_NAME]
+## Tech Stack
 <!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
 
-[SECTION_2_CONTENT]
+This project uses
+- Next.Js for Frontend
+- Netlify for hosting
+- NPM as package manager
+- No DB
+- No Auth
 <!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
 
 ## Governance
 <!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
+1. any feature or change request should have a design or implementation plan generated for it and should always be up to date inorder for the agent to use it in the next feature of change request.
+2. before implementing of desining or planning first go to the /specs file and add any relevent files to your context so as not to break any previous features
+3. use simple code structure and standards like S.O.L.I.D and D.R.Y and K.I.S.S 
+4. always write code in a readable way use functions with clear long names that descripe what the function actually does.
+5. beware of magic numbers always use enums or consts for any string or number values.
 <!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+**Version**: 0.1 | **Ratified**: 24/04/2026 | **Last Amended**: 24/04/2026
 <!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
