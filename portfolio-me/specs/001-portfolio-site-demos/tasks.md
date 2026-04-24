@@ -121,7 +121,7 @@
 - [x] T046 [P] [US3] Implement three.js demo `D:\personal\portfolio-me\apps\web\app\demos\three-showcase\page.jsx` with renderer dispose on unmount and WebGL unsupported messaging
 - [x] T047 [P] [US3] Implement AR demo `D:\personal\portfolio-me\apps\web\app\demos\ar-overlay\page.jsx` with AR.js and camera-permission denied UX copy
 - [x] T048 [US3] Implement A-Frame demo `D:\personal\portfolio-me\apps\web\app\demos\vr-room\page.jsx` with enter-VR prompts and WebXR unsupported fallback
-- [x] T049 [US3] Wire `D:\personal\portfolio-me\apps\web\lib\config\feature-flags.ts` to hide or show demo slugs in `D:\personal\portfolio-me\apps\web\app\demos\page.jsx` and document vars in `D:\personal\portfolio-me\apps\web\.env.example`
+- [x] T049 [US3] Wire `D:\personal\portfolio-me\apps\web\lib\config\feature-flags.js` to hide or show demo slugs in `D:\personal\portfolio-me\apps\web\app\demos\page.jsx` and document vars in `D:\personal\portfolio-me\apps\web\.env.example`
 
 **Checkpoint**: Each demo category has a happy path under five minutes on reference devices; turning off a flag removes demo without build failure.
 
