@@ -13,6 +13,7 @@
     "@netlify/blobs": "^10.7.4",
     "blobshape": "^1.0.0",
     "bright": "^1.0.0",
+    "gray-matter": "^4.0.3",
     "markdown-to-jsx": "^7.7.16",
     "next": "^16.0.8",
     "react": "19.2.4",

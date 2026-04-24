@@ -1,0 +1,13 @@
+[
+  {
+    "id": "i1",
+    "title": "Indoor climbing",
+    "body": "Bouldering keeps problem solving physical: read the wall, commit to a sequence, adjust when beta fails.",
+    "image": "/media/interest-climb.jpg"
+  },
+  {
+    "id": "i2",
+    "title": "Keyboard layouts",
+    "body": "Tinkering with ergonomic splits and layers for long coding sessions without wrist strain."
+  }
+]

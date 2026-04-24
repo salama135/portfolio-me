@@ -34,10 +34,6 @@ const nextConfig = {
         source: '/api/health',
         destination: '/quotes/random',
       },
-      {
-        source: '/blog',
-        destination: '/classics',
-      },
     ];
   },
 };

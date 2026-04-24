@@ -1,4 +1,14 @@
 /** Canonical marketing + demo paths (no magic strings in nav). */
+/** @param {string} slug */
+export function routeProject(slug) {
+  return `/projects/${slug}`;
+}
+
+/** @param {string} slug */
+export function routeBlogPost(slug) {
+  return `/blog/${slug}`;
+}
+
 export const ROUTES = {
   home: '/',
   projects: '/projects',

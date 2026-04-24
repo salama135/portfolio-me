@@ -8,3 +8,7 @@ export const articleFrontmatterSchema = z.object({
   tags: z.array(z.string()).optional().default([]),
   excerpt: z.string().optional(),
 });
+
+export const articleSchema = articleFrontmatterSchema.extend({
+  body: z.string(),
+});

@@ -18,6 +18,8 @@ export const projectSchema = z.object({
   coverImage: z.string().optional(),
   featured: z.boolean().optional().default(false),
   order: z.number().optional().default(0),
+  /** Markdown body from colocated `.mdx` / `.md` (optional; JSON-only projects omit). */
+  body: z.string().optional(),
 });
 
 export const projectListSchema = z.array(projectSchema);

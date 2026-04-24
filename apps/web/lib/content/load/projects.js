@@ -1,6 +1,7 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import { projectListSchema } from '../schemas/project.js';
+import matter from 'gray-matter';
+import { projectSchema } from '../schemas/project.js';
 
 const PROJECTS_DIR = join(process.cwd(), 'content', 'projects');
 
@@ -13,13 +14,42 @@ export async function loadProjects() {
     return [];
   }
 
-  const jsonFiles = files.filter((f) => f.endsWith('.json'));
-  const items = [];
-  for (const file of jsonFiles) {
-    const raw = await readFile(join(PROJECTS_DIR, file), 'utf8');
-    const data = JSON.parse(raw);
-    items.push(data);
+  const projects = [];
+  for (const file of files) {
+    const fullPath = join(PROJECTS_DIR, file);
+    try {
+      if (file.endsWith('.json')) {
+        const raw = await readFile(fullPath, 'utf8');
+        projects.push(projectSchema.parse(JSON.parse(raw)));
+      } else if (file.endsWith('.mdx') || file.endsWith('.md')) {
+        const raw = await readFile(fullPath, 'utf8');
+        const { data, content } = matter(raw);
+        projects.push(
+          projectSchema.parse({
+            ...data,
+            body: typeof content === 'string' ? content.trim() : '',
+          }),
+        );
+      }
+    } catch {
+      /* skip invalid editorial files in dev */
+    }
   }
 
-  return projectListSchema.parse(items);
+  return projects.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+}
+
+/** @returns {Promise<string[]>} */
+export async function loadProjectSlugs() {
+  const projects = await loadProjects();
+  return [...new Set(projects.map((p) => p.slug))];
+}
+
+/**
+ * @param {string} slug
+ * @returns {Promise<import('zod').infer<typeof import('../schemas/project.js').projectSchema> | null>}
+ */
+export async function loadProjectBySlug(slug) {
+  const projects = await loadProjects();
+  return projects.find((p) => p.slug === slug) ?? null;
 }

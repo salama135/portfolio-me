@@ -86,18 +86,18 @@
 
 ### Implementation for User Story 2
 
-- [ ] T027 [US2] Implement projects index `D:\personal\portfolio-me\apps\web\app\projects\page.jsx` consuming validated project list from `content/projects/*`
-- [ ] T028 [P] [US2] Implement project detail `D:\personal\portfolio-me\apps\web\app\projects\[slug]\page.jsx` with `generateStaticParams` from loader
-- [ ] T029 [P] [US2] Seed at least two projects as `D:\personal\portfolio-me\apps\web\content\projects\*.mdx` (or `.json`) with frontmatter per `data-model.md`
-- [ ] T030 [US2] Implement `D:\personal\portfolio-me\apps\web\app\about\page.jsx` with profile narrative and optional highlights strip
-- [ ] T031 [P] [US2] Implement `D:\personal\portfolio-me\apps\web\app\mentoring\page.jsx` for instruction/teaching positioning
-- [ ] T032 [P] [US2] Implement `D:\personal\portfolio-me\apps\web\app\interests\page.jsx` for hobbies content
-- [ ] T033 [US2] Implement blog list `D:\personal\portfolio-me\apps\web\app\blog\page.jsx` and post reader `D:\personal\portfolio-me\apps\web\app\blog\[slug]\page.jsx` using MDX pipeline chosen in `research.md`
-- [ ] T034 [P] [US2] Seed sample posts under `D:\personal\portfolio-me\apps\web\content\blog\*.mdx` with title, date, author frontmatter
-- [ ] T035 [US2] Implement adventures/gallery `D:\personal\portfolio-me\apps\web\app\adventures\page.jsx` rendering `MediaAsset` lists with required `alt` text
-- [ ] T036 [P] [US2] Add `D:\personal\portfolio-me\apps\web\content\highlights.json` and render achievements on `D:\personal\portfolio-me\apps\web\app\about\page.jsx` or dedicated section component `D:\personal\portfolio-me\apps\web\components\highlights-list.jsx`
-- [ ] T037 [US2] Add `D:\personal\portfolio-me\apps\web\components\content-empty-state.jsx` and use on `D:\personal\portfolio-me\apps\web\app\projects\page.jsx` and `D:\personal\portfolio-me\apps\web\app\blog\page.jsx` when lists empty
-- [ ] T038 [P] [US2] Standardize imagery via `next/image` in `D:\personal\portfolio-me\apps\web\app\projects\page.jsx` and `D:\personal\portfolio-me\apps\web\app\adventures\page.jsx` sourcing files under `D:\personal\portfolio-me\apps\web\public\media\`
+- [x] T027 [US2] Implement projects index `D:\personal\portfolio-me\apps\web\app\projects\page.jsx` consuming validated project list from `content/projects/*`
+- [x] T028 [P] [US2] Implement project detail `D:\personal\portfolio-me\apps\web\app\projects\[slug]\page.jsx` with `generateStaticParams` from loader
+- [x] T029 [P] [US2] Seed at least two projects as `D:\personal\portfolio-me\apps\web\content\projects\*.mdx` (or `.json`) with frontmatter per `data-model.md`
+- [x] T030 [US2] Implement `D:\personal\portfolio-me\apps\web\app\about\page.jsx` with profile narrative and optional highlights strip
+- [x] T031 [P] [US2] Implement `D:\personal\portfolio-me\apps\web\app\mentoring\page.jsx` for instruction/teaching positioning
+- [x] T032 [P] [US2] Implement `D:\personal\portfolio-me\apps\web\app\interests\page.jsx` for hobbies content
+- [x] T033 [US2] Implement blog list `D:\personal\portfolio-me\apps\web\app\blog\page.jsx` and post reader `D:\personal\portfolio-me\apps\web\app\blog\[slug]\page.jsx` using MDX pipeline chosen in `research.md`
+- [x] T034 [P] [US2] Seed sample posts under `D:\personal\portfolio-me\apps\web\content\blog\*.mdx` with title, date, author frontmatter
+- [x] T035 [US2] Implement adventures/gallery `D:\personal\portfolio-me\apps\web\app\adventures\page.jsx` rendering `MediaAsset` lists with required `alt` text
+- [x] T036 [P] [US2] Add `D:\personal\portfolio-me\apps\web\content\highlights.json` and render achievements on `D:\personal\portfolio-me\apps\web\app\about\page.jsx` or dedicated section component `D:\personal\portfolio-me\apps\web\components\highlights-list.jsx`
+- [x] T037 [US2] Add `D:\personal\portfolio-me\apps\web\components\content-empty-state.jsx` and use on `D:\personal\portfolio-me\apps\web\app\projects\page.jsx` and `D:\personal\portfolio-me\apps\web\app\blog\page.jsx` when lists empty
+- [x] T038 [P] [US2] Standardize imagery via `next/image` in `D:\personal\portfolio-me\apps\web\app\projects\page.jsx` and `D:\personal\portfolio-me\apps\web\app\adventures\page.jsx` sourcing files under `D:\personal\portfolio-me\apps\web\public\media\`
 
 **Checkpoint**: All IA routes from `contracts\public-site-ia.md` except demos resolve with real or placeholder copy; two-click navigation smoke passes for marketing sections.
 
@@ -247,4 +247,5 @@ Serial finish: T048 (vr-room), then T049 feature-flag wiring
 
 - If migration (T004) is too large for one change set, split into sub-PRs: (a) copy tree to `apps/web`, (b) fix imports, (c) delete old root duplicates—still satisfy T004 acceptance before Phase 2.
 - Remove or archive starter Netlify demo routes under `D:\personal\portfolio-me\apps\web\app\blobs\` etc., when portfolio routes replace them, to avoid duplicate IA noise.
-- **2026-04-24 `/speckit.implement` session**: Completed **T001–T026** (Phases 1–3). Also moved `utils.js` and `data/` into `apps/web` (required for T004 build). Stub marketing routes added for nav parity; **T027+** not started. ESLint: `apps/web/eslint.config.mjs` + `eslint app components lib`; first full run can be slow—tune ignores if needed.
+- **2026-04-24 `/speckit.implement`**: Phases 1–3 **T001–T026**; moved `utils.js` and `data/` into `apps/web` for T004; stub marketing routes; ESLint in `apps/web/eslint.config.mjs`.
+- **2026-04-24 (continued)**: Phase 4 **T027–T038** (US2). Added `gray-matter`, project/blog/adventure/highlight/interest loaders and content, `public/media/`, removed `/blog` → `/classics` **rewrite** in `apps/web/next.config.js` so `/blog` is editorial.

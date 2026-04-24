@@ -1,0 +1,15 @@
+{
+  "slug": "design-systems-platform",
+  "title": "Design systems on a compliance-heavy product",
+  "summary": "Scaled a token-based UI kit and documentation site so squads shipped consistent flows without a dedicated design-ops team.",
+  "role": "Frontend lead · architecture · accessibility reviews",
+  "outcomes": "Cut design QA cycles by standardizing primitives; WCAG 2.2 AA checks moved into CI storybook runs.",
+  "techLabels": ["React", "TypeScript", "Storybook", "Design tokens"],
+  "links": {
+    "repo": "https://github.com",
+    "demo": "/demos"
+  },
+  "coverImage": "/media/cover-design-systems.jpg",
+  "featured": true,
+  "order": 1
+}

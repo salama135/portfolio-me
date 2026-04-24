@@ -1,0 +1,21 @@
+[
+  {
+    "slug": "ridge-weekend",
+    "title": "Ridge trail weekend",
+    "description": "Fog, granite, and a very patient trail dog.",
+    "media": [
+      {
+        "src": "/media/adventure-trail-1.jpg",
+        "alt": "Low fog over a rocky ridge with evergreen trees below",
+        "caption": "Morning inversion",
+        "type": "image"
+      },
+      {
+        "src": "/media/adventure-trail-2.jpg",
+        "alt": "Same ridge line from the descent with clearer sky",
+        "caption": "Afternoon clearing",
+        "type": "image"
+      }
+    ]
+  }
+]
