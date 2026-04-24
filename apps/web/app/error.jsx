@@ -2,13 +2,14 @@
 
 export default function Error({ error, reset }) {
   return (
-    <div className="mx-auto max-w-lg px-6 py-16">
-      <h1 className="text-2xl font-semibold text-white">Something went wrong</h1>
-      <p className="mt-2 text-zinc-400">{error?.message ?? 'Unexpected error'}</p>
+    <div className="page-shell py-[clamp(3rem,10vw,5rem)]">
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-2">Error</p>
+      <h1 className="mt-4">Something went wrong</h1>
+      <p className="mt-3 max-w-[50ch] text-text-1">{error?.message ?? 'Unexpected error'}</p>
       <button
         type="button"
         onClick={() => reset()}
-        className="mt-6 rounded-md bg-cyan-500 px-4 py-2 text-sm font-medium text-zinc-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+        className="mt-8 inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-accent-fg transition-[box-shadow,background-color] duration-200 ease-out hover:bg-[color:oklch(0.82_0.13_198)] hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
       >
         Try again
       </button>

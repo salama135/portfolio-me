@@ -3,13 +3,13 @@ import { ROUTES } from '../lib/constants/routes.js';
 
 export default function NotFound() {
   return (
-    <div className="mx-auto max-w-lg px-6 py-24 text-center">
-      <p className="text-sm font-medium text-cyan-400">404</p>
-      <h1 className="mt-2 text-2xl font-semibold text-white">Page not found</h1>
-      <p className="mt-2 text-zinc-400">That route does not exist yet.</p>
+    <div className="page-shell py-[clamp(4rem,12vw,8rem)] text-center">
+      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-2">404</p>
+      <h1 className="mt-4">Page not found</h1>
+      <p className="mx-auto mt-3 max-w-[40ch] text-text-1">That route does not exist yet.</p>
       <Link
         href={ROUTES.home}
-        className="mt-8 inline-block rounded-md bg-cyan-500 px-4 py-2 text-sm font-medium text-zinc-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+        className="mt-10 inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-accent-fg no-underline transition-[box-shadow,background-color] duration-200 ease-out hover:bg-[color:oklch(0.82_0.13_198)] hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
       >
         Back home
       </Link>

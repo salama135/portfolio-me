@@ -5,9 +5,11 @@ export const metadata = {
 
 export default function ProjectsPage() {
   return (
-    <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
-      <h1 className="text-3xl font-bold text-white">Projects</h1>
-      <p className="mt-2 text-zinc-400">Project listings will load from `content/projects/*.json` (see tasks T027–T029).</p>
+    <div className="page-shell">
+      <h1>Projects</h1>
+      <p className="mt-4 max-w-[60ch] text-pretty text-lg text-text-1">
+        Project listings will load from <code>content/projects/*.json</code> (see tasks T027–T029).
+      </p>
     </div>
   );
 }

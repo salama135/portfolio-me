@@ -11,42 +11,62 @@ export default async function ContactPage() {
   const { social } = profile;
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
-      <h1 className="text-3xl font-bold text-white">Contact</h1>
-      <p className="mt-2 text-zinc-400">Reach out for software engineering, instruction, or game development roles.</p>
-      <ul className="mt-10 flex flex-col gap-4 text-lg">
+    <div className="page-shell">
+      <h1>Contact</h1>
+      <p className="mt-3 max-w-[60ch] text-pretty text-lg text-text-1">
+        Reach out for software engineering, instruction, or game development roles.
+      </p>
+      <ul className="mt-12 flex flex-col gap-5 text-lg">
         {social?.email ? (
           <li>
-            <a className="text-cyan-400 underline-offset-4 hover:underline" href={social.email}>
+            <a
+              className="font-medium text-accent transition-opacity duration-200 ease-out hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+              href={social.email}
+            >
               Email
             </a>
           </li>
         ) : null}
         {social?.linkedin ? (
           <li>
-            <a className="text-cyan-400 underline-offset-4 hover:underline" href={social.linkedin} rel="noreferrer" target="_blank">
+            <a
+              className="font-medium text-accent transition-opacity duration-200 ease-out hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+              href={social.linkedin}
+              rel="noreferrer"
+              target="_blank"
+            >
               LinkedIn
             </a>
           </li>
         ) : null}
         {social?.github ? (
           <li>
-            <a className="text-cyan-400 underline-offset-4 hover:underline" href={social.github} rel="noreferrer" target="_blank">
+            <a
+              className="font-medium text-accent transition-opacity duration-200 ease-out hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+              href={social.github}
+              rel="noreferrer"
+              target="_blank"
+            >
               GitHub
             </a>
           </li>
         ) : null}
         {social?.calendar ? (
           <li>
-            <a className="text-cyan-400 underline-offset-4 hover:underline" href={social.calendar} rel="noreferrer" target="_blank">
+            <a
+              className="font-medium text-accent transition-opacity duration-200 ease-out hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+              href={social.calendar}
+              rel="noreferrer"
+              target="_blank"
+            >
               Schedule time
             </a>
           </li>
         ) : null}
       </ul>
-      <p className="mt-12 text-sm text-zinc-500">
-        Edit paths and copy in <code className="text-zinc-400">content/site-profile.json</code> ·{' '}
-        <a className="text-cyan-500" href={ROUTES.links}>
+      <p className="mt-16 text-sm text-text-2">
+        Edit copy in <code>content/site-profile.json</code>.{' '}
+        <a className="text-accent hover:opacity-90" href={ROUTES.links}>
           More links
         </a>
       </p>

@@ -1,176 +1,273 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-
 @import 'tailwindcss';
 
-@theme {
-    --background-image-noise: linear-gradient(
-            to bottom,
-            color-mix(in oklab, var(--color-neutral-950) 0%, transparent),
-            color-mix(in oklab, var(--color-neutral-950) 100%, transparent)
-        ),
-        url('/images/noise.png');
-    --color-primary: #2bdcd2;
-    --color-primary-content: #171717;
-    --color-secondary: #016968;
-    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
+/* ── Design tokens (OKLCH). Neutrals tinted toward 265° hue; no pure black/white. ── */
+:root {
+  --hue-base: 268;
+  --surface-0: oklch(0.14 0.045 268);
+  --surface-1: oklch(0.18 0.055 268);
+  --surface-2: oklch(0.22 0.06 268);
+  --text-0: oklch(0.94 0.02 268);
+  --text-1: oklch(0.78 0.03 270);
+  --text-2: oklch(0.62 0.04 272);
+  --border: oklch(0.38 0.06 272 / 0.35);
+  --accent: oklch(0.78 0.14 198);
+  --accent-fg: oklch(0.18 0.04 268);
+  --accent-2: oklch(0.74 0.17 158);
+  --focus-ring: oklch(0.82 0.12 198);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --page-pad-x: clamp(1rem, 3.5vw, 2rem);
+  --page-pad-y: clamp(2.5rem, 6vw, 4.5rem);
 }
 
-/* Portfolio shell tokens (aligned with poc/index.html intent) */
-:root {
-    --portfolio-bg: #07070e;
-    --portfolio-bg2: #0d0d18;
-    --portfolio-accent: #00d4ff;
-    --portfolio-accent-2: #10e888;
-    --portfolio-muted: #6b6b80;
+@theme {
+  --color-surface-0: var(--surface-0);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-text-0: var(--text-0);
+  --color-text-1: var(--text-1);
+  --color-text-2: var(--text-2);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-2: var(--accent-2);
+  --color-focus-ring: var(--focus-ring);
+  --font-sans: var(--font-portfolio-body), ui-sans-serif, system-ui, sans-serif;
+  --background-image-noise: linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-surface-0) 0%, transparent),
+      color-mix(in oklab, var(--color-surface-0) 100%, transparent)
+    ),
+    url('/images/noise.png');
+  --color-primary: oklch(0.78 0.14 198);
+  --color-primary-content: oklch(0.18 0.04 268);
+  --color-secondary: oklch(0.55 0.1 198);
 }
 
 @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Ambient field (no layout animation; opacity-only keyframes allowed) */
+@keyframes ambient-drift {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    opacity: 0.62;
+    transform: translate3d(2%, -1.5%, 0) scale(1.03);
+  }
+}
+
+.site-backdrop {
+  background-color: var(--surface-0);
+  background-image:
+    radial-gradient(ellipse 55% 45% at 78% 22%, oklch(0.32 0.12 290 / 0.35), transparent 60%),
+    radial-gradient(ellipse 40% 35% at 12% 88%, oklch(0.28 0.1 198 / 0.22), transparent 55%),
+    radial-gradient(ellipse 30% 28% at 42% 48%, oklch(0.26 0.08 158 / 0.12), transparent 50%);
+}
+
+.site-backdrop-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(72px);
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: ambient-drift 18s var(--ease-out) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-backdrop-orb {
+    animation: none;
+    opacity: 0.4;
+  }
+}
+
+.page-shell {
+  margin-inline: auto;
+  max-width: 70ch;
+  padding: var(--page-pad-y) var(--page-pad-x);
+}
+
+.page-shell-wide {
+  margin-inline: auto;
+  max-width: min(120rem, 100%);
+  padding: var(--page-pad-y) var(--page-pad-x);
 }
 
 @layer base {
-    h1 {
-        @apply text-4xl font-bold tracking-tight sm:text-5xl;
-    }
+  body {
+    font-family: var(--font-portfolio-body), ui-sans-serif, system-ui, sans-serif;
+    background-color: var(--surface-0);
+    color: var(--text-0);
+    line-height: 1.65;
+  }
 
-    h2 {
-        @apply text-2xl font-bold sm:text-3xl;
-    }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-portfolio-display), var(--font-portfolio-body), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+    color: var(--text-0);
+  }
 
-    h3 {
-        @apply text-xl font-bold;
-    }
+  h1 {
+    font-size: clamp(2rem, 4.5vw, 3.25rem);
+  }
 
-    a:not(.btn) {
-        @apply underline transition hover:opacity-80;
-    }
+  h2 {
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+  }
 
-    :not(pre) > code {
-        @apply px-1 py-0.5 font-mono rounded bg-neutral-900 text-yellow-200;
-        font-size: 0.9em;
-    }
+  h3 {
+    font-size: clamp(1.2rem, 2vw, 1.35rem);
+  }
+
+  .markdown a:not(.btn) {
+    color: var(--accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color 0.2s var(--ease-out), opacity 0.2s var(--ease-out);
+  }
+
+  .markdown a:not(.btn):hover {
+    opacity: 0.88;
+  }
+
+  :not(pre) > code {
+    font-size: 0.9em;
+    padding: 0.15em 0.4em;
+    border-radius: 0.25rem;
+    background: color-mix(in oklab, var(--surface-2) 85%, transparent);
+    color: oklch(0.88 0.08 95);
+  }
 }
 
 @layer components {
-    .markdown {
-        > * {
-            @apply my-4;
-        }
-
-        :where(h1, h2) {
-            @apply mt-12 mb-6;
-        }
-
-        > :first-child {
-            @apply mt-0;
-        }
-
-        > :last-child {
-            @apply mb-0;
-        }
+  .markdown {
+    > * {
+      @apply my-4;
     }
 
-    .btn {
-        @apply inline-flex items-center justify-center gap-2 font-bold text-center no-underline transition-colors cursor-pointer bg-primary text-primary-content;
-        padding: var(--btn-py, 0.875rem) var(--btn-px, 1.25rem);
-        font-size: var(--btn-font-size, 0.875rem);
-        border-radius: var(--btn-border-radius, 0.25rem);
-
-        &:hover {
-            @apply bg-primary/85;
-        }
-
-        &:disabled {
-            @apply cursor-default text-neutral-400 bg-neutral-700;
-        }
+    :where(h1, h2) {
+      @apply mt-12 mb-6;
     }
 
-    .btn-lg {
-        --btn-font-size: 1.125rem;
-        --btn-px: 1.5rem;
-        --btn-py: 1.125rem;
+    > :first-child {
+      @apply mt-0;
     }
 
-    .input {
-        @apply px-4 py-3 text-sm border rounded-sm border-neutral-300 text-neutral-900 focus:border-primary focus:outline-3 focus:outline-primary/30;
+    > :last-child {
+      @apply mb-0;
+    }
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-bold text-center no-underline transition-colors cursor-pointer bg-primary text-primary-content;
+    padding: var(--btn-py, 0.875rem) var(--btn-px, 1.25rem);
+    font-size: var(--btn-font-size, 0.875rem);
+    border-radius: var(--btn-border-radius, 9999px);
+
+    &:hover {
+      @apply bg-primary/85;
     }
 
-    .diff {
-        direction: ltr;
-        container-type: inline-size;
-        grid-template-columns: auto 1fr;
-
-        &:focus-visible,
-        &:has(.diff-item-1:focus),
-        &:has(.diff-item-2:focus) {
-            outline: 2px solid var(--color-gray-400);
-            outline-offset: 1px;
-        }
-        &:focus-visible {
-            .diff-resizer {
-                min-width: 80cqi;
-                max-width: 80cqi;
-            }
-        }
-        &:has(.diff-item-2:focus-visible) {
-            .diff-resizer {
-                min-width: 20cqi;
-                max-width: 20cqi;
-            }
-        }
+    &:disabled {
+      @apply cursor-default text-text-2 bg-surface-2;
     }
+  }
 
-    .diff-resizer {
-        width: 50cqi;
-        max-width: calc(100cqi - 1rem);
-        transform: scaleY(3) translate(0.35rem, 0.08rem);
-        transform-origin: 100% 100%;
-        clip-path: inset(calc(100% - 0.75rem) 0 0 calc(100% - 0.75rem));
-        transition: min-width 0.3s ease-out, max-width 0.3s ease-out;
-    }
+  .btn-lg {
+    --btn-font-size: 1.125rem;
+    --btn-px: 1.5rem;
+    --btn-py: 1.125rem;
+  }
 
-    .diff-item-2 {
-        &:after {
-            content: '';
-            width: 1.25rem;
-            height: 1.875rem;
-            position: absolute;
-            top: 50%;
-            right: 1px;
-            bottom: 0;
-            translate: 50% -50%;
-            background: color-mix(in oklab, var(--color-white) 50%, transparent);
-            border-radius: 9999px;
-            border: 2px solid var(--color-white);
-            backdrop-filter: blur(8px);
-            pointer-events: none;
-            z-index: 2;
-            box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-gray-900) 5%, transparent),
-                0 1px 3px 0 color-mix(in oklab, var(--color-gray-900) 20%, transparent);
-        }
-        @supports (-webkit-overflow-scrolling: touch) and (overflow: -webkit-paged-x) {
-            &:after {
-                content: none;
-            }
-        }
-    }
+  .input {
+    @apply px-4 py-3 text-sm border rounded-sm border-border text-text-0 bg-surface-1 focus:border-accent focus:outline-3 focus:outline-accent/30;
+  }
 
-    .diff-item-1,
-    .diff-item-2 {
-        > * {
-            height: 100%;
-            width: 100cqi;
-            position: absolute;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-        }
+  .diff {
+    direction: ltr;
+    container-type: inline-size;
+    grid-template-columns: auto 1fr;
+
+    &:focus-visible,
+    &:has(.diff-item-1:focus),
+    &:has(.diff-item-2:focus) {
+      outline: 2px solid var(--border);
+      outline-offset: 1px;
     }
+    &:focus-visible {
+      .diff-resizer {
+        min-width: 80cqi;
+        max-width: 80cqi;
+      }
+    }
+    &:has(.diff-item-2:focus-visible) {
+      .diff-resizer {
+        min-width: 20cqi;
+        max-width: 20cqi;
+      }
+    }
+  }
+
+  .diff-resizer {
+    width: 50cqi;
+    max-width: calc(100cqi - 1rem);
+    transform: scaleY(3) translate(0.35rem, 0.08rem);
+    transform-origin: 100% 100%;
+    clip-path: inset(calc(100% - 0.75rem) 0 0 calc(100% - 0.75rem));
+    transition:
+      min-width 0.3s var(--ease-out),
+      max-width 0.3s var(--ease-out);
+  }
+
+  .diff-item-2 {
+    &:after {
+      content: '';
+      width: 1.25rem;
+      height: 1.875rem;
+      position: absolute;
+      top: 50%;
+      right: 1px;
+      bottom: 0;
+      translate: 50% -50%;
+      background: color-mix(in oklab, var(--color-text-0) 35%, transparent);
+      border-radius: 9999px;
+      border: 2px solid color-mix(in oklab, var(--color-text-0) 60%, transparent);
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+      z-index: 2;
+      box-shadow:
+        inset 0 0 0 1px color-mix(in oklab, var(--surface-0) 8%, transparent),
+        0 1px 3px 0 color-mix(in oklab, var(--surface-0) 25%, transparent);
+    }
+    @supports (-webkit-overflow-scrolling: touch) and (overflow: -webkit-paged-x) {
+      &:after {
+        content: none;
+      }
+    }
+  }
+
+  .diff-item-1,
+  .diff-item-2 {
+    > * {
+      height: 100%;
+      width: 100cqi;
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+  }
 }

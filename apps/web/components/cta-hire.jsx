@@ -8,7 +8,7 @@ export function CtaHire({ href, children, className = '' }) {
   return (
     <Link
       href={href}
-      className={`inline-flex items-center justify-center rounded-md bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-zinc-950 shadow transition hover:bg-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200 ${className}`}
+      className={`inline-flex min-h-11 min-w-[10rem] items-center justify-center rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-accent-fg no-underline shadow-sm transition-[box-shadow,background-color,opacity] duration-200 ease-out hover:bg-[color:oklch(0.82_0.13_198)] hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)] ${className}`}
     >
       {children}
     </Link>
