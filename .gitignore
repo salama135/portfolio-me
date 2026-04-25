@@ -7,10 +7,14 @@
 
 # testing
 /coverage
+apps/web/playwright-report/
+apps/web/test-results/
 
 # next.js
 /.next/
 /out/
+apps/web/.next/
+apps/web/out/
 
 # production
 /build

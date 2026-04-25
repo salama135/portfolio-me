@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Portfolio Mobile",
+    "slug": "portfolio-mobile",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "portfolio",
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "me.portfolio.mobile"
+    },
+    "android": {
+      "package": "me.portfolio.mobile",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": false,
+          "data": [
+            {
+              "scheme": "portfolio",
+              "host": "demo",
+              "pathPrefix": "/"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
+    },
+    "plugins": []
+  }
+}

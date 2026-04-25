@@ -1,0 +1,22 @@
+[
+  {
+    "id": "h1",
+    "title": "Shipped zero-downtime cutover",
+    "description": "Led weekend migration for payments read path with feature flags and shadow traffic.",
+    "date": "2024-11-01",
+    "icon": "launch"
+  },
+  {
+    "id": "h2",
+    "title": "Conference workshop host",
+    "description": "Hands-on WebGL performance clinic for 40 engineers.",
+    "date": "2023-09-15",
+    "icon": "teach"
+  },
+  {
+    "id": "h3",
+    "title": "Open-source maintainer",
+    "description": "Small utilities for Netlify and Next.js deploy diagnostics.",
+    "icon": "oss"
+  }
+]
