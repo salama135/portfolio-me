@@ -20,6 +20,10 @@ export default async function DemosPage() {
         Heavy bundles load only after you press <strong className="font-semibold">Start demo</strong> on each route. Registry:
         <code className="mx-1">content/demos.json</code>. Flags: see <code>.env.example</code>.
       </p>
+      <p className="mt-3 max-w-[62ch] text-pretty text-sm leading-relaxed text-apple-gray-secondary">
+        Motion-sensitive users can enable reduced motion at the OS level. Demos that need camera or immersive capabilities
+        show fallback copy when permission is denied or the browser lacks support.
+      </p>
 
       <MobileDemoCallout deepLink={helloDemo?.mobileAppLink} />
 

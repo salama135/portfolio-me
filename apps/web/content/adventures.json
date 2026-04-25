@@ -5,13 +5,13 @@
     "description": "Fog, granite, and a very patient trail dog.",
     "media": [
       {
-        "src": "/media/adventure-trail-1.jpg",
+        "src": "/media/adventure-trail-1.webp",
         "alt": "Low fog over a rocky ridge with evergreen trees below",
         "caption": "Morning inversion",
         "type": "image"
       },
       {
-        "src": "/media/adventure-trail-2.jpg",
+        "src": "/media/adventure-trail-2.webp",
         "alt": "Same ridge line from the descent with clearer sky",
         "caption": "Afternoon clearing",
         "type": "image"

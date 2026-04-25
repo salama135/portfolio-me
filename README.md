@@ -15,50 +15,46 @@ Local dev URL when using `npm run dev`: [http://localhost:3000](http://localhost
 
 ## Netlify
 
-Build runs from the **repository root** (`npm install && npm run build`) so npm workspaces resolve. Publish directory is `apps/web/.next` (see `netlify.toml`). Do not set Netlify “base directory” to `apps/web` unless you change the build command to install from the monorepo root.
+Build runs from the **repository root** (`npm install && npm run build`) so npm workspaces resolve.
 
----
+Netlify settings in `netlify.toml`:
 
-# Next.js on Netlify Platform Starter (legacy readme body)
+- Build command: `npm install && npm run build`
+- Publish directory: `apps/web/.next`
 
-[Live Demo](https://nextjs-platform-starter.netlify.app/)
+### Environment variables
 
-A modern starter based on Next.js 16 (App Router), Tailwind, and [Netlify Core Primitives](https://docs.netlify.com/core/overview/#develop) (Edge Functions, Image CDN, Blob Store).
+Web demo flags are optional and enabled by default. Set to `0` to hide:
 
-In this site, Netlify Core Primitives are used both implictly for running Next.js features (e.g. Route Handlers, image optimization via `next/image`, and more) and also explicitly by the user code.
+- `NEXT_PUBLIC_DEMO_IMMERSIVE`
+- `NEXT_PUBLIC_DEMO_AUGMENTED`
+- `NEXT_PUBLIC_DEMO_THREE_D`
+- `NEXT_PUBLIC_DEMO_CREATIVE`
+- `NEXT_PUBLIC_DEMO_MOBILE`
+- `NEXT_PUBLIC_DEMO_HELLO`
 
-Implicit usage means you're using any Next.js functionality and everything "just works" when deployed - all the plumbing is done for you. Explicit usage is framework-agnostic and typically provides more features than what Next.js exposes.
+## Mobile companion
 
-## Deploying to Netlify
-
-Click the button below to deploy this template to your Netlify account.
-
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/netlify-templates/next-platform-starter)
-
-## Developing Locally
-
-1. Clone this repository, then run `npm install` in its root directory.
-
-2. For the starter to have full functionality locally (e.g. edge functions, blob store), please ensure you have an up-to-date version of Netlify CLI. Run:
-
-```
-npm install netlify-cli@latest -g
+```bash
+npm run mobile
 ```
 
-3. Link your local repository to the deployed Netlify site. This will ensure you're using the same runtime version for both local development and your deployed site.
+Or:
 
-```
-netlify link
-```
-
-4. Then, run the Next.js development server via Netlify CLI:
-
-```
-netlify dev
+```bash
+cd apps/mobile
+npx expo start
 ```
 
-If your browser doesn't navigate to the site automatically, visit [localhost:8888](http://localhost:8888).
+Deep link target for flagship demo: `portfolio://demo/hello`.
 
-## Resources
+## Testing
 
-- Check out the [Next.js on Netlify docs](https://docs.netlify.com/frameworks/next-js/overview/)
+```bash
+npm run lint -w web
+npm run test:e2e -w web
+```
+
+## POC reference-only
+
+`poc/index.html` is design reference only. It is not part of runtime routes or deploy output.

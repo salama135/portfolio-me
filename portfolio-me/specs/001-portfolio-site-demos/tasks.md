@@ -149,12 +149,12 @@
 
 **Purpose**: Motion, a11y automation, docs, and release readiness (SC-004–SC-006, Sprint 10–11).
 
-- [ ] T055 [P] Apply `prefers-reduced-motion` friendly shell transitions in `D:\personal\portfolio-me\apps\web\app\globals.css` and audit demo motion disclaimers in `D:\personal\portfolio-me\apps\web\app\demos\page.jsx`
-- [ ] T056 [P] Add Playwright dependency and `D:\personal\portfolio-me\apps\web\playwright.config.ts` plus `D:\personal\portfolio-me\apps\web\e2e\shell.spec.ts` covering `/`, `/contact`, `/projects`, `/demos` smoke
-- [ ] T057 Optimize static assets: compress hero media in `D:\personal\portfolio-me\apps\web\public\media\` and verify LCP target on `D:\personal\portfolio-me\apps\web\app\page.jsx`
-- [ ] T058 Run ESLint from root across `D:\personal\portfolio-me\apps\web\` and fix regressions introduced by migration
-- [ ] T059 Sync `D:\personal\portfolio-me\portfolio-me\specs\001-portfolio-site-demos\quickstart.md` with final scripts and paths after T001–T008 land
-- [ ] T060 Final pass on `D:\personal\portfolio-me\README.md` and Netlify env vars; confirm `D:\personal\portfolio-me\poc\index.html` remains reference-only
+- [x] T055 [P] Apply `prefers-reduced-motion` friendly shell transitions in `D:\personal\portfolio-me\apps\web\app\globals.css` and audit demo motion disclaimers in `D:\personal\portfolio-me\apps\web\app\demos\page.jsx`
+- [x] T056 [P] Add Playwright dependency and `D:\personal\portfolio-me\apps\web\playwright.config.ts` plus `D:\personal\portfolio-me\apps\web\e2e\shell.spec.ts` covering `/`, `/contact`, `/projects`, `/demos` smoke
+- [x] T057 Optimize static assets: compress hero media in `D:\personal\portfolio-me\apps\web\public\media\` and verify LCP target on `D:\personal\portfolio-me\apps\web\app\page.jsx`
+- [x] T058 Run ESLint from root across `D:\personal\portfolio-me\apps\web\` and fix regressions introduced by migration
+- [x] T059 Sync `D:\personal\portfolio-me\portfolio-me\specs\001-portfolio-site-demos\quickstart.md` with final scripts and paths after T001–T008 land
+- [x] T060 Final pass on `D:\personal\portfolio-me\README.md` and Netlify env vars; confirm `D:\personal\portfolio-me\poc\index.html` remains reference-only
 
 ---
 
@@ -251,3 +251,4 @@ Serial finish: T048 (vr-room), then T049 feature-flag wiring
 - **2026-04-24 (continued)**: Phase 4 **T027–T038** (US2). Added `gray-matter`, project/blog/adventure/highlight/interest loaders and content, `public/media/`, removed `/blog` → `/classics` **rewrite** in `apps/web/next.config.js` so `/blog` is editorial.
 - **2026-04-24 Phase 5**: **T039–T049** (US3). Demos layout, hub + `content/demos.json`, `DemoErrorBoundary`, `DemoLauncher` + per-route `next/dynamic` (`ssr: false`), `DemoPageShell` gate, demos `hello`, `creative-sketch` (p5), `three-showcase` (three), `ar-overlay` (getUserMedia + overlay; AR.js-ready copy), `vr-room` (aframe), `feature-flags.js` + `.env.example`, deps `p5` `three` `aframe`.
 - **2026-04-24 Phase 6**: **T050–T054** (US4). `apps/mobile` Expo SDK 53 + React Navigation, `FlagshipDemoScreen`, scheme `portfolio` + Android intent filter, `mobileAppLink` on hello in `demos.json`, web `MobileDemoCallout`, root script `npm run mobile`, workspace `overrides` for single `react`/`react-dom`.
+- **2026-04-25 Phase 7**: **T055–T060** (Polish). Added reduced-motion and fallback copy audit in demos hub, Playwright smoke (`playwright.config.ts`, `e2e/shell.spec.ts`), WebP media conversion under `apps/web/public/media`, media optimization script (`scripts/optimize-media.mjs`), README and quickstart sync, `.gitignore` entries for Playwright outputs.

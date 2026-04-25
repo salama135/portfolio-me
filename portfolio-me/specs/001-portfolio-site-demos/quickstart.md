@@ -13,11 +13,10 @@
 
 ```powershell
 cd D:\personal\portfolio-me
-git checkout 001-portfolio-site-demos
 npm install
 ```
 
-> Until workspace migration merges, `npm install` at repo root already installs the existing Next app.
+The repository already uses npm workspaces (`apps/web`, `apps/mobile`).
 
 ## Run web (npm workspaces)
 
@@ -28,6 +27,16 @@ npm run dev
 ```
 
 This runs the `web` workspace (`apps\web`). Open `http://localhost:3000`.
+
+## Web quality checks
+
+```powershell
+cd D:\personal\portfolio-me
+npm run lint -w web
+npm run test:e2e -w web
+```
+
+Playwright smoke tests cover `/`, `/contact`, `/projects`, and `/demos`.
 
 ## POC reference
 
@@ -40,6 +49,8 @@ cd D:\personal\portfolio-me\apps\mobile
 npx expo start
 ```
 
+Deep link for flagship demo: `portfolio://demo/hello`.
+
 ## Useful specs for agents
 
 Before coding a slice, load:
@@ -50,10 +61,10 @@ Before coding a slice, load:
 
 ## Netlify
 
-Production deploy expects **static-friendly** Next build. After monorepo move, set:
+Production deploy expects **static-friendly** Next build and workspace install from repo root:
 
-- **Base directory**: `apps/web` (or repo root if not yet moved)
-- **Build command**: `npm run build` (workspace-aware)
-- **Publish directory**: Next output per Netlify Next plugin defaults
+- **Base directory**: repo root (`D:\personal\portfolio-me`)
+- **Build command**: `npm install && npm run build`
+- **Publish directory**: `apps/web/.next`
 
 Document final values in the repo `README.md` when implementation tasks complete.

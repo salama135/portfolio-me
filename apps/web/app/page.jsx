@@ -16,6 +16,7 @@ export default async function Page() {
 
   return (
     <>
+      {/* LCP guardrail: text-first hero avoids remote media on first paint. */}
       <section className="apple-chapter-dark relative overflow-hidden pb-[clamp(3.5rem,11vw,6.5rem)] pt-[clamp(1.25rem,4vw,2.5rem)]">
         <div className="page-shell-wide">
           <div className="grid items-center gap-14 lg:grid-cols-12 lg:gap-16">
