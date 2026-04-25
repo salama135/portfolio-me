@@ -7,7 +7,8 @@
     "deviceNeeds": "Any current desktop or mobile browser.",
     "durationHint": "~30 sec",
     "entryPath": "/demos/hello",
-    "featureFlag": "HELLO"
+    "featureFlag": "HELLO",
+    "mobileAppLink": "portfolio://demo/hello"
   },
   {
     "slug": "creative-sketch",

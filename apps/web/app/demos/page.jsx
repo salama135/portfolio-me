@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { MobileDemoCallout } from '../../components/mobile-demo-callout.jsx';
 import { loadDemosRegistry } from '../../lib/content/load/demos-registry.js';
 import { isDemoExperienceEnabled } from '../../lib/config/feature-flags.js';
 
@@ -10,6 +11,7 @@ export const metadata = {
 export default async function DemosPage() {
   const all = await loadDemosRegistry();
   const demos = all.filter(isDemoExperienceEnabled);
+  const helloDemo = all.find((d) => d.slug === 'hello');
 
   return (
     <div className="page-shell-wide py-[clamp(2.5rem,6vw,4rem)]">
@@ -18,6 +20,8 @@ export default async function DemosPage() {
         Heavy bundles load only after you press <strong className="font-semibold">Start demo</strong> on each route. Registry:
         <code className="mx-1">content/demos.json</code>. Flags: see <code>.env.example</code>.
       </p>
+
+      <MobileDemoCallout deepLink={helloDemo?.mobileAppLink} />
 
       {demos.length === 0 ? (
         <p className="mt-14 rounded-2xl border border-dashed border-apple-border-mid bg-apple-gray/50 px-8 py-14 text-center text-apple-gray-secondary">

@@ -7,10 +7,30 @@
     "apps/*",
     "packages/*"
   ],
+  "overrides": {
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-native": "0.79.6",
+    "metro": "0.82.5",
+    "metro-babel-transformer": "0.82.5",
+    "metro-cache": "0.82.5",
+    "metro-cache-key": "0.82.5",
+    "metro-config": "0.82.5",
+    "metro-core": "0.82.5",
+    "metro-file-map": "0.82.5",
+    "metro-minify-terser": "0.82.5",
+    "metro-resolver": "0.82.5",
+    "metro-runtime": "0.82.5",
+    "metro-source-map": "0.82.5",
+    "metro-symbolicate": "0.82.5",
+    "metro-transform-plugins": "0.82.5",
+    "metro-transform-worker": "0.82.5"
+  },
   "scripts": {
     "dev": "npm run dev -w web",
     "build": "npm run build -w web",
     "start": "npm run start -w web",
-    "lint": "npm run lint -w web"
+    "lint": "npm run lint -w web",
+    "mobile": "npm run start -w mobile"
   }
 }

@@ -135,11 +135,11 @@
 
 ### Implementation for User Story 4
 
-- [ ] T050 [US4] Scaffold Expo project files `D:\personal\portfolio-me\apps\mobile\package.json`, `D:\personal\portfolio-me\apps\mobile\app.json`, `D:\personal\portfolio-me\apps\mobile\tsconfig.json` in workspace
-- [ ] T051 [US4] Implement entry `D:\personal\portfolio-me\apps\mobile\App.tsx` with React Navigation (or Expo Router) shell and home screen linking to demo
-- [ ] T052 [US4] Implement flagship demo screen `D:\personal\portfolio-me\apps\mobile\src\screens\FlagshipDemoScreen.tsx` (UI-only state, 60fps target, readable at 360px width)
-- [ ] T053 [P] [US4] Configure deep-link scheme in `D:\personal\portfolio-me\apps\mobile\app.json` aligned with slug naming in `D:\personal\portfolio-me\apps\web\content\demos.json`
-- [ ] T054 [US4] Update `D:\personal\portfolio-me\apps\web\app\demos\page.jsx` (or `D:\personal\portfolio-me\apps\web\components\mobile-demo-callout.jsx`) with instructions / QR / store-less Expo Go path for the mobile demo
+- [x] T050 [US4] Scaffold Expo project files `D:\personal\portfolio-me\apps\mobile\package.json`, `D:\personal\portfolio-me\apps\mobile\app.json`, `D:\personal\portfolio-me\apps\mobile\tsconfig.json` in workspace
+- [x] T051 [US4] Implement entry `D:\personal\portfolio-me\apps\mobile\App.tsx` with React Navigation (or Expo Router) shell and home screen linking to demo
+- [x] T052 [US4] Implement flagship demo screen `D:\personal\portfolio-me\apps\mobile\src\screens\FlagshipDemoScreen.tsx` (UI-only state, 60fps target, readable at 360px width)
+- [x] T053 [P] [US4] Configure deep-link scheme in `D:\personal\portfolio-me\apps\mobile\app.json` aligned with slug naming in `D:\personal\portfolio-me\apps\web\content\demos.json`
+- [x] T054 [US4] Update `D:\personal\portfolio-me\apps\web\app\demos\page.jsx` (or `D:\personal\portfolio-me\apps\web\components\mobile-demo-callout.jsx`) with instructions / QR / store-less Expo Go path for the mobile demo
 
 **Checkpoint**: Web hub references mobile demo; `npx expo start` from `apps/mobile` runs flagship flow.
 
@@ -250,3 +250,4 @@ Serial finish: T048 (vr-room), then T049 feature-flag wiring
 - **2026-04-24 `/speckit.implement`**: Phases 1–3 **T001–T026**; moved `utils.js` and `data/` into `apps/web` for T004; stub marketing routes; ESLint in `apps/web/eslint.config.mjs`.
 - **2026-04-24 (continued)**: Phase 4 **T027–T038** (US2). Added `gray-matter`, project/blog/adventure/highlight/interest loaders and content, `public/media/`, removed `/blog` → `/classics` **rewrite** in `apps/web/next.config.js` so `/blog` is editorial.
 - **2026-04-24 Phase 5**: **T039–T049** (US3). Demos layout, hub + `content/demos.json`, `DemoErrorBoundary`, `DemoLauncher` + per-route `next/dynamic` (`ssr: false`), `DemoPageShell` gate, demos `hello`, `creative-sketch` (p5), `three-showcase` (three), `ar-overlay` (getUserMedia + overlay; AR.js-ready copy), `vr-room` (aframe), `feature-flags.js` + `.env.example`, deps `p5` `three` `aframe`.
+- **2026-04-24 Phase 6**: **T050–T054** (US4). `apps/mobile` Expo SDK 53 + React Navigation, `FlagshipDemoScreen`, scheme `portfolio` + Android intent filter, `mobileAppLink` on hello in `demos.json`, web `MobileDemoCallout`, root script `npm run mobile`, workspace `overrides` for single `react`/`react-dom`.
