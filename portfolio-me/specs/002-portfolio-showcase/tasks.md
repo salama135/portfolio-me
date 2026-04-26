@@ -101,11 +101,11 @@
 
 **Independent Test**: Visit projects detail, adventures grid, blog index, achievements, resume; categories are clear; badge fallbacks work.
 
-- [ ] T024 [P] [US3] Author `D:\personal\portfolio-me\apps\web\content\resume.json` and render full resume layout in `D:\personal\portfolio-me\apps\web\app\resume\page.jsx` using `resume` loader (experience, education, four skill groups).
-- [ ] T025 [US3] Add optional `D:\personal\portfolio-me\apps\web\content\achievements-meta.json` and enhance `D:\personal\portfolio-me\apps\web\app\achievements\page.jsx` with titles and milestone section using `D:\personal\portfolio-me\apps\web\content\highlights.json` if present.
-- [ ] T026 [P] [US3] Refine `D:\personal\portfolio-me\apps\web\app\adventures\page.jsx` to gallery/card grid with required `alt` text and spacing per FR-006 and `PRODUCT.md` / `DESIGN.md`.
-- [ ] T027 [P] [US3] Surface blog categories (tech, life, health, hobbies) on `D:\personal\portfolio-me\apps\web\app\blog\page.jsx` and ensure `D:\personal\portfolio-me\apps\web\app\blog\[slug]\page.jsx` shows category chips.
-- [ ] T028 [US3] Review `D:\personal\portfolio-me\apps\web\app\projects\[slug]\page.jsx` and project content under `D:\personal\portfolio-me\apps\web\content\projects\` for role, scope, and outcomes fields per FR-005.
+- [x] T024 [P] [US3] Author `D:\personal\portfolio-me\apps\web\content\resume.json` and render full resume layout in `D:\personal\portfolio-me\apps\web\app\resume\page.jsx` using `resume` loader (experience, education, four skill groups).
+- [x] T025 [US3] Add optional `D:\personal\portfolio-me\apps\web\content\achievements-meta.json` and enhance `D:\personal\portfolio-me\apps\web\app\achievements\page.jsx` with titles and milestone section using `D:\personal\portfolio-me\apps\web\content\highlights.json` if present.
+- [x] T026 [P] [US3] Refine `D:\personal\portfolio-me\apps\web\app\adventures\page.jsx` to gallery/card grid with required `alt` text and spacing per FR-006 and `PRODUCT.md` / `DESIGN.md`.
+- [x] T027 [P] [US3] Surface blog categories (tech, life, health, hobbies) on `D:\personal\portfolio-me\apps\web\app\blog\page.jsx` and ensure `D:\personal\portfolio-me\apps\web\app\blog\[slug]\page.jsx` shows category chips.
+- [x] T028 [US3] Review `D:\personal\portfolio-me\apps\web\app\projects\[slug]\page.jsx` and project content under `D:\personal\portfolio-me\apps\web\content\projects\` for role, scope, and outcomes fields per FR-005.
 
 **Checkpoint**: US3 acceptance scenarios pass for projects, life grid, achievements listing.
 

@@ -25,7 +25,7 @@ export default async function ProjectDetailPage({ params }) {
   const project = await loadProjectBySlug(slug);
   if (!project) notFound();
 
-  const { title, summary, role, outcomes, techLabels, links, coverImage, body } = project;
+  const { title, summary, role, scope, outcomes, techLabels, links, coverImage, body } = project;
 
   return (
     <article className="page-shell-wide py-[clamp(2.5rem,6vw,4rem)]">
@@ -40,6 +40,11 @@ export default async function ProjectDetailPage({ params }) {
       <header className="mt-6 max-w-[70ch]">
         <h1 className="text-apple-ink">{title}</h1>
         <p className="mt-4 text-[19px] font-semibold leading-snug text-text-1">{role}</p>
+        {scope ? (
+          <p className="mt-3 max-w-[62ch] text-[17px] leading-[1.47] text-apple-gray-secondary">
+            <span className="font-semibold text-apple-ink">Scope.</span> {scope}
+          </p>
+        ) : null}
         <p className="mt-4 text-[17px] leading-[1.47] text-text-1">{summary}</p>
         {techLabels?.length ? (
           <ul className="mt-6 flex flex-wrap gap-2">

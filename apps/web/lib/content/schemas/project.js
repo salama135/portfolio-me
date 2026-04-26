@@ -5,6 +5,8 @@ export const projectSchema = z.object({
   title: z.string(),
   summary: z.string(),
   role: z.string(),
+  /** What you owned across teams or systems (FR-005). */
+  scope: z.string().optional(),
   outcomes: z.string().optional(),
   techLabels: z.array(z.string()).optional().default([]),
   links: z

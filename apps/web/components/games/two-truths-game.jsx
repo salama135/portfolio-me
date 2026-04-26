@@ -64,8 +64,6 @@ export function TwoTruthsGame({ pack }) {
       <p className="text-sm font-medium text-apple-gray-secondary">
         Round {roundIndex + 1} of {pack.rounds.length}
       </p>
-      <p className="mt-2 text-[17px] leading-relaxed text-text-1">{pack.intro}</p>
-
       <ul className="mt-8 list-none space-y-3 p-0" role="list">
         {statements.map((s, idx) => (
           <li key={`${round.id}-${idx}`}>
@@ -94,7 +92,7 @@ export function TwoTruthsGame({ pack }) {
         </output>
       ) : null}
 
-      {roundIndex < pack.rounds.length - 1 ? (
+      {solved && roundIndex < pack.rounds.length - 1 ? (
         <button
           type="button"
           onClick={nextRound}

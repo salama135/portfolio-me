@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 function isPlaceholderResume(resume) {
-  return resume.experiences.length === 1 && resume.experiences[0]?.id === 'exp-placeholder';
+  return [...resume.experiences, ...resume.education].some((row) => String(row.id).includes('placeholder'));
 }
 
 export default async function ResumePage() {
@@ -96,7 +96,16 @@ export default async function ResumePage() {
             {resume.education.map((edu) => (
               <li key={edu.id} className="rounded-2xl border border-apple-border-soft bg-apple-gray/40 px-6 py-5">
                 <p className="font-semibold text-apple-ink">{edu.degree}</p>
-                <p className="mt-1 text-[15px] text-apple-gray-secondary">{edu.institution}</p>
+                <p className="mt-1 text-[15px] text-apple-gray-secondary">
+                  {edu.institution}
+                  {edu.location ? ` · ${edu.location}` : ''}
+                  {edu.startDate || edu.endDate ? (
+                    <>
+                      {' '}
+                      · {edu.startDate ?? '?'} — {edu.endDate ?? 'Present'}
+                    </>
+                  ) : null}
+                </p>
                 {edu.summary ? <p className="mt-3 text-[15px] leading-relaxed text-text-1">{edu.summary}</p> : null}
               </li>
             ))}
