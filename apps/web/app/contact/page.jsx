@@ -9,7 +9,6 @@ export const metadata = {
 export default async function ContactPage() {
   const profile = await loadSiteProfile();
   const { social } = profile;
-  console.log(social);
   
   return (
     <div className="page-shell">
