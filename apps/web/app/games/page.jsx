@@ -2,11 +2,18 @@ import Link from 'next/link';
 import { ContentEmptyState } from '../../components/content-empty-state.jsx';
 import { routeGame } from '../../lib/constants/routes.js';
 import { loadGamePacks } from '../../lib/content/load/games.js';
+import { loadSiteProfile } from '../../lib/content/load/site-profile.js';
+import { segmentMetadata } from '../../lib/seo/segment-metadata.js';
 
-export const metadata = {
-  title: 'Games',
-  description: 'Light ice-breakers to learn more about me.',
-};
+export async function generateMetadata() {
+  const [profile, packs] = await Promise.all([loadSiteProfile(), loadGamePacks()]);
+  const description = `In-browser ice-breakers (${packs.length} pack${packs.length === 1 ? '' : 's'}): no accounts, no saved scores. ${profile.tagline}`;
+  return segmentMetadata({
+    title: 'Games',
+    description,
+    siteTitle: profile.title,
+  });
+}
 
 export default async function GamesHubPage() {
   const packs = await loadGamePacks();
@@ -33,7 +40,7 @@ export default async function GamesHubPage() {
             <li key={g.gameId}>
               <Link
                 href={routeGame(g.gameId)}
-                className="block rounded-2xl border border-apple-border-soft bg-apple-white px-6 py-8 shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-shadow duration-200 hover:shadow-[0_8px_28px_rgba(0,0,0,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+                className="block rounded-2xl border border-apple-border-soft bg-apple-white px-6 py-8 shadow-[0_2px_12px_rgba(0,0,0,0.06)] motion-safe:transition-shadow motion-safe:duration-200 motion-safe:hover:shadow-[0_8px_28px_rgba(0,0,0,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
               >
                 <h2 className="text-lg font-semibold text-apple-ink">{g.title}</h2>
                 <p className="mt-3 text-[15px] leading-relaxed text-text-1">{g.intro}</p>

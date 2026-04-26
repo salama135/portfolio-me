@@ -12,7 +12,9 @@ const figtree = Figtree({
 
 export async function generateMetadata() {
   const profile = await loadSiteProfile();
+  const base = process.env.NEXT_PUBLIC_SITE_URL;
   return {
+    metadataBase: base ? new URL(base) : undefined,
     title: { default: profile.title, template: `%s | ${profile.title}` },
     description: profile.seo?.description ?? profile.tagline,
   };
@@ -29,7 +31,7 @@ export default async function RootLayout({ children }) {
       <body className="min-h-screen overflow-x-clip antialiased">
         <a
           href="#main-content"
-          className="fixed left-4 top-4 z-[100] -translate-y-24 rounded-full border border-apple-border-soft bg-apple-white px-4 py-2 text-sm font-semibold text-apple-ink shadow-md transition-transform duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] focus:translate-y-0 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[var(--focus-ring)]"
+          className="fixed left-4 top-4 z-[100] -translate-y-24 rounded-full border border-apple-border-soft bg-apple-white px-4 py-2 text-sm font-semibold text-apple-ink shadow-md motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-[cubic-bezier(0.25,0.1,0.25,1)] focus:translate-y-0 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[var(--focus-ring)]"
         >
           Skip to content
         </a>

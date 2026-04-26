@@ -2,11 +2,20 @@ import Link from 'next/link';
 import { ContentEmptyState } from '../../components/content-empty-state.jsx';
 import { ROUTES } from '../../lib/constants/routes.js';
 import { loadResume } from '../../lib/content/load/resume.js';
+import { loadSiteProfile } from '../../lib/content/load/site-profile.js';
+import { segmentMetadata } from '../../lib/seo/segment-metadata.js';
 
-export const metadata = {
-  title: 'Resume',
-  description: 'Experience, education, and technical skills.',
-};
+export async function generateMetadata() {
+  const [profile, resume] = await Promise.all([loadSiteProfile(), loadResume()]);
+  const exp = resume.experiences.length;
+  const edu = resume.education.length;
+  const description = `Work history (${exp} roles), education (${edu} entries), and skill groups sourced from JSON. ${profile.seo?.description ?? profile.tagline}`;
+  return segmentMetadata({
+    title: 'Resume',
+    description,
+    siteTitle: profile.title,
+  });
+}
 
 function isPlaceholderResume(resume) {
   return [...resume.experiences, ...resume.education].some((row) => String(row.id).includes('placeholder'));

@@ -47,6 +47,18 @@ npm run build
 
 Netlify should use `apps/web` as base directory per existing root config.
 
+## Phase 8 validation (SC-002 navigation smoke)
+
+Run locally after `npm install`:
+
+1. `cd D:\personal\portfolio-me` then `npm run build` (must succeed).
+2. `npm run dev` and open the printed URL (usually `http://localhost:3000`).
+3. From the header, open **Resume**, **Achievements**, **Games**, **Mobile**, and one nested **game** route; confirm no 404 and pages render.
+4. Optional: set `NEXT_PUBLIC_SITE_URL` in `apps/web/.env.local` to your deploy origin, restart dev, and view page source or DevTools Application tab to confirm absolute Open Graph URLs on those routes.
+5. On Netlify: open the deploy preview, repeat step 3, and spot-check **Contact** and **Mentoring** links from **About** / **Links**.
+
+From `apps/web`: `npm run validate:quickstart` runs `next build` (same as step 1). From monorepo root you can use `npm run build -w web`.
+
 ## Branch note
 
 Speckit scripts run from `portfolio-me` may report `HAS_GIT: false`. Git operations (branch `002-portfolio-showcase`) should be run from `D:\personal\portfolio-me` where `.git` exists.

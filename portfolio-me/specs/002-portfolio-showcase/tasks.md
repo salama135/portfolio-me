@@ -131,9 +131,9 @@
 
 **Purpose**: SEO, motion pass, deploy smoke; FR-004 polish across sections.
 
-- [ ] T034 [P] Export unique `metadata` in `D:\personal\portfolio-me\apps\web\app\resume\page.jsx`, `D:\personal\portfolio-me\apps\web\app\achievements\page.jsx`, `D:\personal\portfolio-me\apps\web\app\games\page.jsx`, `D:\personal\portfolio-me\apps\web\app\mobile\page.jsx`, and nested game routes.
-- [ ] T035 Run validation steps in `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\quickstart.md` locally and on Netlify preview for SC-002 and navigation smoke.
-- [ ] T036 [P] Pass `prefers-reduced-motion` audit for new hero, games, and demo entry animations; adjust `D:\personal\portfolio-me\apps\web\app\globals.css` or component classes as needed.
+- [x] T034 [P] Export unique `metadata` in `D:\personal\portfolio-me\apps\web\app\resume\page.jsx`, `D:\personal\portfolio-me\apps\web\app\achievements\page.jsx`, `D:\personal\portfolio-me\apps\web\app\games\page.jsx`, `D:\personal\portfolio-me\apps\web\app\mobile\page.jsx`, and nested game routes.
+- [x] T035 Run validation steps in `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\quickstart.md` locally and on Netlify preview for SC-002 and navigation smoke.
+- [x] T036 [P] Pass `prefers-reduced-motion` audit for new hero, games, and demo entry animations; adjust `D:\personal\portfolio-me\apps\web\app\globals.css` or component classes as needed.
 
 ---
 

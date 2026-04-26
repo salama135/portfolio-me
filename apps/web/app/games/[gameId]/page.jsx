@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { TwoTruthsGame } from '../../../components/games/two-truths-game.jsx';
 import { ROUTES } from '../../../lib/constants/routes.js';
 import { loadGamePackById, loadGamePacks } from '../../../lib/content/load/games.js';
+import { loadSiteProfile } from '../../../lib/content/load/site-profile.js';
+import { segmentMetadata } from '../../../lib/seo/segment-metadata.js';
 
 export async function generateStaticParams() {
   const packs = await loadGamePacks();
@@ -12,11 +14,17 @@ export async function generateStaticParams() {
 /** @param {{ params: Promise<{ gameId: string }> }} props */
 export async function generateMetadata({ params }) {
   const { gameId } = await params;
-  const pack = await loadGamePackById(gameId);
+  const [profile, pack] = await Promise.all([loadSiteProfile(), loadGamePackById(gameId)]);
   if (!pack) return { title: 'Game' };
+  const intro = pack.intro.trim();
+  const description = intro.length > 160 ? `${intro.slice(0, 157)}…` : intro;
   return {
-    title: pack.title,
-    description: pack.intro.slice(0, 160),
+    ...segmentMetadata({
+      title: pack.title,
+      description: `${description} (${pack.rounds.length} rounds).`,
+      siteTitle: profile.title,
+    }),
+    robots: { index: true, follow: true },
   };
 }
 

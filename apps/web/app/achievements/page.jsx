@@ -5,11 +5,23 @@ import { ROUTES } from '../../lib/constants/routes.js';
 import { loadAchievements } from '../../lib/content/load/achievements.js';
 import { loadAchievementsMeta } from '../../lib/content/load/achievements-meta.js';
 import { loadHighlights } from '../../lib/content/load/highlights.js';
+import { loadSiteProfile } from '../../lib/content/load/site-profile.js';
+import { segmentMetadata } from '../../lib/seo/segment-metadata.js';
 
-export const metadata = {
-  title: 'Achievements',
-  description: 'Credentials and certifications (Credly embeds and manual certificates).',
-};
+export async function generateMetadata() {
+  const [profile, achievements, meta] = await Promise.all([
+    loadSiteProfile(),
+    loadAchievements(),
+    loadAchievementsMeta(),
+  ]);
+  const headline = meta?.headline ?? 'Achievements';
+  const description = `${headline}: ${achievements.length} badge or certificate rows (Credly embeds and manual entries), plus optional milestones.`;
+  return segmentMetadata({
+    title: 'Achievements',
+    description,
+    siteTitle: profile.title,
+  });
+}
 
 export default async function AchievementsPage() {
   const achievements = await loadAchievements();

@@ -26,7 +26,7 @@ export function DemoLauncher({ Demo, title, description }) {
         {description ? <p className="mt-2 max-w-[52ch] text-sm text-apple-gray-secondary">{description}</p> : null}
         <button
           type="button"
-          className="mt-6 rounded-full bg-[#0071e3] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#0077ed] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+          className="mt-6 rounded-full bg-[#0071e3] px-5 py-2.5 text-sm font-semibold text-white motion-safe:transition-colors motion-safe:hover:bg-[#0077ed] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
           onClick={() => setStarted(true)}
         >
           Start demo

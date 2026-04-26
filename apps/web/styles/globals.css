@@ -72,12 +72,17 @@
   .apple-reveal,
   .hero-device-shimmer,
   .hero-device-glow,
+  .hero-device-frame,
   .hero-showcase-mesh,
   .hero-showcase-orb-a,
   .hero-showcase-orb-b {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .hero-device-frame {
+    background-position: 50% 50% !important;
   }
 }
 

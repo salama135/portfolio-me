@@ -1,10 +1,17 @@
 import Link from 'next/link';
 import { ROUTES } from '../../lib/constants/routes.js';
+import { loadSiteProfile } from '../../lib/content/load/site-profile.js';
+import { segmentMetadata } from '../../lib/seo/segment-metadata.js';
 
-export const metadata = {
-  title: 'Mobile apps',
-  description: 'React Native / Expo work in the monorepo workspace.',
-};
+export async function generateMetadata() {
+  const profile = await loadSiteProfile();
+  const description = `Expo / React Native workspace in this monorepo: how to run apps/mobile locally, plus links to web demos and projects. ${profile.tagline}`;
+  return segmentMetadata({
+    title: 'Mobile apps',
+    description,
+    siteTitle: profile.title,
+  });
+}
 
 export default function MobileAppsPage() {
   return (
