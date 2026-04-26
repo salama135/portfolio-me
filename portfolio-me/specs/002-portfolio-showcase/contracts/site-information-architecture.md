@@ -29,6 +29,11 @@
 
 - If marketing label “Life” is preferred over “Adventures”, **nav label** may read “Life” while path remains `/adventures` **or** add `next.config.js` redirect `/life` → `/adventures` (pick one; document in `site-header`).
 
+**Implemented (002 Phase 3)**:
+
+- Primary nav shows the label **Life** for the canonical path `/adventures` (`NAV_ITEMS` in `apps/web/lib/constants/routes.js`).
+- **Permanent redirect**: `/life` → `/adventures` in `apps/web/next.config.js`.
+
 ## Two-click rule
 
 From any row in the table (except dynamic `[slug]`), user MUST reach any other marketing row within **two navigational actions** (prefer primary nav over buried links).

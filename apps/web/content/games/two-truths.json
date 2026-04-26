@@ -10,10 +10,34 @@
         { "text": "I learned to code before age ten.", "isLie": true },
         { "text": "I enjoy mentoring junior developers.", "isLie": false }
       ]
+    },
+    {
+      "id": "round-2",
+      "statements": [
+        { "text": "I have shipped production mobile apps.", "isLie": false },
+        { "text": "I learned to code before age ten.", "isLie": true },
+        { "text": "I enjoy mentoring junior developers.", "isLie": false }
+      ]
+    },
+    {
+      "id": "round-3",
+      "statements": [
+        { "text": "I have shipped production mobile apps.", "isLie": false },
+        { "text": "I learned to code before age ten.", "isLie": true },
+        { "text": "I enjoy mentoring junior developers.", "isLie": false }
+      ]
+    },
+    {
+      "id": "round-4",
+      "statements": [
+        { "text": "I have shipped production mobile apps.", "isLie": false },
+        { "text": "I learned to code before age ten.", "isLie": true },
+        { "text": "I enjoy mentoring junior developers.", "isLie": false }
+      ]
     }
   ],
   "outcomes": [
-    { "id": "correct", "message": "Correct — the middle statement was the lie." },
+    { "id": "correct", "message": "Correct — this is a the lie." },
     { "id": "wrong", "message": "Not quite. Try another statement." }
   ]
 }

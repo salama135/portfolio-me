@@ -51,6 +51,7 @@ export function SiteHeader() {
           Portfolio
         </Link>
         <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-3 sm:flex-none sm:justify-normal">
+          {/* Nav labels and hrefs come from lib/constants/routes.js (NAV_ITEMS) — keep in sync with IA contract. */}
           <nav
             aria-label="Primary"
             className="-mx-1 flex max-w-[min(100%,52rem)] gap-1 overflow-x-auto overflow-y-hidden pb-1 sm:max-w-none sm:flex-wrap sm:overflow-visible sm:pb-0"

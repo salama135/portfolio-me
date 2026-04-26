@@ -40,7 +40,7 @@ export const NAV_ITEMS = [
   { href: ROUTES.mentoring, label: 'Mentoring' },
   { href: ROUTES.interests, label: 'Interests' },
   { href: ROUTES.blog, label: 'Blog' },
-  { href: ROUTES.adventures, label: 'Adventures' },
+  { href: ROUTES.adventures, label: 'Life' },
   { href: ROUTES.games, label: 'Games' },
   { href: ROUTES.mobile, label: 'Mobile' },
   { href: ROUTES.links, label: 'Links' },

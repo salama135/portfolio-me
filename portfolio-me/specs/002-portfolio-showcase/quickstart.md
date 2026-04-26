@@ -27,7 +27,7 @@ Open the local URL printed for `apps/web` (typically `http://localhost:3000`).
 | Demos registry | `apps/web/content/demos.json` |
 | Projects | `apps/web/content/projects/` |
 | Blog | `apps/web/content/blog/` |
-| Credly badge URLs (source) | `poc/credly-badges.json` (sync or import into `apps/web/content/` per plan) |
+| Achievements (Credly embeds + manual certs) | `apps/web/content/achievements.json` (fallback: `poc/credly-badges.json`) |
 | New: resume | `apps/web/content/resume.json` (to be added) |
 | New: games | `apps/web/content/games/` (to be added) |
 | New: mentoring + testimonials | `apps/web/content/mentoring.json` (to be added) |

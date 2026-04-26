@@ -14,3 +14,9 @@ export {
   achievementMetaEntrySchema,
   achievementMetaListSchema,
 } from './credly-inventory.js';
+export {
+  achievementEntrySchema,
+  achievementManualSchema,
+  achievementCredlyEmbedSchema,
+  achievementsFileSchema,
+} from './achievement-entry.js';

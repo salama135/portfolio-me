@@ -53,13 +53,13 @@
 
 **Independent Test**: Audit each route in `site-information-architecture.md` from `D:\personal\portfolio-me\apps\web\components\site-header.jsx` without using address bar guesses.
 
-- [ ] T009 [US5] Create `D:\personal\portfolio-me\apps\web\app\resume\page.jsx` stub with section anchors and `metadata` using `ContentEmptyState` or equivalent until resume JSON wired in US3.
-- [ ] T010 [P] [US5] Create `D:\personal\portfolio-me\apps\web\app\achievements\page.jsx` listing badges from `achievements` loader with link + image fallback per spec edge cases.
-- [ ] T011 [P] [US5] Create `D:\personal\portfolio-me\apps\web\app\games\page.jsx` as hub and `D:\personal\portfolio-me\apps\web\app\games\[gameId]\page.jsx` (or equivalent pattern) for individual games.
-- [ ] T012 [P] [US5] Create `D:\personal\portfolio-me\apps\web\app\mobile\page.jsx` for native app showcase (screens, links to `D:\personal\portfolio-me\apps\mobile` or store URLs) per FR-015.
-- [ ] T013 [US5] Update `D:\personal\portfolio-me\apps\web\components\site-header.jsx` to render updated `NAV_ITEMS` from `routes.js` including new routes and accessible labels (e.g. Adventures vs Life per contract).
-- [ ] T014 [P] [US5] Update `D:\personal\portfolio-me\apps\web\components\site-footer.jsx` with secondary links to new sections if needed for two-click rule.
-- [ ] T015 [US5] If IA contract chooses `/life` → `/adventures`, add redirect in `D:\personal\portfolio-me\apps\web\next.config.js` and document choice in `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\contracts\site-information-architecture.md` footer note.
+- [x] T009 [US5] Create `D:\personal\portfolio-me\apps\web\app\resume\page.jsx` stub with section anchors and `metadata` using `ContentEmptyState` or equivalent until resume JSON wired in US3.
+- [x] T010 [P] [US5] Create `D:\personal\portfolio-me\apps\web\app\achievements\page.jsx` listing badges from `achievements` loader with link + image fallback per spec edge cases.
+- [x] T011 [P] [US5] Create `D:\personal\portfolio-me\apps\web\app\games\page.jsx` as hub and `D:\personal\portfolio-me\apps\web\app\games\[gameId]\page.jsx` (or equivalent pattern) for individual games.
+- [x] T012 [P] [US5] Create `D:\personal\portfolio-me\apps\web\app\mobile\page.jsx` for native app showcase (screens, links to `D:\personal\portfolio-me\apps\mobile` or store URLs) per FR-015.
+- [x] T013 [US5] Update `D:\personal\portfolio-me\apps\web\components\site-header.jsx` to render updated `NAV_ITEMS` from `routes.js` including new routes and accessible labels (e.g. Adventures vs Life per contract).
+- [x] T014 [P] [US5] Update `D:\personal\portfolio-me\apps\web\components\site-footer.jsx` with secondary links to new sections if needed for two-click rule.
+- [x] T015 [US5] If IA contract chooses `/life` → `/adventures`, add redirect in `D:\personal\portfolio-me\apps\web\next.config.js` and document choice in `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\contracts\site-information-architecture.md` footer note.
 
 **Checkpoint**: All marketing routes from contract exist (no 404 on nav clicks); mobile page live.
 

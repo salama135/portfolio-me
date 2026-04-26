@@ -3,9 +3,11 @@
 **Applies to**: Achievements page and loaders  
 **Version**: 2026-04-26
 
-## Source file
+## Source files
 
-Canonical URL list lives in:
+**Primary (curated UI, embeds + manual rows):** `D:\personal\portfolio-me\apps\web\content\achievements.json` — see `achievement-entry` schema in `apps/web/lib/content/schemas/achievement-entry.js`.
+
+**Fallback:** if `achievements.json` is missing or has an empty `achievements` array, the loader builds `credly_embed` rows from:
 
 `D:\personal\portfolio-me\poc\credly-badges.json`
 
