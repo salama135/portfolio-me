@@ -117,11 +117,11 @@
 
 **Independent Test**: Play one game round; mentoring shows 1:1 vs group + booking + embed + testimonial; contact shows success or error guidance.
 
-- [ ] T029 [P] [US4] Author first game JSON under `D:\personal\portfolio-me\apps\web\content\games\` (e.g. `two-truths.json`) per `games-content.md`.
-- [ ] T030 [US4] Implement client-only game UI in `D:\personal\portfolio-me\apps\web\app\games\[gameId]\page.jsx` (or shared `D:\personal\portfolio-me\apps\web\components\games\`) reading `games` loader; no visitor PII persistence.
-- [ ] T031 [US4] Author `D:\personal\portfolio-me\apps\web\content\mentoring.json` and update `D:\personal\portfolio-me\apps\web\app\mentoring\page.jsx` with session types, Google Calendar embed, booking CTAs, and testimonials strip per FR-010.
-- [ ] T032 [P] [US4] Harden `D:\personal\portfolio-me\apps\web\app\contact\page.jsx` for explicit success, validation, and configuration-missing messages (mailto or form provider).
-- [ ] T033 [P] [US4] Align `D:\personal\portfolio-me\apps\web\app\links\page.jsx` and `D:\personal\portfolio-me\apps\web\app\about\page.jsx` copy with outreach goals (FR-011, FR-014).
+- [x] T029 [P] [US4] Author first game JSON under `D:\personal\portfolio-me\apps\web\content\games\` (e.g. `two-truths.json`) per `games-content.md`.
+- [x] T030 [US4] Implement client-only game UI in `D:\personal\portfolio-me\apps\web\app\games\[gameId]\page.jsx` (or shared `D:\personal\portfolio-me\apps\web\components\games\`) reading `games` loader; no visitor PII persistence.
+- [x] T031 [US4] Author `D:\personal\portfolio-me\apps\web\content\mentoring.json` and update `D:\personal\portfolio-me\apps\web\app\mentoring\page.jsx` with session types, Google Calendar embed, booking CTAs, and testimonials strip per FR-010.
+- [x] T032 [P] [US4] Harden `D:\personal\portfolio-me\apps\web\app\contact\page.jsx` for explicit success, validation, and configuration-missing messages (mailto or form provider).
+- [x] T033 [P] [US4] Align `D:\personal\portfolio-me\apps\web\app\links\page.jsx` and `D:\personal\portfolio-me\apps\web\app\about\page.jsx` copy with outreach goals (FR-011, FR-014).
 
 **Checkpoint**: US4 acceptance scenarios satisfied; games respect reduced motion where applicable.
 

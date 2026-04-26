@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import { HighlightsList } from '../../components/highlights-list.jsx';
+import { ROUTES } from '../../lib/constants/routes.js';
 import { loadHighlights } from '../../lib/content/load/highlights.js';
 import { loadSiteProfile } from '../../lib/content/load/site-profile.js';
 
@@ -16,6 +18,13 @@ export default async function AboutPage() {
       <p className="mt-5 max-w-[62ch] text-pretty text-[19px] font-semibold leading-snug text-text-1">{profile.tagline}</p>
       <p className="mt-4 max-w-[62ch] text-[17px] leading-[1.47] text-text-1">
         {profile.roles.join(' · ')}: {profile.seo?.description ?? 'Engineering, instruction, and playful systems.'}
+      </p>
+
+      <p className="mt-6 max-w-[62ch] text-[17px] leading-[1.47] text-text-1">
+        Hiring or collaboration: <Link href={ROUTES.contact}>Contact</Link> (email and calendar),{' '}
+        <Link href={ROUTES.mentoring}>Mentoring</Link> for session shapes, and <Link href={ROUTES.links}>Links</Link> for every
+        profile in one list. <Link href={ROUTES.resume}>Resume</Link> and <Link href={ROUTES.projects}>Projects</Link> carry
+        the evidence.
       </p>
 
       <section className="mt-12 max-w-[62ch]">

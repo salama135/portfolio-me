@@ -1,6 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
+import { ROUTES } from '../../lib/constants/routes.js';
 
 /**
  * @param {{
@@ -16,6 +18,18 @@ export function TwoTruthsGame({ pack }) {
   const [solved, setSolved] = useState(false);
 
   const round = pack.rounds[roundIndex];
+
+  const roundIssue = useMemo(() => {
+    const raw = round?.statements;
+    if (!Array.isArray(raw)) return 'This round is missing a statements array.';
+    if (raw.length !== 3) return 'Two truths and a lie needs exactly three statements per round.';
+    const valid = raw.filter((s) => s && typeof s.text === 'string' && s.text.trim().length > 0);
+    if (valid.length !== 3) return 'Each statement needs non-empty text.';
+    const lies = valid.filter((s) => Boolean(s.isLie)).length;
+    if (lies !== 1) return 'Exactly one statement must have isLie: true.';
+    return null;
+  }, [round]);
+
   const statements = useMemo(() => {
     const raw = round?.statements;
     if (!Array.isArray(raw) || raw.length === 0) return [];
@@ -30,7 +44,7 @@ export function TwoTruthsGame({ pack }) {
 
   const pickStatement = useCallback(
     (index) => {
-      if (solved) return;
+      if (solved || roundIssue) return;
       const st = statements[index];
       if (!st) return;
       const lie = Boolean(st.isLie);
@@ -41,7 +55,7 @@ export function TwoTruthsGame({ pack }) {
         setFeedback({ tone: 'bad', text: outcomeById.get('wrong') ?? 'Not quite — try another statement.' });
       }
     },
-    [statements, outcomeById, solved],
+    [statements, outcomeById, solved, roundIssue],
   );
 
   const nextRound = useCallback(() => {
@@ -50,11 +64,20 @@ export function TwoTruthsGame({ pack }) {
     setRoundIndex((i) => Math.min(i + 1, pack.rounds.length - 1));
   }, [pack.rounds.length]);
 
-  if (!round || statements.length === 0) {
+  const isLastRound = roundIndex >= pack.rounds.length - 1;
+
+  if (!round) {
     return (
       <p className="mt-8 rounded-xl border border-apple-border-soft bg-apple-gray/50 px-4 py-3 text-[15px] text-text-1">
-        This game pack is missing <code>rounds[].statements</code> with <code>text</code> and <code>isLie</code> flags. Edit{' '}
-        <code>content/games/two-truths.json</code>.
+        This pack has no rounds. Edit <code>content/games/two-truths.json</code>.
+      </p>
+    );
+  }
+
+  if (roundIssue) {
+    return (
+      <p className="mt-8 rounded-xl border border-amber-200/90 bg-amber-50 px-4 py-3 text-[15px] text-amber-950" role="alert">
+        {roundIssue}
       </p>
     );
   }
@@ -71,7 +94,7 @@ export function TwoTruthsGame({ pack }) {
               type="button"
               disabled={solved}
               onClick={() => pickStatement(idx)}
-              className="w-full rounded-2xl border border-apple-border-soft bg-apple-white px-5 py-4 text-left text-[16px] font-medium leading-snug text-apple-ink shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-[0_6px_20px_rgba(0,0,0,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)] disabled:pointer-events-none disabled:opacity-50"
+              className="w-full rounded-2xl border border-apple-border-soft bg-apple-white px-5 py-4 text-left text-[16px] font-medium leading-snug text-apple-ink shadow-[0_2px_12px_rgba(0,0,0,0.04)] motion-safe:transition-shadow motion-safe:hover:shadow-[0_6px_20px_rgba(0,0,0,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)] disabled:pointer-events-none disabled:opacity-50"
             >
               {s.text}
             </button>
@@ -92,7 +115,13 @@ export function TwoTruthsGame({ pack }) {
         </output>
       ) : null}
 
-      {solved && roundIndex < pack.rounds.length - 1 ? (
+      {solved && isLastRound ? (
+        <p className="mt-6 text-[15px] leading-relaxed text-text-1">
+          {outcomeById.get('complete') ?? 'You finished all rounds.'}
+        </p>
+      ) : null}
+
+      {solved && !isLastRound ? (
         <button
           type="button"
           onClick={nextRound}
@@ -100,6 +129,17 @@ export function TwoTruthsGame({ pack }) {
         >
           Next round
         </button>
+      ) : null}
+
+      {solved && isLastRound ? (
+        <p className="mt-8">
+          <Link
+            href={ROUTES.games}
+            className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#0071e3] px-6 py-2.5 text-sm font-semibold text-white no-underline transition-colors hover:bg-[#0077ed] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+          >
+            Back to games
+          </Link>
+        </p>
       ) : null}
     </div>
   );

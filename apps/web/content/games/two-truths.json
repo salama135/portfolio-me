@@ -1,43 +1,36 @@
 {
   "gameId": "two-truths",
   "title": "Two Truths and a Lie",
-  "intro": "Pick the statement you think is the lie. Content is placeholder — edit `content/games/two-truths.json`.",
+  "intro": "Three statements per round: two are true, one is not. Tap the one you think is the lie. Nothing is saved; it is all in this tab.",
   "rounds": [
     {
       "id": "round-1",
       "statements": [
-        { "text": "I have shipped production mobile apps.", "isLie": false },
-        { "text": "I learned to code before age ten.", "isLie": true },
-        { "text": "I enjoy mentoring junior developers.", "isLie": false }
+        { "text": "I have shipped production mobile apps with real users and store releases.", "isLie": false },
+        { "text": "I wrote my first compiler pass before I turned twelve.", "isLie": true },
+        { "text": "I still enjoy pairing with juniors when there is time on the calendar.", "isLie": false }
       ]
     },
     {
       "id": "round-2",
       "statements": [
-        { "text": "I have shipped production mobile apps.", "isLie": false },
-        { "text": "I learned to code before age ten.", "isLie": true },
-        { "text": "I enjoy mentoring junior developers.", "isLie": false }
+        { "text": "I treat accessibility regressions like production incidents.", "isLie": false },
+        { "text": "I have never broken a CI pipeline on a Friday.", "isLie": true },
+        { "text": "I prefer small PRs with screenshots over giant theory threads.", "isLie": false }
       ]
     },
     {
       "id": "round-3",
       "statements": [
-        { "text": "I have shipped production mobile apps.", "isLie": false },
-        { "text": "I learned to code before age ten.", "isLie": true },
-        { "text": "I enjoy mentoring junior developers.", "isLie": false }
-      ]
-    },
-    {
-      "id": "round-4",
-      "statements": [
-        { "text": "I have shipped production mobile apps.", "isLie": false },
-        { "text": "I learned to code before age ten.", "isLie": true },
-        { "text": "I enjoy mentoring junior developers.", "isLie": false }
+        { "text": "Teaching forced me to explain tradeoffs I used to hand-wave.", "isLie": false },
+        { "text": "I only work in greenfield codebases with zero legacy.", "isLie": true },
+        { "text": "Game jams are where I test ideas that later become talks or demos.", "isLie": false }
       ]
     }
   ],
   "outcomes": [
-    { "id": "correct", "message": "Correct — this is a the lie." },
-    { "id": "wrong", "message": "Not quite. Try another statement." }
+    { "id": "correct", "message": "Right call. The lie was the odd one out; the other two lines are grounded in real work." },
+    { "id": "wrong", "message": "Not that one. Try another statement." },
+    { "id": "complete", "message": "You cleared every round. Thanks for playing." }
   ]
 }
