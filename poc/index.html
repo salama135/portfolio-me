@@ -735,6 +735,364 @@
     color: var(--games);
   }
 
+  /* ── CV ── */
+  #cv { background: var(--bg2); }
+  .cv-layout { display: grid; grid-template-columns: 220px 1fr; gap: 2.5rem; align-items: start; margin-top: 3rem; }
+  .cv-tabs { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 0.4rem; }
+  .cv-tab {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer;
+    border: 1px solid transparent; background: transparent;
+    color: var(--muted); font-family: var(--font-body); font-size: 0.875rem;
+    text-align: left; transition: all 0.2s; white-space: nowrap;
+  }
+  .cv-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .cv-tab.active { color: var(--text); background: rgba(255,255,255,0.06); border-color: var(--border-h); }
+  .cv-tab-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+  .cv-tab-divider { height: 1px; background: var(--border); margin: 0.4rem 0; }
+
+  .cv-panels { min-height: 400px; }
+  .cv-panel { display: none; }
+  .cv-panel.active { display: block; }
+
+  /* timeline */
+  .cv-timeline { display: flex; flex-direction: column; gap: 0; }
+  .cv-entry {
+    display: grid; grid-template-columns: 160px 1fr;
+    gap: 1.5rem; padding-bottom: 2.5rem; position: relative;
+    opacity: 0; transform: translateY(16px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .cv-entry.visible { opacity: 1; transform: translateY(0); }
+  .cv-entry::before {
+    content: ''; position: absolute;
+    left: 160px; top: 0; bottom: 0; width: 1px;
+    background: var(--border); margin-left: 0.75rem;
+  }
+  .cv-entry:last-child { padding-bottom: 0; }
+  .cv-entry:last-child::before { display: none; }
+  .cv-date {
+    font-family: var(--font-mono); font-size: 0.72rem;
+    color: var(--muted2); padding-top: 0.35rem; text-align: right; line-height: 1.4;
+  }
+  .cv-dot {
+    position: absolute; left: 160px; top: 0.35rem;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--mobile); margin-left: 0.375rem;
+    border: 2px solid var(--bg2); flex-shrink: 0;
+  }
+  .cv-body { padding-left: 1.75rem; }
+  .cv-role {
+    font-family: var(--font-display); font-size: 1.05rem; font-weight: 700;
+    letter-spacing: -0.02em; color: var(--text); margin-bottom: 0.2rem;
+  }
+  .cv-org { font-size: 0.82rem; color: var(--mobile); font-weight: 500; margin-bottom: 0.6rem; }
+  .cv-desc { font-size: 0.855rem; color: var(--muted); line-height: 1.7; }
+  .cv-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.65rem; }
+  .cv-tag {
+    font-size: 0.7rem; font-family: var(--font-mono); padding: 0.2rem 0.6rem;
+    border-radius: 100px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--muted);
+  }
+
+  /* skills grids */
+  .cv-skills-group { margin-bottom: 2.5rem; }
+  .cv-skills-group-title {
+    font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted2); margin-bottom: 1rem;
+    padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+  }
+  .cv-skill-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .cv-skill-pill {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.45rem 0.9rem; border-radius: 100px;
+    background: var(--card); border: 1px solid var(--border);
+    font-size: 0.82rem; color: var(--text); transition: border-color 0.2s;
+  }
+  .cv-skill-pill:hover { border-color: var(--border-h); }
+  .cv-skill-pill-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+  /* certs */
+  .cv-certs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; }
+  .cv-cert-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 1.5rem; transition: border-color 0.25s, transform 0.2s;
+    opacity: 0; transform: translateY(16px); transition: opacity 0.4s, transform 0.4s, border-color 0.2s;
+  }
+  .cv-cert-card.visible { opacity: 1; transform: translateY(0); }
+  .cv-cert-card:hover { border-color: var(--border-h); transform: translateY(-2px); }
+  .cv-cert-badge-wrap {
+    min-height: 100px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1rem; border-radius: 10px; background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border); padding: 0.75rem; position: relative; overflow: hidden;
+  }
+  .cv-cert-placeholder {
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    font-size: 2.5rem;
+  }
+  .cv-cert-placeholder-label {
+    font-size: 0.65rem; font-family: var(--font-mono); color: var(--muted2);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .cv-cert-name { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; letter-spacing: -0.01em; }
+  .cv-cert-issuer { font-size: 0.78rem; color: var(--mobile); margin-bottom: 0.5rem; }
+  .cv-cert-year { font-size: 0.72rem; font-family: var(--font-mono); color: var(--muted2); }
+  .cv-cert-link {
+    display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.75rem;
+    font-size: 0.75rem; font-family: var(--font-mono); color: var(--mobile);
+    text-decoration: none; transition: opacity 0.2s;
+  }
+  .cv-cert-link:hover { opacity: 0.7; }
+
+  /* achievements / leadership with images */
+  .cv-achieve-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+  .cv-achieve-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    overflow: hidden; transition: border-color 0.25s, transform 0.2s;
+    opacity: 0; transform: translateY(16px); transition: opacity 0.4s, transform 0.4s, border-color 0.2s;
+  }
+  .cv-achieve-card.visible { opacity: 1; transform: translateY(0); }
+  .cv-achieve-card:hover { border-color: var(--border-h); transform: translateY(-2px); }
+  .cv-achieve-img {
+    width: 100%; height: 180px; object-fit: cover;
+    display: block; background: rgba(255,255,255,0.04);
+  }
+  .cv-achieve-img-placeholder {
+    width: 100%; height: 180px;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 0.5rem;
+    background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(176,108,244,0.05));
+    border-bottom: 1px solid var(--border); font-size: 2.5rem;
+  }
+  .cv-achieve-img-placeholder span { font-size: 0.65rem; font-family: var(--font-mono); color: var(--muted2); letter-spacing: 0.08em; }
+  .cv-achieve-body { padding: 1.25rem; }
+  .cv-achieve-tag {
+    font-size: 0.65rem; font-family: var(--font-mono); text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--games); margin-bottom: 0.5rem;
+  }
+  .cv-achieve-title { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; letter-spacing: -0.01em; }
+  .cv-achieve-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── GAMES ── */
+  #games { background: var(--bg2); }
+
+  .game-picker {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+  }
+  .game-pick-btn {
+    display: flex; align-items: center; gap: 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.75rem 1.4rem;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .game-pick-btn:hover { border-color: var(--border-h); color: var(--text); }
+  .game-pick-btn.active { background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.3); color: var(--mobile); }
+  .game-pick-icon { font-size: 1.1rem; }
+
+  .game-panel { display: none; }
+  .game-panel.active { display: block; animation: fadeUp 0.35s ease both; }
+
+  .game-arena {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .game-top-bar {
+    display: flex; gap: 0.75rem; margin-bottom: 2rem;
+  }
+  .game-score-pill {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    padding: 0.3rem 0.9rem;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .game-score-pill span { color: var(--mobile); font-weight: 600; }
+  .game-prompt {
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 1.75rem;
+    line-height: 1.3;
+  }
+  .game-question {
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 2.5vw, 1.45rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 1.75rem;
+    line-height: 1.4;
+  }
+
+  /* Truth options */
+  .truth-options {
+    display: flex; flex-direction: column; gap: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+  .truth-opt {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem 1.4rem;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .truth-opt:hover:not(:disabled) { border-color: var(--border-h); transform: translateX(4px); }
+  .truth-opt:disabled { cursor: default; }
+  .truth-opt.correct { border-color: var(--web); background: rgba(16,232,136,0.07); color: var(--web); }
+  .truth-opt.wrong   { border-color: #ff5566; background: rgba(255,85,102,0.07); color: #ff5566; }
+  .truth-opt.reveal  { border-color: var(--web); background: rgba(16,232,136,0.05); }
+  .truth-opt-letter {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.04);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .truth-opt.correct .truth-opt-letter { border-color: var(--web); background: rgba(16,232,136,0.15); color: var(--web); }
+  .truth-opt.wrong   .truth-opt-letter { border-color: #ff5566; background: rgba(255,85,102,0.15); color: #ff5566; }
+
+  /* Quiz options */
+  .quiz-options {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0.75rem; margin-bottom: 1.5rem;
+  }
+  .quiz-opt {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    line-height: 1.4;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--border-h); transform: translateY(-2px); }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-opt.correct { border-color: var(--web); background: rgba(16,232,136,0.07); color: var(--web); }
+  .quiz-opt.wrong   { border-color: #ff5566; background: rgba(255,85,102,0.07); color: #ff5566; }
+  .quiz-opt.reveal  { border-color: var(--web); background: rgba(16,232,136,0.05); }
+
+  /* This or That */
+  .tot-pair {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1rem; margin-bottom: 1.5rem;
+  }
+  .tot-opt {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem 1.25rem;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 0.75rem;
+    text-align: center;
+    min-height: 140px;
+  }
+  .tot-opt:hover:not(:disabled) { border-color: var(--border-h); transform: translateY(-4px); }
+  .tot-opt:disabled { cursor: default; }
+  .tot-opt.chosen  { border-color: var(--mobile); background: rgba(0,212,255,0.07); }
+  .tot-opt.ahmed   { border-color: var(--web); background: rgba(16,232,136,0.07); }
+  .tot-opt.both    { border-color: var(--vrar); background: rgba(176,108,244,0.07); }
+  .tot-opt-emoji { font-size: 2.5rem; line-height: 1; }
+  .tot-opt-label {
+    font-family: var(--font-display);
+    font-size: 1rem; font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .tot-result-tag {
+    font-family: var(--font-mono);
+    font-size: 0.65rem; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem; border-radius: 100px;
+    opacity: 0; transition: opacity 0.3s 0.2s;
+  }
+  .tot-opt.ahmed .tot-result-tag,
+  .tot-opt.chosen .tot-result-tag,
+  .tot-opt.both .tot-result-tag { opacity: 1; }
+  .tot-opt.ahmed .tot-result-tag  { background: rgba(16,232,136,0.15); color: var(--web); border: 1px solid rgba(16,232,136,0.3); }
+  .tot-opt.chosen .tot-result-tag { background: rgba(0,212,255,0.15); color: var(--mobile); border: 1px solid rgba(0,212,255,0.3); }
+  .tot-opt.both .tot-result-tag   { background: rgba(176,108,244,0.15); color: var(--vrar); border: 1px solid rgba(176,108,244,0.3); }
+
+  /* Feedback & Next btn */
+  .game-feedback {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+    animation: fadeUp 0.3s ease both;
+  }
+  .game-feedback.hidden { display: none; }
+  .game-feedback strong { color: var(--text); }
+  .game-next-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.65rem 1.4rem;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.88rem; font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .game-next-btn:hover { border-color: var(--border-h); transform: translateY(-1px); }
+  .game-next-btn.hidden { display: none; }
+
+  /* End screen */
+  .game-end {
+    text-align: center; padding: 2.5rem 1rem;
+    animation: fadeUp 0.4s ease both;
+  }
+  .game-end-emoji { font-size: 4rem; margin-bottom: 1rem; }
+  .game-end-title {
+    font-family: var(--font-display);
+    font-size: 1.8rem; font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text); margin-bottom: 0.5rem;
+  }
+  .game-end-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .game-restart-btn {
+    background: var(--mobile); color: #000;
+    border: none; border-radius: 8px;
+    padding: 0.7rem 1.8rem;
+    font-family: var(--font-body); font-size: 0.9rem; font-weight: 600;
+    cursor: pointer; transition: opacity 0.2s, transform 0.2s;
+  }
+  .game-restart-btn:hover { opacity: 0.85; transform: translateY(-2px); }
+
   /* ── MENTORING ── */
   #mentoring { background: var(--bg); }
   .mentoring-layout {
@@ -892,6 +1250,14 @@
     footer { flex-direction: column; text-align: center; }
     .mentoring-layout { grid-template-columns: 1fr; gap: 2.5rem; }
     .mentoring-statement { position: static; }
+    .cv-layout { grid-template-columns: 1fr; }
+    .cv-tabs { position: static; flex-direction: row; flex-wrap: wrap; gap: 0.4rem; }
+    .cv-tab-divider { display: none; }
+    .cv-entry { grid-template-columns: 1fr; gap: 0.25rem; }
+    .cv-entry::before { display: none; }
+    .cv-date { text-align: left; padding-top: 0; }
+    .cv-dot { display: none; }
+    .cv-body { padding-left: 0; }
   }
   @media (max-width: 480px) {
     section { padding: 4rem 5%; }
@@ -1164,7 +1530,9 @@ const CONFIG = {
   <ul class="nav-links">
     <li><a href="#projects">Projects</a></li>
     <li><a href="#about">About</a></li>
+    <li><a href="#cv">CV</a></li>
     <li><a href="#mentoring">Mentoring</a></li>
+    <li><a href="#games">Games</a></li>
     <li><a href="#interests">Interests</a></li>
     <li><a href="#blog">Blog</a></li>
     <li><a href="#links">Links</a></li>
@@ -1220,6 +1588,30 @@ const CONFIG = {
   </div>
 </section>
 
+<!-- CV -->
+<section id="cv">
+  <div class="reveal">
+    <p class="section-label">Résumé</p>
+    <h2 class="section-title">Professional Profile</h2>
+    <p class="section-sub">My experience, education, skills, certifications, and achievements in one place.</p>
+  </div>
+  <div class="cv-layout">
+    <!-- Tab Nav -->
+    <nav class="cv-tabs" id="cv-tabs">
+      <button class="cv-tab active" data-panel="experience"><span class="cv-tab-icon">💼</span> Experience</button>
+      <button class="cv-tab" data-panel="education"><span class="cv-tab-icon">🎓</span> Education</button>
+      <div class="cv-tab-divider"></div>
+      <button class="cv-tab" data-panel="skills"><span class="cv-tab-icon">⚙️</span> Technical Skills</button>
+      <div class="cv-tab-divider"></div>
+      <button class="cv-tab" data-panel="certifications"><span class="cv-tab-icon">🏅</span> Certifications</button>
+      <button class="cv-tab" data-panel="achievements"><span class="cv-tab-icon">🏆</span> Achievements</button>
+      <button class="cv-tab" data-panel="leadership"><span class="cv-tab-icon">🌟</span> Leadership</button>
+    </nav>
+    <!-- Panels -->
+    <div class="cv-panels" id="cv-panels"></div>
+  </div>
+</section>
+
 <!-- MENTORING -->
 <section id="mentoring">
   <div class="mentoring-layout">
@@ -1239,6 +1631,72 @@ const CONFIG = {
       </div>
     </div>
     <div class="mentoring-cards" id="mentoring-cards"></div>
+  </div>
+</section>
+
+<!-- GAMES -->
+<section id="games">
+  <div class="reveal" style="margin-bottom: 3rem;">
+    <p class="section-label">Get To Know Me</p>
+    <h2 class="section-title">Play & Discover</h2>
+    <p class="section-sub">A few fun games to break the ice — you might learn something about me.</p>
+  </div>
+
+  <!-- Game Picker -->
+  <div class="game-picker" id="game-picker">
+    <button class="game-pick-btn active" data-game="truths">
+      <span class="game-pick-icon">🤥</span>
+      <span class="game-pick-name">2 Truths & a Lie</span>
+    </button>
+    <button class="game-pick-btn" data-game="thisorthat">
+      <span class="game-pick-icon">⚡</span>
+      <span class="game-pick-name">This or That</span>
+    </button>
+    <button class="game-pick-btn" data-game="quiz">
+      <span class="game-pick-icon">🧠</span>
+      <span class="game-pick-name">Ahmed Quiz</span>
+    </button>
+  </div>
+
+  <!-- GAME 1: 2 Truths & a Lie -->
+  <div class="game-panel active" id="game-truths">
+    <div class="game-arena">
+      <div class="game-top-bar">
+        <div class="game-score-pill">Round <span id="truth-round">1</span> / <span id="truth-total">5</span></div>
+        <div class="game-score-pill">Score <span id="truth-score">0</span></div>
+      </div>
+      <p class="game-prompt">Which one is the <span style="color:var(--games); font-weight:700;">lie</span>?</p>
+      <div class="truth-options" id="truth-options"></div>
+      <div class="game-feedback hidden" id="truth-feedback"></div>
+      <button class="game-next-btn hidden" id="truth-next">Next Round →</button>
+    </div>
+  </div>
+
+  <!-- GAME 2: This or That -->
+  <div class="game-panel" id="game-thisorthat">
+    <div class="game-arena">
+      <div class="game-top-bar">
+        <div class="game-score-pill">Question <span id="tot-q">1</span> / <span id="tot-total">8</span></div>
+        <div class="game-score-pill">Matched <span id="tot-score">0</span></div>
+      </div>
+      <p class="game-prompt">What does Ahmed prefer?</p>
+      <div class="tot-pair" id="tot-pair"></div>
+      <div class="game-feedback hidden" id="tot-feedback"></div>
+    </div>
+  </div>
+
+  <!-- GAME 3: Quiz -->
+  <div class="game-panel" id="game-quiz">
+    <div class="game-arena">
+      <div class="game-top-bar">
+        <div class="game-score-pill">Q <span id="quiz-q">1</span> / <span id="quiz-total">6</span></div>
+        <div class="game-score-pill">Score <span id="quiz-score">0</span></div>
+      </div>
+      <p class="game-question" id="quiz-question"></p>
+      <div class="quiz-options" id="quiz-options"></div>
+      <div class="game-feedback hidden" id="quiz-feedback"></div>
+      <button class="game-next-btn hidden" id="quiz-next">Next Question →</button>
+    </div>
   </div>
 </section>
 
@@ -1475,6 +1933,260 @@ const observer = new IntersectionObserver((entries) => {
 // Reveal generic .reveal elements
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+// ══════════════════════════════════════════════
+//  CV DATA — edit to match your real details
+// ══════════════════════════════════════════════
+const CV = {
+  experience: [
+    {
+      date: '2022 – Present',
+      role: 'Software Engineer',
+      org: 'Current Company · Full-time',
+      desc: 'Building and maintaining scalable web APIs on Google Cloud Platform using Java and Spring Boot. Designing system architecture, leading technical discussions, and delivering end-to-end features in an Angular + Java stack.',
+      tags: ['Java', 'Spring Boot', 'Angular', 'GCP', 'REST APIs', 'PostgreSQL']
+    },
+    {
+      date: '2021 – 2022',
+      role: 'Junior Backend Developer',
+      org: 'Previous Company · Full-time',
+      desc: 'Developed and maintained backend services for a client-facing web platform. Collaborated with cross-functional teams to ship features on time and contributed to CI/CD pipeline setup.',
+      tags: ['Java', 'Spring', 'MySQL', 'Docker', 'Jenkins']
+    },
+    {
+      date: '2020 – 2021',
+      role: 'Freelance App & Game Developer',
+      org: 'Self-employed',
+      desc: 'Delivered multiple mobile apps and Unity games for clients. Built AR experiences using ARKit and ARCore, and shipped apps to both Google Play and the App Store.',
+      tags: ['Unity', 'C#', 'React Native', 'ARCore', 'ARKit', 'Flutter']
+    }
+  ],
+  education: [
+    {
+      date: '2016 – 2020',
+      role: 'BSc Computer Science',
+      org: 'University Name · Cairo, Egypt',
+      desc: 'Graduated with honours. Focus areas included software engineering, algorithms, databases, and mobile development. Final year project: a real-time multiplayer game built in Unity.',
+      tags: ['Algorithms', 'Data Structures', 'OOP', 'Databases', 'Networking']
+    }
+  ],
+  skills: [
+    {
+      group: 'Programming Languages',
+      color: '#00d4ff',
+      items: ['Java', 'C#', 'TypeScript', 'JavaScript', 'Dart', 'Python', 'SQL', 'GDScript']
+    },
+    {
+      group: 'Frameworks & Technologies',
+      color: '#10e888',
+      items: ['Spring Boot', 'Angular', 'React Native', 'Flutter', 'Unity', 'Godot', 'Node.js', 'REST', 'GraphQL']
+    },
+    {
+      group: 'Cloud & DevOps',
+      color: '#b06cf4',
+      items: ['Google Cloud Platform', 'Firebase', 'Docker', 'Kubernetes', 'CI/CD', 'GitHub Actions', 'Jenkins']
+    },
+    {
+      group: 'Databases',
+      color: '#ff8c42',
+      items: ['PostgreSQL', 'MySQL', 'Firestore', 'MongoDB', 'Redis']
+    },
+    {
+      group: 'Development Concepts',
+      color: '#00c8b4',
+      items: ['System Design', 'Microservices', 'Clean Architecture', 'TDD', 'Agile / Scrum', 'REST API Design', 'OOP', 'Design Patterns']
+    },
+    {
+      group: 'Tools & Platforms',
+      color: '#ff50a0',
+      items: ['Git', 'Jira', 'Figma', 'Postman', 'IntelliJ IDEA', 'VS Code', 'Android Studio', 'Xcode', 'Blender']
+    }
+  ],
+  certifications: [
+    {
+      emoji: '☁️',
+      name: 'Google Associate Cloud Engineer',
+      issuer: 'Google Cloud',
+      year: '2023',
+      // Replace badge ID with your real Credly badge ID
+      credlyId: 'YOUR_CREDLY_BADGE_ID',
+      credlyUrl: 'https://www.credly.com/badges/YOUR_BADGE_ID'
+    },
+    {
+      emoji: '🧩',
+      name: 'Professional Scrum Master I',
+      issuer: 'Scrum.org',
+      year: '2022',
+      credlyId: 'YOUR_CREDLY_BADGE_ID',
+      credlyUrl: 'https://www.credly.com/badges/YOUR_BADGE_ID'
+    },
+    {
+      emoji: '☕',
+      name: 'Oracle Certified Professional Java SE',
+      issuer: 'Oracle',
+      year: '2021',
+      credlyId: 'YOUR_CREDLY_BADGE_ID',
+      credlyUrl: 'https://www.credly.com/badges/YOUR_BADGE_ID'
+    }
+  ],
+  achievements: [
+    {
+      emoji: '🥇',
+      tag: 'Award',
+      title: 'Hackathon Winner',
+      desc: 'Won 1st place at a national university hackathon for building a real-time AR navigation app in 48 hours.',
+      // Replace with a real image URL, or leave empty for emoji placeholder
+      img: ''
+    },
+    {
+      emoji: '🚀',
+      tag: 'Project',
+      title: 'Published 3+ Mobile Games',
+      desc: 'Built and shipped multiple Unity games on Google Play and the App Store with thousands of downloads.',
+      img: ''
+    },
+    {
+      emoji: '🏅',
+      tag: 'Recognition',
+      title: 'Top Performer — 2023',
+      desc: 'Recognised internally as a top performer for delivering a critical API migration ahead of schedule.',
+      img: ''
+    }
+  ],
+  leadership: [
+    {
+      emoji: '🎓',
+      tag: 'Mentoring',
+      title: 'University Tech Club Lead',
+      desc: 'Led the computer science club during final year — organised workshops, hackathons, and peer mentoring sessions for 100+ students.',
+      img: ''
+    },
+    {
+      emoji: '🌍',
+      tag: 'Community',
+      title: 'Open Source Contributor',
+      desc: 'Active contributor to open source Unity packages and dev tools. Helped maintain documentation and reviewed pull requests.',
+      img: ''
+    },
+    {
+      emoji: '🏋️',
+      tag: 'Extracurricular',
+      title: 'Sports & Fitness Captain',
+      desc: 'Organised team sports events at university — football, tennis and padel tournaments among classmates.',
+      img: ''
+    }
+  ]
+};
+
+// ── CV RENDERER
+(function() {
+  const tabsEl = document.getElementById('cv-tabs');
+  const panelsEl = document.getElementById('cv-panels');
+
+  function makeTimeline(items) {
+    return items.map((e, i) => `
+      <div class="cv-entry" style="transition-delay:${i*0.1}s">
+        <div class="cv-date">${e.date}</div>
+        <div class="cv-dot"></div>
+        <div class="cv-body">
+          <div class="cv-role">${e.role}</div>
+          <div class="cv-org">${e.org}</div>
+          <p class="cv-desc">${e.desc}</p>
+          <div class="cv-tags">${(e.tags||[]).map(t=>`<span class="cv-tag">${t}</span>`).join('')}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  const PANELS = {
+    experience: `<div class="cv-timeline">${makeTimeline(CV.experience)}</div>`,
+    education:  `<div class="cv-timeline">${makeTimeline(CV.education)}</div>`,
+    skills: CV.skills.map(g => `
+      <div class="cv-skills-group">
+        <div class="cv-skills-group-title">${g.group}</div>
+        <div class="cv-skill-pills">
+          ${g.items.map(item=>`<span class="cv-skill-pill"><span class="cv-skill-pill-dot" style="background:${g.color}"></span>${item}</span>`).join('')}
+        </div>
+      </div>`).join(''),
+    certifications: `
+      <div style="margin-bottom:1rem;font-size:0.78rem;color:var(--muted);font-family:var(--font-mono);">
+        Replace <code style="color:var(--mobile)">YOUR_CREDLY_BADGE_ID</code> in the CV config with your real badge IDs to show embedded Credly badges.
+      </div>
+      <div class="cv-certs-grid">
+        ${CV.certifications.map((c,i)=>`
+          <div class="cv-cert-card" style="transition-delay:${i*0.1}s">
+            <div class="cv-cert-badge-wrap">
+              ${c.credlyId !== 'YOUR_CREDLY_BADGE_ID'
+                ? `<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="${c.credlyId}" data-share-badge-host="https://www.credly.com"></div>`
+                : `<div class="cv-cert-placeholder"><div>${c.emoji}</div><div class="cv-cert-placeholder-label">Credly Badge</div></div>`}
+            </div>
+            <div class="cv-cert-name">${c.name}</div>
+            <div class="cv-cert-issuer">${c.issuer}</div>
+            <div class="cv-cert-year">${c.year}</div>
+            <a class="cv-cert-link" href="${c.credlyUrl}" target="_blank" rel="noopener">View on Credly →</a>
+          </div>`).join('')}
+      </div>`,
+    achievements: `<div class="cv-achieve-grid">${CV.achievements.map((a,i)=>`
+      <div class="cv-achieve-card" style="transition-delay:${i*0.1}s">
+        ${a.img
+          ? `<img class="cv-achieve-img" src="${a.img}" alt="${a.title}" loading="lazy">`
+          : `<div class="cv-achieve-img-placeholder">${a.emoji}<span>Add your photo</span></div>`}
+        <div class="cv-achieve-body">
+          <div class="cv-achieve-tag">${a.tag}</div>
+          <div class="cv-achieve-title">${a.title}</div>
+          <p class="cv-achieve-desc">${a.desc}</p>
+        </div>
+      </div>`).join('')}</div>`,
+    leadership: `<div class="cv-achieve-grid">${CV.leadership.map((a,i)=>`
+      <div class="cv-achieve-card" style="transition-delay:${i*0.1}s">
+        ${a.img
+          ? `<img class="cv-achieve-img" src="${a.img}" alt="${a.title}" loading="lazy">`
+          : `<div class="cv-achieve-img-placeholder">${a.emoji}<span>Add your photo</span></div>`}
+        <div class="cv-achieve-body">
+          <div class="cv-achieve-tag">${a.tag}</div>
+          <div class="cv-achieve-title">${a.title}</div>
+          <p class="cv-achieve-desc">${a.desc}</p>
+        </div>
+      </div>`).join('')}</div>`
+  };
+
+  // render all panels
+  Object.entries(PANELS).forEach(([key, html]) => {
+    const div = document.createElement('div');
+    div.className = 'cv-panel' + (key === 'experience' ? ' active' : '');
+    div.id = `cv-panel-${key}`;
+    div.innerHTML = html;
+    panelsEl.appendChild(div);
+  });
+
+  // tab switching
+  tabsEl.querySelectorAll('.cv-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.panel;
+      tabsEl.querySelectorAll('.cv-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      panelsEl.querySelectorAll('.cv-panel').forEach(p => p.classList.remove('active'));
+      const panel = document.getElementById(`cv-panel-${key}`);
+      panel.classList.add('active');
+      // trigger animations
+      panel.querySelectorAll('.cv-entry, .cv-cert-card, .cv-achieve-card').forEach(el => {
+        el.classList.remove('visible');
+        requestAnimationFrame(() => setTimeout(() => el.classList.add('visible'), 50));
+      });
+      // load Credly script if needed
+      if (key === 'certifications' && !document.getElementById('credly-script')) {
+        const s = document.createElement('script');
+        s.id = 'credly-script'; s.async = true;
+        s.src = '//cdn.credly.com/assets/utilities/embed.js';
+        document.body.appendChild(s);
+      }
+    });
+  });
+
+  // animate first panel entries on load
+  setTimeout(() => {
+    document.querySelectorAll('#cv-panel-experience .cv-entry').forEach(el => el.classList.add('visible'));
+  }, 400);
+})();
+
 // ── MENTORING
 const MENTORING_CARDS = [
   {
@@ -1518,6 +2230,325 @@ MENTORING_CARDS.forEach((card, i) => {
   mentoringCards.appendChild(el);
   observer.observe(el);
 });
+
+// ── GAMES
+
+// — Game picker tabs
+document.querySelectorAll('.game-pick-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.game-pick-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('game-' + btn.dataset.game).classList.add('active');
+  });
+});
+
+// ══════════════════════
+//  GAME 1: 2 Truths & a Lie
+// ══════════════════════
+const TRUTH_ROUNDS = [
+  {
+    statements: [
+      "I've built and shipped multiple mobile games using Unity",
+      "I started coding when I was a teenager",
+      "I have a black belt in karate"
+    ],
+    lie: 2,
+    explanation: "No martial arts here! But I did start coding young and Unity is basically my second home."
+  },
+  {
+    statements: [
+      "I watch Formula 1 every race weekend",
+      "I've gone on a multi-day camping trip",
+      "I've never touched a Godot project"
+    ],
+    lie: 2,
+    explanation: "Godot is actually something I enjoy exploring alongside Unity — great engine!"
+  },
+  {
+    statements: [
+      "I own or have used a 3D printer for DIY projects",
+      "I prefer dark mode on every screen I use",
+      "I play tennis and padel regularly"
+    ],
+    lie: 1,
+    explanation: "Okay, I do love dark mode — but not on *every* screen. Tennis and padel are definitely part of my routine though!"
+  },
+  {
+    statements: [
+      "I've read manga and follow Japanese animation",
+      "I once tried to learn a musical instrument",
+      "I built an AR app that places furniture in real rooms"
+    ],
+    lie: 1,
+    explanation: "The instrument didn't last long — turns out I'm better at debugging code than learning scales. The AR furniture app and manga love are both very real."
+  },
+  {
+    statements: [
+      "I journal regularly as part of my daily habits",
+      "I cycle as one of my main sports activities",
+      "My primary programming language at work is Python"
+    ],
+    lie: 2,
+    explanation: "It's Java! I work in Java and Angular. Python is cool but not my daily driver at work."
+  }
+];
+
+let truthRound = 0, truthScore = 0;
+
+function renderTruthRound() {
+  const r = TRUTH_ROUNDS[truthRound];
+  document.getElementById('truth-round').textContent = truthRound + 1;
+  document.getElementById('truth-total').textContent = TRUTH_ROUNDS.length;
+  document.getElementById('truth-score').textContent = truthScore;
+  document.getElementById('truth-feedback').classList.add('hidden');
+  document.getElementById('truth-next').classList.add('hidden');
+
+  const letters = ['A', 'B', 'C'];
+  const container = document.getElementById('truth-options');
+  container.innerHTML = '';
+  r.statements.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'truth-opt';
+    btn.innerHTML = `<span class="truth-opt-letter">${letters[i]}</span> ${s}`;
+    btn.addEventListener('click', () => handleTruthPick(i));
+    container.appendChild(btn);
+  });
+}
+
+function handleTruthPick(picked) {
+  const r = TRUTH_ROUNDS[truthRound];
+  const opts = document.querySelectorAll('.truth-opt');
+  opts.forEach(o => o.disabled = true);
+
+  const correct = picked === r.lie;
+  if (correct) truthScore++;
+
+  opts[picked].classList.add(correct ? 'correct' : 'wrong');
+  opts[r.lie].classList.add(correct ? 'correct' : 'reveal');
+
+  document.getElementById('truth-score').textContent = truthScore;
+
+  const fb = document.getElementById('truth-feedback');
+  fb.classList.remove('hidden');
+  fb.innerHTML = correct
+    ? `✅ <strong>Got it!</strong> That was the lie. ${r.explanation}`
+    : `❌ <strong>Not quite!</strong> The lie was statement ${['A','B','C'][r.lie]}. ${r.explanation}`;
+
+  const nextBtn = document.getElementById('truth-next');
+  nextBtn.classList.remove('hidden');
+
+  if (truthRound === TRUTH_ROUNDS.length - 1) {
+    nextBtn.textContent = 'See Results ✦';
+  } else {
+    nextBtn.textContent = 'Next Round →';
+  }
+}
+
+document.getElementById('truth-next').addEventListener('click', () => {
+  truthRound++;
+  if (truthRound >= TRUTH_ROUNDS.length) {
+    const emoji = truthScore >= 4 ? '🏆' : truthScore >= 2 ? '🎯' : '😅';
+    const msg = truthScore >= 4 ? "You really paid attention!" : truthScore >= 2 ? "Not bad, you know me a little!" : "Looks like I'm still a mystery to you!";
+    document.getElementById('game-truths').querySelector('.game-arena').innerHTML = `
+      <div class="game-end">
+        <div class="game-end-emoji">${emoji}</div>
+        <div class="game-end-title">${truthScore} / ${TRUTH_ROUNDS.length}</div>
+        <p class="game-end-sub">${msg}</p>
+        <button class="game-restart-btn" onclick="truthRound=0;truthScore=0;renderTruthRound()">Play Again</button>
+      </div>`;
+  } else {
+    renderTruthRound();
+  }
+});
+
+renderTruthRound();
+
+// ══════════════════════
+//  GAME 2: This or That
+// ══════════════════════
+const TOT_QUESTIONS = [
+  { a: { emoji: '🎮', label: 'Unity' }, b: { emoji: '👾', label: 'Godot' }, ahmed: 'a', note: "Unity is my home base — but I genuinely enjoy Godot too!" },
+  { a: { emoji: '☕', label: 'Coffee' }, b: { emoji: '🍵', label: 'Tea' }, ahmed: 'a', note: "Coffee, without a doubt. ☕" },
+  { a: { emoji: '⛰️', label: 'Mountains' }, b: { emoji: '🏖️', label: 'Beach' }, ahmed: 'a', note: "Mountains, hiking, camping — that's my kind of trip." },
+  { a: { emoji: '🌙', label: 'Dark Mode' }, b: { emoji: '☀️', label: 'Light Mode' }, ahmed: 'a', note: "Dark mode. Always. My eyes will not allow otherwise." },
+  { a: { emoji: '🎵', label: 'R&B' }, b: { emoji: '🎤', label: 'Hip Hop' }, ahmed: 'both', note: "Both! My playlist switches between R&B and Hip Hop constantly." },
+  { a: { emoji: '🏎️', label: 'Cars' }, b: { emoji: '🏍️', label: 'Motorcycles' }, ahmed: 'both', note: "I love both — cars for the engineering, motorcycles for the freedom." },
+  { a: { emoji: '🎬', label: 'Sci-Fi' }, b: { emoji: '🏰', label: 'Fantasy' }, ahmed: 'both', note: "Genuinely can't choose — I love both genres equally." },
+  { a: { emoji: '📱', label: 'Mobile Dev' }, b: { emoji: '🌐', label: 'Web Dev' }, ahmed: 'a', note: "Mobile is where the magic happens for me — apps people hold in their hands." }
+];
+
+let totQ = 0, totScore = 0;
+
+function renderTOT() {
+  if (totQ >= TOT_QUESTIONS.length) {
+    const emoji = totScore >= 6 ? '🤝' : totScore >= 4 ? '😄' : '🤔';
+    const msg = totScore >= 6 ? "We think alike!" : totScore >= 4 ? "Pretty good match!" : "We're quite different — and that's cool!";
+    document.getElementById('game-thisorthat').querySelector('.game-arena').innerHTML = `
+      <div class="game-end">
+        <div class="game-end-emoji">${emoji}</div>
+        <div class="game-end-title">Matched ${totScore} / ${TOT_QUESTIONS.length}</div>
+        <p class="game-end-sub">${msg}</p>
+        <button class="game-restart-btn" onclick="totQ=0;totScore=0;renderTOT()">Play Again</button>
+      </div>`;
+    return;
+  }
+
+  const q = TOT_QUESTIONS[totQ];
+  document.getElementById('tot-q').textContent = totQ + 1;
+  document.getElementById('tot-total').textContent = TOT_QUESTIONS.length;
+  document.getElementById('tot-score').textContent = totScore;
+  document.getElementById('tot-feedback').classList.add('hidden');
+
+  const pair = document.getElementById('tot-pair');
+  pair.innerHTML = ['a', 'b'].map(side => `
+    <button class="tot-opt" data-side="${side}">
+      <span class="tot-opt-emoji">${q[side].emoji}</span>
+      <span class="tot-opt-label">${q[side].label}</span>
+      <span class="tot-result-tag"></span>
+    </button>`).join('');
+
+  pair.querySelectorAll('.tot-opt').forEach(btn => {
+    btn.addEventListener('click', () => handleTOTPick(btn.dataset.side));
+  });
+}
+
+function handleTOTPick(picked) {
+  const q = TOT_QUESTIONS[totQ];
+  const opts = document.querySelectorAll('.tot-opt');
+  opts.forEach(o => o.disabled = true);
+
+  const matched = picked === q.ahmed || q.ahmed === 'both';
+  if (matched) totScore++;
+  document.getElementById('tot-score').textContent = totScore;
+
+  opts.forEach(btn => {
+    const side = btn.dataset.side;
+    const tag = btn.querySelector('.tot-result-tag');
+    if (q.ahmed === 'both') {
+      btn.classList.add('both');
+      tag.textContent = 'Ahmed: Both!';
+    } else if (side === q.ahmed) {
+      btn.classList.add('ahmed');
+      tag.textContent = "Ahmed's pick";
+    } else if (side === picked) {
+      btn.classList.add('chosen');
+      tag.textContent = 'Your pick';
+    }
+  });
+
+  const fb = document.getElementById('tot-feedback');
+  fb.classList.remove('hidden');
+  fb.innerHTML = (matched ? '✅ ' : '❌ ') + `<strong>${matched ? 'Same!' : 'Different picks.'}</strong> ${q.note}`;
+
+  setTimeout(() => { totQ++; renderTOT(); }, 2200);
+}
+
+renderTOT();
+
+// ══════════════════════
+//  GAME 3: Ahmed Quiz
+// ══════════════════════
+const QUIZ_QUESTIONS = [
+  {
+    q: "How many years of experience does Ahmed have as a developer?",
+    opts: ["2 years", "4 years", "6 years", "8 years"],
+    answer: 1,
+    fact: "4 years building web APIs, systems design, and mobile/game projects."
+  },
+  {
+    q: "Which game engine is Ahmed's primary tool for game development?",
+    opts: ["Unreal Engine", "Godot", "Unity", "GameMaker"],
+    answer: 2,
+    fact: "Unity is the main one — he's shipped multiple games with it. Godot is a second love."
+  },
+  {
+    q: "Which cloud platform does Ahmed work with professionally?",
+    opts: ["AWS", "Azure", "GCP", "Heroku"],
+    answer: 2,
+    fact: "Google Cloud Platform — that's his day-to-day cloud environment at work."
+  },
+  {
+    q: "Which of these sports does Ahmed NOT play?",
+    opts: ["Padel", "Football", "Basketball", "Tennis"],
+    answer: 2,
+    fact: "Ahmed runs, cycles, plays padel, tennis, and football — but basketball isn't on the list."
+  },
+  {
+    q: "What motorsport does Ahmed follow closely?",
+    opts: ["MotoGP", "WRC Rally", "Formula 1", "NASCAR"],
+    answer: 2,
+    fact: "F1 all the way — race weekends are sacred."
+  },
+  {
+    q: "Which of these describes Ahmed's programming stack at work?",
+    opts: ["Python + Vue", "Java + Angular", "Go + React", "Node + Svelte"],
+    answer: 1,
+    fact: "Java on the backend, Angular on the frontend — classic enterprise stack done well."
+  }
+];
+
+let quizQ = 0, quizScore = 0;
+
+function renderQuiz() {
+  const q = QUIZ_QUESTIONS[quizQ];
+  document.getElementById('quiz-q').textContent = quizQ + 1;
+  document.getElementById('quiz-total').textContent = QUIZ_QUESTIONS.length;
+  document.getElementById('quiz-score').textContent = quizScore;
+  document.getElementById('quiz-question').textContent = q.q;
+  document.getElementById('quiz-feedback').classList.add('hidden');
+  document.getElementById('quiz-next').classList.add('hidden');
+
+  const container = document.getElementById('quiz-options');
+  container.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => handleQuizPick(i));
+    container.appendChild(btn);
+  });
+}
+
+function handleQuizPick(picked) {
+  const q = QUIZ_QUESTIONS[quizQ];
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts.forEach(o => o.disabled = true);
+
+  const correct = picked === q.answer;
+  if (correct) quizScore++;
+  document.getElementById('quiz-score').textContent = quizScore;
+
+  opts[picked].classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) opts[q.answer].classList.add('reveal');
+
+  const fb = document.getElementById('quiz-feedback');
+  fb.classList.remove('hidden');
+  fb.innerHTML = (correct ? '✅ <strong>Correct!</strong> ' : '❌ <strong>Not quite.</strong> ') + q.fact;
+
+  const nextBtn = document.getElementById('quiz-next');
+  nextBtn.classList.remove('hidden');
+  nextBtn.textContent = quizQ === QUIZ_QUESTIONS.length - 1 ? 'See Results ✦' : 'Next Question →';
+}
+
+document.getElementById('quiz-next').addEventListener('click', () => {
+  quizQ++;
+  if (quizQ >= QUIZ_QUESTIONS.length) {
+    const emoji = quizScore >= 5 ? '🧠' : quizScore >= 3 ? '👏' : '😄';
+    const msg = quizScore >= 5 ? "You really know your stuff!" : quizScore >= 3 ? "Decent score — you're paying attention!" : "Now you know me a little better!";
+    document.getElementById('game-quiz').querySelector('.game-arena').innerHTML = `
+      <div class="game-end">
+        <div class="game-end-emoji">${emoji}</div>
+        <div class="game-end-title">${quizScore} / ${QUIZ_QUESTIONS.length}</div>
+        <p class="game-end-sub">${msg}</p>
+        <button class="game-restart-btn" onclick="quizQ=0;quizScore=0;renderQuiz()">Play Again</button>
+      </div>`;
+  } else {
+    renderQuiz();
+  }
+});
+
+renderQuiz();
 
 // ── INTERESTS
 const INTERESTS = [
@@ -1711,7 +2742,7 @@ const cardObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll('.project-card').forEach(card => cardObserver.observe(card));
 
 // ── Smooth active nav link
-const sections = ['hero','projects','about','mentoring','interests','blog','links','contact'];
+const sections = ['hero','projects','about','cv','mentoring','interests','blog','links','contact'];
 const navObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
