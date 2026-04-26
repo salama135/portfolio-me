@@ -1,0 +1,28 @@
+{
+  "experiences": [
+    {
+      "id": "exp-placeholder",
+      "title": "Your role title",
+      "organization": "Company or client",
+      "location": "",
+      "startDate": "",
+      "endDate": "",
+      "summary": "Replace this block in `content/resume.json` with your real experience.",
+      "highlights": []
+    }
+  ],
+  "education": [
+    {
+      "id": "edu-placeholder",
+      "degree": "Your degree or program",
+      "institution": "School name",
+      "summary": "Optional details."
+    }
+  ],
+  "skillGroups": {
+    "programmingLanguages": ["TypeScript", "JavaScript"],
+    "frameworks": ["Next.js", "React"],
+    "concepts": ["Accessibility", "Static site generation"],
+    "tools": ["Git", "npm"]
+  }
+}

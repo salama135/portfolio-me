@@ -1,0 +1,9 @@
+{
+  "headline": "Mentoring",
+  "body": "Replace this copy with your mentoring story, then set a real booking URL and optional calendar embed URL.",
+  "sessionTypes": ["one_to_one", "group"],
+  "audience": "Students, graduates, and career switchers in software",
+  "durationSummary": "30–60 minute sessions",
+  "bookingUrl": "https://example.com/mentoring-booking",
+  "testimonials": []
+}

@@ -6,3 +6,11 @@ export { highlightSchema, highlightListSchema } from './highlight.js';
 export { interestSchema, interestListSchema } from './interest.js';
 export { mediaAssetSchema } from './media-asset.js';
 export { adventureSchema, adventureListSchema } from './adventure.js';
+export { resumeDocumentSchema } from './resume.js';
+export { mentoringContentSchema, mentoringTestimonialSchema } from './mentoring.js';
+export { gamePackSchema, gameRoundSchema, gameOutcomeSchema } from './game-pack.js';
+export {
+  credlyBadgeInventorySchema,
+  achievementMetaEntrySchema,
+  achievementMetaListSchema,
+} from './credly-inventory.js';

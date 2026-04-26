@@ -36,12 +36,12 @@
 
 **CRITICAL**: Complete before user-story phases that consume new JSON.
 
-- [ ] T003 Extend `D:\personal\portfolio-me\apps\web\lib\constants\routes.js` with stable paths and `NAV_ITEMS` updates for `/resume`, `/achievements`, `/games`, `/mobile` per `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\contracts\site-information-architecture.md` (use grouped labels if nav overflow).
-- [ ] T004 [P] Add Zod schema for resume content in `D:\personal\portfolio-me\apps\web\lib\content\schemas\resume.js` per [data-model.md](./data-model.md) `ResumeDocument`.
-- [ ] T005 [P] Add Zod schema for mentoring content in `D:\personal\portfolio-me\apps\web\lib\content\schemas\mentoring.js` (session types, booking URLs, testimonials array).
-- [ ] T006 [P] Add Zod schema for game packs in `D:\personal\portfolio-me\apps\web\lib\content\schemas\game-pack.js` per `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\contracts\games-content.md`.
-- [ ] T007 Implement `D:\personal\portfolio-me\apps\web\lib\content\load\achievements.js` to read `D:\personal\portfolio-me\poc\credly-badges.json` (and optional `D:\personal\portfolio-me\apps\web\content\achievements-meta.json`) with URL validation and deduplication per `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\contracts\credly-badges-content.md`.
-- [ ] T008 Add `D:\personal\portfolio-me\apps\web\lib\content\load\resume.js`, `D:\personal\portfolio-me\apps\web\lib\content\load\mentoring.js`, and `D:\personal\portfolio-me\apps\web\lib\content\load\games.js` wired to new schemas and `D:\personal\portfolio-me\apps\web\content\` JSON paths.
+- [x] T003 Extend `D:\personal\portfolio-me\apps\web\lib\constants\routes.js` with stable paths and `NAV_ITEMS` updates for `/resume`, `/achievements`, `/games`, `/mobile` per `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\contracts\site-information-architecture.md` (use grouped labels if nav overflow).
+- [x] T004 [P] Add Zod schema for resume content in `D:\personal\portfolio-me\apps\web\lib\content\schemas\resume.js` per [data-model.md](./data-model.md) `ResumeDocument`.
+- [x] T005 [P] Add Zod schema for mentoring content in `D:\personal\portfolio-me\apps\web\lib\content\schemas\mentoring.js` (session types, booking URLs, testimonials array).
+- [x] T006 [P] Add Zod schema for game packs in `D:\personal\portfolio-me\apps\web\lib\content\schemas\game-pack.js` per `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\contracts\games-content.md`.
+- [x] T007 Implement `D:\personal\portfolio-me\apps\web\lib\content\load\achievements.js` to read `D:\personal\portfolio-me\poc\credly-badges.json` (and optional `D:\personal\portfolio-me\apps\web\content\achievements-meta.json`) with URL validation and deduplication per `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\contracts\credly-badges-content.md`.
+- [x] T008 Add `D:\personal\portfolio-me\apps\web\lib\content\load\resume.js`, `D:\personal\portfolio-me\apps\web\lib\content\load\mentoring.js`, and `D:\personal\portfolio-me\apps\web\lib\content\load\games.js` wired to new schemas and `D:\personal\portfolio-me\apps\web\content\` JSON paths.
 
 **Checkpoint**: `npm run dev` from `D:\personal\portfolio-me` runs with no loader import errors for new modules.
 
