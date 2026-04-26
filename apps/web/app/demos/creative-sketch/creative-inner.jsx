@@ -46,5 +46,13 @@ export default function CreativeInner({ reducedMotion }) {
     };
   }, [reducedMotion]);
 
-  return <div ref={hostRef} className="w-full max-w-xl" />;
+  return (
+    <div className="w-full max-w-xl space-y-3">
+      <p className="text-sm text-apple-gray-secondary">
+        <strong className="text-apple-ink">Try it:</strong> start the demo and watch the pulse—no drawing required; leaving the
+        route tears the sketch down cleanly.
+      </p>
+      <div ref={hostRef} className="w-full" role="img" aria-label="p5.js creative sketch canvas" />
+    </div>
+  );
 }

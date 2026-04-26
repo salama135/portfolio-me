@@ -36,7 +36,7 @@ export default async function Page() {
       <section className="apple-chapter-dark relative overflow-hidden pb-[clamp(3.5rem,11vw,6.5rem)] pt-[clamp(1.25rem,4vw,2.5rem)]">
         <HeroShowcase>
           <div className="page-shell-wide">
-            <div className="grid items-center gap-14 lg:grid-cols-12 lg:gap-16">
+            <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-12 lg:gap-16">
               <div className="lg:col-span-7">
                 <p className="apple-reveal apple-reveal-1 text-[12px] font-semibold uppercase tracking-[0.2em] text-white/55">
                   {eyebrow}

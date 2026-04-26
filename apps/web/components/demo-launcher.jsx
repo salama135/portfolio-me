@@ -6,6 +6,11 @@ import { DemoErrorBoundary } from './demo-error-boundary.jsx';
 /**
  * Defers heavy demo bundles until explicit user intent (contracts/demo-module-interface.md).
  * Pass a `next/dynamic(..., { ssr: false })` component as `Demo` from a parent module scope so the import stays stable.
+ *
+ * **Registry contract**: every slug in `content/demos.json` that ships a heavy client bundle must mount through
+ * `DemoPageShell` on the server and a `*Client` module that wraps the dynamic inner demo in `DemoLauncher` (which
+ * includes `DemoErrorBoundary`). The thin `hello` demo follows the same pattern for parity.
+ *
  * @param {{ Demo: import('react').ComponentType<{ reducedMotion?: boolean }>, title: string, description?: string }} props
  */
 export function DemoLauncher({ Demo, title, description }) {

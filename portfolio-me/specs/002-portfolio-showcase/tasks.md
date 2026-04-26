@@ -85,11 +85,11 @@
 
 **Independent Test**: From `/demos`, open each shipped slug; complete primary interaction; no account prompt; observe loading states.
 
-- [ ] T019 [US2] Update `D:\personal\portfolio-me\apps\web\content\demos.json` so at least four demos include accurate duration, device hints, and slug entries aligned with `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\demo-shortlist.md`.
-- [ ] T020 [P] [US2] Add skeleton or loading placeholders to `D:\personal\portfolio-me\apps\web\app\demos\page.jsx` cards per `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\contracts\demo-delivery.md`.
-- [ ] T021 [P] [US2] Verify `D:\personal\portfolio-me\apps\web\components\demo-launcher.jsx` and `D:\personal\portfolio-me\apps\web\components\demo-error-boundary.jsx` wrap every heavy demo route listed in `demos.json`.
-- [ ] T022 [US2] Implement one new high-flair demo under `D:\personal\portfolio-me\apps\web\app\demos\<new-slug>\page.jsx` per demo-shortlist and register it in `D:\personal\portfolio-me\apps\web\content\demos.json`.
-- [ ] T023 [P] [US2] Polish primary flows for existing demos under `D:\personal\portfolio-me\apps\web\app\demos\ar-overlay\`, `D:\personal\portfolio-me\apps\web\app\demos\creative-sketch\`, `D:\personal\portfolio-me\apps\web\app\demos\three-showcase\`, and `D:\personal\portfolio-me\apps\web\app\demos\vr-room\` (default state, controls, unmount cleanup).
+- [x] T019 [US2] Update `D:\personal\portfolio-me\apps\web\content\demos.json` so at least four demos include accurate duration, device hints, and slug entries aligned with `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\demo-shortlist.md`.
+- [x] T020 [P] [US2] Add skeleton or loading placeholders to `D:\personal\portfolio-me\apps\web\app\demos\page.jsx` cards per `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\contracts\demo-delivery.md`.
+- [x] T021 [P] [US2] Verify `D:\personal\portfolio-me\apps\web\components\demo-launcher.jsx` and `D:\personal\portfolio-me\apps\web\components\demo-error-boundary.jsx` wrap every heavy demo route listed in `demos.json`.
+- [x] T022 [US2] Implement one new high-flair demo under `D:\personal\portfolio-me\apps\web\app\demos\<new-slug>\page.jsx` per demo-shortlist and register it in `D:\personal\portfolio-me\apps\web\content\demos.json`.
+- [x] T023 [P] [US2] Polish primary flows for existing demos under `D:\personal\portfolio-me\apps\web\app\demos\ar-overlay\`, `D:\personal\portfolio-me\apps\web\app\demos\creative-sketch\`, `D:\personal\portfolio-me\apps\web\app\demos\three-showcase\`, and `D:\personal\portfolio-me\apps\web\app\demos\vr-room\` (default state, controls, unmount cleanup).
 
 **Checkpoint**: SC-003 satisfied (four demos, each completable quickly); demo isolation holds on thrown errors.
 
