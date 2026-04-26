@@ -13,6 +13,7 @@ export const siteProfileSchema = z.object({
       calendar: z.string().optional(),
       instagram: z.string().optional(),
       pinterest: z.string().optional(),
+      credly: z.string().optional(),
     })
     .optional()
     .default({}),
