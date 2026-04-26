@@ -1,0 +1,21 @@
+{
+  "headline": "Mentoring and office hours",
+  "body": "I mentor the way I build: start from something that runs, add one constraint at a time, and end every session with a written next step. Use the booking link for a first conversation, or skim session types below if you are routing this for a team.",
+  "sessionTypes": ["one_to_one", "group"],
+  "audience": "Software engineers growing into senior work, tech leads who want sharper review habits, and game-program students who need honest feedback on a vertical slice.",
+  "durationSummary": "About 45 minutes for a 1:1 intro or career-focused chat; about 90 minutes for a small-group clinic (debugging, portfolio review, or interview prep).",
+  "bookingUrl": "https://calendar.app.google/cf8EYphXkDKmVbdf8",
+  "calendarEmbedUrl": "https://calendar.google.com/calendar/appointments/schedules/AcZssZ1cN6F_QH54P-yRur-U4MpkFwIXTmweHW5nYcfNQdA7IlkE5YnC-TSzlnmmlsK7YWzT8wh_LEbw?gv=true",
+  "testimonials": [
+    {
+      "quote": "Office hours ended with a checklist I actually used the same week. No vague cheerleading.",
+      "name": "Engineering mentee",
+      "context": "1:1 program, 2024"
+    },
+    {
+      "quote": "The group session turned our broken build into a teachable moment for the whole lab.",
+      "name": "Teaching assistant",
+      "context": "Group clinic, 2023"
+    }
+  ]
+}

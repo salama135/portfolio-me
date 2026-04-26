@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint app components lib e2e --max-warnings 0",
+    "validate:quickstart": "next build",
     "test:e2e": "playwright test",
     "optimize:media": "node scripts/optimize-media.mjs"
   },

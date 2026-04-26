@@ -6,6 +6,11 @@ import { DemoErrorBoundary } from './demo-error-boundary.jsx';
 /**
  * Defers heavy demo bundles until explicit user intent (contracts/demo-module-interface.md).
  * Pass a `next/dynamic(..., { ssr: false })` component as `Demo` from a parent module scope so the import stays stable.
+ *
+ * **Registry contract**: every slug in `content/demos.json` that ships a heavy client bundle must mount through
+ * `DemoPageShell` on the server and a `*Client` module that wraps the dynamic inner demo in `DemoLauncher` (which
+ * includes `DemoErrorBoundary`). The thin `hello` demo follows the same pattern for parity.
+ *
  * @param {{ Demo: import('react').ComponentType<{ reducedMotion?: boolean }>, title: string, description?: string }} props
  */
 export function DemoLauncher({ Demo, title, description }) {
@@ -21,7 +26,7 @@ export function DemoLauncher({ Demo, title, description }) {
         {description ? <p className="mt-2 max-w-[52ch] text-sm text-apple-gray-secondary">{description}</p> : null}
         <button
           type="button"
-          className="mt-6 rounded-full bg-[#0071e3] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#0077ed] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+          className="mt-6 rounded-full bg-[#0071e3] px-5 py-2.5 text-sm font-semibold text-white motion-safe:transition-colors motion-safe:hover:bg-[#0077ed] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
           onClick={() => setStarted(true)}
         >
           Start demo

@@ -5,7 +5,8 @@ import { isDemoExperienceEnabled } from '../../lib/config/feature-flags.js';
 
 export const metadata = {
   title: 'Demos',
-  description: 'Interactive live demos: creative coding, 3D, AR-style camera, and WebXR.',
+  description:
+    'Interactive live demos: creative coding, generative canvas, 3D, AR-style camera, and WebXR—each gated behind Start demo.',
 };
 
 export default async function DemosPage() {

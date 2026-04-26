@@ -1,0 +1,170 @@
+{
+  "achievements": [
+    {
+      "kind": "manual",
+      "id": "sample-certificate",
+      "certificateImage": "/media/cover-teachable-engine.webp",
+      "title": "Sample certificate (edit achievements.json)",
+      "description": "Replace this block with a real certificate. You can remove it once you add your own rows.",
+      "issueDate": "2026-04-26",
+      "skills": [
+        "Documentation"
+      ],
+      "issuer": "Example issuer"
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-094c661e-7031-4b31-80b7-bdf2254e05f6",
+      "shareBadgeId": "094c661e-7031-4b31-80b7-bdf2254e05f6",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-0bd78623-1899-4417-9afb-ec28fa66b3de",
+      "shareBadgeId": "0bd78623-1899-4417-9afb-ec28fa66b3de",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-0cb1d745-4b7c-4029-bda8-bd58ca41214b",
+      "shareBadgeId": "0cb1d745-4b7c-4029-bda8-bd58ca41214b",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-33c01daa-1912-43d5-a197-a4305a5fe48d",
+      "shareBadgeId": "33c01daa-1912-43d5-a197-a4305a5fe48d",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-3b339ccb-8d4d-43df-87d0-f98b21f71a91",
+      "shareBadgeId": "3b339ccb-8d4d-43df-87d0-f98b21f71a91",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-464fa8e4-0164-41ff-88b6-8e58f02b7e34",
+      "shareBadgeId": "464fa8e4-0164-41ff-88b6-8e58f02b7e34",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-5c4c2b40-caf8-452d-a59a-c05cc5d23537",
+      "shareBadgeId": "5c4c2b40-caf8-452d-a59a-c05cc5d23537",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-69482836-54cc-4acd-9c73-f7bdd53601bd",
+      "shareBadgeId": "69482836-54cc-4acd-9c73-f7bdd53601bd",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-7ae6f861-3e5c-4048-99e1-625cbefc8f69",
+      "shareBadgeId": "7ae6f861-3e5c-4048-99e1-625cbefc8f69",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-8565044b-e1fa-4db0-ab88-fb195c6c17ba",
+      "shareBadgeId": "8565044b-e1fa-4db0-ab88-fb195c6c17ba",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-8567eacf-3918-4ac8-b568-608fc59c6f4d",
+      "shareBadgeId": "8567eacf-3918-4ac8-b568-608fc59c6f4d",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-876497ec-c628-454a-8062-a8d589f45bf8",
+      "shareBadgeId": "876497ec-c628-454a-8062-a8d589f45bf8",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-8b7dabb0-1c85-4309-af5a-8eea78f2e42e",
+      "shareBadgeId": "8b7dabb0-1c85-4309-af5a-8eea78f2e42e",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-9b25cae5-928d-488b-bc01-fc0a60440123",
+      "shareBadgeId": "9b25cae5-928d-488b-bc01-fc0a60440123",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-a07c1396-09b6-4f65-ba00-f6638afcd823",
+      "shareBadgeId": "a07c1396-09b6-4f65-ba00-f6638afcd823",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-a4517fbe-51de-46b5-83f5-4ebb3dc40361",
+      "shareBadgeId": "a4517fbe-51de-46b5-83f5-4ebb3dc40361",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-aa5d0e03-838b-4a9a-a3c2-bb9a49310957",
+      "shareBadgeId": "aa5d0e03-838b-4a9a-a3c2-bb9a49310957",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-e54ebb91-86e6-494b-a428-fcddbe28166b",
+      "shareBadgeId": "e54ebb91-86e6-494b-a428-fcddbe28166b",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-e7bdadc6-8b9b-440f-8c08-dcbc0c93f127",
+      "shareBadgeId": "e7bdadc6-8b9b-440f-8c08-dcbc0c93f127",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-eb297039-a2fb-40a2-8a07-09a926c02f9e",
+      "shareBadgeId": "eb297039-a2fb-40a2-8a07-09a926c02f9e",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-eec63c43-7d85-4d51-8eb6-64b3f2f66344",
+      "shareBadgeId": "eec63c43-7d85-4d51-8eb6-64b3f2f66344",
+      "issuer": "",
+      "skills": []
+    },
+    {
+      "kind": "credly_embed",
+      "id": "credly-f8762b1c-9aed-465d-a064-85d78697e5bd",
+      "shareBadgeId": "f8762b1c-9aed-465d-a064-85d78697e5bd",
+      "issuer": "",
+      "skills": []
+    }
+  ]
+}

@@ -89,5 +89,13 @@ export default function ThreeInner({ reducedMotion }) {
     );
   }
 
-  return <div ref={hostRef} className="aspect-video w-full max-w-3xl bg-black" />;
+  return (
+    <div className="w-full max-w-3xl space-y-3">
+      <p className="text-sm text-apple-gray-secondary">
+        <strong className="text-apple-ink">Try it:</strong> resize the window—the canvas tracks width and keeps a stable aspect
+        ratio until you navigate away (then WebGL resources dispose).
+      </p>
+      <div ref={hostRef} className="aspect-video w-full bg-black" />
+    </div>
+  );
 }

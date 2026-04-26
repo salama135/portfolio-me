@@ -4,6 +4,13 @@ import { notFound } from 'next/navigation';
 import { loadArticleBySlug, loadArticleSlugs } from '../../../lib/content/load/articles.js';
 import { ROUTES } from '../../../lib/constants/routes.js';
 
+const CATEGORY_LABEL = {
+  tech: 'Tech',
+  life: 'Life',
+  health: 'Health',
+  hobbies: 'Hobbies',
+};
+
 export async function generateStaticParams() {
   const slugs = await loadArticleSlugs();
   return slugs.map((slug) => ({ slug }));
@@ -39,8 +46,19 @@ export default async function BlogPostPage({ params }) {
         <p className="mt-4 text-sm text-apple-gray-secondary">
           {post.date} · {post.author}
         </p>
+        {(post.categories ?? []).length > 0 ? (
+          <ul className="mt-3 flex flex-wrap gap-2" aria-label="Categories">
+            {(post.categories ?? []).map((c) => (
+              <li key={c}>
+                <span className="inline-flex rounded-full bg-apple-gray px-3 py-1 text-xs font-semibold uppercase tracking-wide text-apple-ink ring-1 ring-apple-border-soft">
+                  {CATEGORY_LABEL[c]}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
         {post.tags?.length ? (
-          <p className="mt-2 text-sm text-apple-gray-secondary">{post.tags.join(' · ')}</p>
+          <p className="mt-3 text-sm text-apple-gray-secondary">Tags: {post.tags.join(' · ')}</p>
         ) : null}
       </header>
 

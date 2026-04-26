@@ -1,0 +1,48 @@
+{
+  "experiences": [
+    {
+      "id": "exp-senior-engineer",
+      "title": "Senior Software Engineer",
+      "organization": "Example Product Co.",
+      "location": "Remote · US Eastern",
+      "startDate": "2021-03",
+      "endDate": "Present",
+      "summary": "Owns web platform for customer-facing analytics: Next.js app shell, design-system governance, and performance budgets on every release.",
+      "highlights": [
+        "Cut largest contentful paint roughly in half by splitting marketing JS from authenticated app routes.",
+        "Partnered with design on WCAG 2.2 AA audits; focus-visible and reduced-motion paths are part of definition of done.",
+        "Mentored three engineers through promotion; ran weekly architecture office hours."
+      ]
+    },
+    {
+      "id": "exp-fullstack",
+      "title": "Full Stack Engineer",
+      "organization": "Earlier Startup Inc.",
+      "location": "San Francisco, CA",
+      "startDate": "2017-06",
+      "endDate": "2021-02",
+      "summary": "First web hire: shipped billing dashboards, public marketing site, and internal admin from one TypeScript codebase.",
+      "highlights": [
+        "Introduced E2E smoke suite (Playwright) before major pricing-page relaunch.",
+        "Built educator-facing game engine courseware and CI templates still used by the program."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "id": "edu-cs-degree",
+      "degree": "B.S. Computer Science",
+      "institution": "Example University",
+      "location": "Boston, MA",
+      "startDate": "2013-09",
+      "endDate": "2017-05",
+      "summary": "Coursework emphasis: graphics, HCI, and compilers. Teaching assistant for data structures."
+    }
+  ],
+  "skillGroups": {
+    "programmingLanguages": ["TypeScript", "JavaScript", "C#", "Python"],
+    "frameworks": ["Next.js", "React", "Node.js", "Unity"],
+    "concepts": ["Accessibility", "Design systems", "Static site generation", "WebGL basics", "CI/CD"],
+    "tools": ["Git", "npm", "Playwright", "Storybook", "Figma"]
+  }
+}
