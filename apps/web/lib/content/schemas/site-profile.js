@@ -24,4 +24,16 @@ export const siteProfileSchema = z.object({
     })
     .optional()
     .default({}),
+  hero: z
+    .object({
+      eyebrow: z.string().optional(),
+      subcopy: z.string().optional(),
+      primaryCtaLabel: z.string().optional(),
+      secondaryCtaLabel: z.string().optional(),
+      demosCtaLabel: z.string().optional(),
+      resumeLinkLabel: z.string().optional(),
+      aboutLinkLabel: z.string().optional(),
+    })
+    .optional()
+    .default({}),
 });

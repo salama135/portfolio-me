@@ -71,9 +71,9 @@
 
 **Independent Test**: Cold open `/`; confirm motion or layered hero and CTAs to `/demos` and `/projects` within three clicks.
 
-- [ ] T016 [US1] Implement layered or motion hero in `D:\personal\portfolio-me\apps\web\app\page.jsx` with supporting component under `D:\personal\portfolio-me\apps\web\components\` (e.g. `hero-showcase.jsx`) per [research.md](./research.md) with `prefers-reduced-motion` static fallback.
-- [ ] T017 [P] [US1] Extend `D:\personal\portfolio-me\apps\web\content\site-profile.json` with any new hero fields (taglines, subcopy, CTA labels) required by the hero component.
-- [ ] T018 [US1] Wire primary and secondary CTAs on `D:\personal\portfolio-me\apps\web\app\page.jsx` exclusively through `D:\personal\portfolio-me\apps\web\lib\constants\routes.js` constants for demos, projects, resume, about, contact (SC-001).
+- [x] T016 [US1] Implement layered or motion hero in `D:\personal\portfolio-me\apps\web\app\page.jsx` with supporting component under `D:\personal\portfolio-me\apps\web\components\` (e.g. `hero-showcase.jsx`) per [research.md](./research.md) with `prefers-reduced-motion` static fallback.
+- [x] T017 [P] [US1] Extend `D:\personal\portfolio-me\apps\web\content\site-profile.json` with any new hero fields (taglines, subcopy, CTA labels) required by the hero component.
+- [x] T018 [US1] Wire primary and secondary CTAs on `D:\personal\portfolio-me\apps\web\app\page.jsx` exclusively through `D:\personal\portfolio-me\apps\web\lib\constants\routes.js` constants for demos, projects, resume, about, contact (SC-001).
 
 **Checkpoint**: Home matches US1 acceptance scenarios; keyboard focus order still correct with shell.
 

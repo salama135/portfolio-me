@@ -3,6 +3,15 @@
   "tagline": "Software engineer · Instructor · Game developer",
   "roles": ["Software engineer", "Instructor", "Game developer", "Creative Coder", "Mentor"],
   "locale": "en",
+  "hero": {
+    "eyebrow": "Open to opportunities",
+    "subcopy": "Shipped products, classrooms, and playful experiments—same bar for clarity and craft.",
+    "primaryCtaLabel": "Get in touch",
+    "secondaryCtaLabel": "View projects",
+    "demosCtaLabel": "Live demos",
+    "resumeLinkLabel": "Resume",
+    "aboutLinkLabel": "About"
+  },
   "social": {
     "github": "https://github.com/salama135",
     "linkedin": "https://www.linkedin.com/in/ahmed-salama-asayedal/",
