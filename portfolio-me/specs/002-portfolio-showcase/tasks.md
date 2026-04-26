@@ -25,8 +25,8 @@
 
 **Purpose**: Align with prior epic outputs and freeze demo shortlist (FR-016).
 
-- [ ] T001 Review completed items in `D:\personal\portfolio-me\portfolio-me\specs\001-portfolio-site-demos\tasks.md` and note which 002 tasks extend versus replace existing `apps/web` work.
-- [ ] T002 [P] Add `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\demo-shortlist.md` listing the agreed demo concepts to implement (from [research.md](./research.md) table) with mapping to showcase goals for FR-016 sign-off.
+- [x] T001 Review completed items in `D:\personal\portfolio-me\portfolio-me\specs\001-portfolio-site-demos\tasks.md` and note which 002 tasks extend versus replace existing `apps/web` work.
+- [x] T002 [P] Add `D:\personal\portfolio-me\portfolio-me\specs\002-portfolio-showcase\demo-shortlist.md` listing the agreed demo concepts to implement (from [research.md](./research.md) table) with mapping to showcase goals for FR-016 sign-off.
 
 ---
 
