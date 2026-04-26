@@ -9,7 +9,8 @@ export const metadata = {
 export default async function ContactPage() {
   const profile = await loadSiteProfile();
   const { social } = profile;
-
+  console.log(social);
+  
   return (
     <div className="page-shell">
       <h1>Contact</h1>
@@ -48,6 +49,30 @@ export default async function ContactPage() {
               target="_blank"
             >
               GitHub
+            </a>
+          </li>
+        ) : null}
+        {social?.instagram ? (
+          <li>
+            <a
+              className="font-medium text-apple-link transition-opacity duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+              href={social.instagram}
+              rel="noreferrer"
+              target="_blank"
+            >
+              Instagram
+            </a>
+          </li>
+        ) : null}
+        {social?.pinterest ? (
+          <li>
+            <a
+              className="font-medium text-apple-link transition-opacity duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:opacity-85 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+              href={social.pinterest}
+              rel="noreferrer"
+              target="_blank"
+            >
+              Pinterest
             </a>
           </li>
         ) : null}

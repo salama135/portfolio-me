@@ -11,6 +11,8 @@ export const siteProfileSchema = z.object({
       linkedin: z.string().optional(),
       email: z.string().optional(),
       calendar: z.string().optional(),
+      instagram: z.string().optional(),
+      pinterest: z.string().optional(),
     })
     .optional()
     .default({}),
