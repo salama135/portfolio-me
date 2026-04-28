@@ -10,6 +10,7 @@ const CATEGORY_ENV = {
   three_d: 'NEXT_PUBLIC_DEMO_THREE_D',
   creative: 'NEXT_PUBLIC_DEMO_CREATIVE',
   mobile: 'NEXT_PUBLIC_DEMO_MOBILE',
+  web_sports: 'NEXT_PUBLIC_DEMO_WEB_SPORTS',
 };
 
 function envIsOn(key) {
@@ -35,5 +36,6 @@ export function getDemoFeatureFlags() {
     three_d: envIsOn('NEXT_PUBLIC_DEMO_THREE_D'),
     creative: envIsOn('NEXT_PUBLIC_DEMO_CREATIVE'),
     mobile: envIsOn('NEXT_PUBLIC_DEMO_MOBILE'),
+    web_sports: envIsOn('NEXT_PUBLIC_DEMO_WEB_SPORTS'),
   };
 }
