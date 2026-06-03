@@ -63,5 +63,14 @@
     "deviceNeeds": "Any current desktop or mobile browser.",
     "durationHint": "~30 sec",
     "entryPath": "/demos/sports-for-all"
+  },
+  {
+    "slug": "identical-game",
+    "title": "Identical Cards",
+    "category": "games",
+    "summary": "Primary task: enter your name and play against the bot. Find the one matching symbol between your card and the center card faster than the bot to win rounds.",
+    "deviceNeeds": "Any current desktop or mobile browser; pointer or touch for tapping symbols.",
+    "durationHint": "~3 min",
+    "entryPath": "/demos/identical-game"
   }
 ]

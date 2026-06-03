@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const demoCategorySchema = z.enum(['immersive', 'augmented', 'three_d', 'creative', 'mobile', 'web']);
+const demoCategorySchema = z.enum(['immersive', 'augmented', 'three_d', 'creative', 'mobile', 'web', 'web_sports', 'games']);
 
 export const demoExperienceSchema = z.object({
   slug: z.string(),

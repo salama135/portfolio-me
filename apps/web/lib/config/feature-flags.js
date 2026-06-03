@@ -11,6 +11,7 @@ const CATEGORY_ENV = {
   creative: 'NEXT_PUBLIC_DEMO_CREATIVE',
   mobile: 'NEXT_PUBLIC_DEMO_MOBILE',
   web_sports: 'NEXT_PUBLIC_DEMO_WEB_SPORTS',
+  games: 'NEXT_PUBLIC_DEMO_IDENTICAL_GAME',
 };
 
 function envIsOn(key) {
@@ -37,5 +38,6 @@ export function getDemoFeatureFlags() {
     creative: envIsOn('NEXT_PUBLIC_DEMO_CREATIVE'),
     mobile: envIsOn('NEXT_PUBLIC_DEMO_MOBILE'),
     web_sports: envIsOn('NEXT_PUBLIC_DEMO_WEB_SPORTS'),
+    identical_game: envIsOn('NEXT_PUBLIC_DEMO_IDENTICAL_GAME'),
   };
 }
