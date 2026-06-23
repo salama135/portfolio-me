@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:server": "node server.js",
     "build": "next build",
     "start": "next start",
     "lint": "eslint app components lib e2e --max-warnings 0",
@@ -14,6 +15,9 @@
   },
   "dependencies": {
     "@netlify/blobs": "^10.7.4",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@react-three/rapier": "^2.2.0",
     "aframe": "^1.7.1",
     "blobshape": "^1.0.0",
     "bright": "^1.0.0",
@@ -23,6 +27,8 @@
     "p5": "^2.2.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.2",
     "three": "^0.184.0",
     "unique-names-generator": "^4.7.1",
     "zod": "^3.24.2"

@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { DemoLauncher } from '../../../components/demo-launcher.jsx';
 
-const ThreeInner = dynamic(() => import('./three-inner.jsx'), { ssr: false });
+const ThreeInner = dynamic(() => import('./SegaRoom.jsx'), { ssr: false });
 
 export function ThreeShowcaseClient() {
   return (

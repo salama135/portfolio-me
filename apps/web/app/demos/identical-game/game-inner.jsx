@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-const ALL_SYMBOLS = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐸','🐵','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦟','🦗','🕷','🦂','🐢','🦎','🐍','🦕','🐙','🦑','🦐','🦞','🦀','🐠','🐟','🐡','🐬','🦈','🐳','🐋','🐊','🎁'];
+const ALL_SYMBOLS = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐸','🐵','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦟','🦗','🕷','🦂','🐢','🦎','🐍','🦕','🐙','🦑','🦐','🦞','🦀','🐠','🐟','🐡','🐬','🦈','🐳','🐋','🐊','🦭'];
 
 function shuffle(arr) {
   const copy = [...arr];
@@ -13,23 +13,34 @@ function shuffle(arr) {
   return copy;
 }
 
-function generateCard(forcedSymbol) {
-  const symbols = [...ALL_SYMBOLS];
-  shuffle(symbols);
-  const card = [forcedSymbol];
-  for (let s of symbols) {
-    if (s !== forcedSymbol && card.length < 8) card.push(s);
-  }
-  return shuffle(card);
-}
+// Greedy/backtracking deck generator ensuring pairwise intersection == 1
+function generateDeck(cardsNeeded, cardSize = 8, maxAttempts = 6) {
+  const symbols = ALL_SYMBOLS;
 
-function generateDeck(rounds) {
-  const deck = [];
-  for (let i = 0; i < rounds + 1; i++) {
-    const sym = ALL_SYMBOLS[Math.floor(Math.random() * ALL_SYMBOLS.length)];
-    deck.push(generateCard(sym));
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const deck = [];
+    let success = true;
+
+    for (let c = 0; c < cardsNeeded; c++) {
+      let found = false;
+      for (let tries = 0; tries < 4000; tries++) {
+        const candidate = shuffle(symbols).slice(0, cardSize);
+        let ok = true;
+        for (const existing of deck) {
+          const inter = existing.filter(x => candidate.includes(x)).length;
+          if (inter !== 1) { ok = false; break; }
+        }
+        if (ok) { deck.push(candidate); found = true; break; }
+      }
+      if (!found) { success = false; break; }
+    }
+
+    if (success) return deck;
   }
-  return deck;
+
+  const fallback = [];
+  for (let i = 0; i < cardsNeeded; i++) fallback.push(shuffle(symbols).slice(0, cardSize));
+  return fallback;
 }
 
 export default function IdenticalGameInner() {
@@ -47,6 +58,11 @@ export default function IdenticalGameInner() {
   const [hintMsg, setHintMsg] = useState('');
   const [timer, setTimer] = useState(0);
   const [selectedWrong, setSelectedWrong] = useState(null);
+  const [centerMeta, setCenterMeta] = useState([]);
+  const [myMeta, setMyMeta] = useState([]);
+  const [socket, setSocket] = useState(null);
+  const [roomId, setRoomId] = useState('');
+  const [players, setPlayers] = useState([]);
   
   const deckRef = useRef([]);
   const roundStartRef = useRef(null);
@@ -62,7 +78,7 @@ export default function IdenticalGameInner() {
   const startGame = () => {
     const name = nameInput.trim() || 'You';
     setPlayerName(name);
-    deckRef.current = generateDeck(MAX_ROUNDS + 4);
+    deckRef.current = generateDeck(MAX_ROUNDS + 20);
     setScores({ player: 0, bot: 0 });
     setRound(0);
     setScreen('game');
@@ -82,8 +98,14 @@ export default function IdenticalGameInner() {
     const centerCardNew = deckRef.current[round];
     const myCardNew = deckRef.current[round + 1];
     
+    // create meta for random sizes and rotations (consistent during the round)
+    const cMeta = centerCardNew.map(() => ({ size: 20 + Math.floor(Math.random() * 18), rot: -30 + Math.floor(Math.random() * 61) }));
+    const mMeta = myCardNew.map(() => ({ size: 22 + Math.floor(Math.random() * 20), rot: -35 + Math.floor(Math.random() * 71) }));
+
     setCenterCard(centerCardNew);
     setMyCard(myCardNew);
+    setCenterMeta(cMeta);
+    setMyMeta(mMeta);
 
     const centerSet = new Set(centerCardNew);
     const mySet = new Set(myCardNew);
@@ -118,16 +140,18 @@ export default function IdenticalGameInner() {
 
     roundStartRef.current = Date.now();
 
-    // Schedule bot move with impure functions in effect
-    const botDelay = 1500 + Math.random() * 3000;
-    botTimeoutRef.current = setTimeout(() => {
-      botWins();
-    }, botDelay);
+    // Schedule bot move with impure functions in effect (only for local bot)
+    if (!socket || !roomId) {
+      const botDelay = 1500 + Math.random() * 3000;
+      botTimeoutRef.current = setTimeout(() => {
+        botWins();
+      }, botDelay);
+    }
 
     return () => {
       clearTimeout(botTimeoutRef.current);
     };
-  }, [roundActive, matchSymbol, botWins]);
+  }, [roundActive, matchSymbol, botWins, socket, roomId]);
 
   // Trigger nextRound when round changes
   useEffect(() => {
@@ -142,6 +166,12 @@ export default function IdenticalGameInner() {
 
   const onSymbolClick = (sym) => {
     if (!roundActive || selectedWrong) return;
+
+    // If connected to a room, send claim to server and let it validate
+    if (socket && roomId) {
+      socket.emit('claim_match', { roomId, symbol: sym });
+      return;
+    }
 
     if (sym === matchSymbol) {
       setRoundActive(false);
@@ -163,6 +193,49 @@ export default function IdenticalGameInner() {
       setTimeout(() => setSelectedWrong(null), 350);
     }
   };
+
+  // Multiplayer helpers
+  useEffect(() => {
+    return () => {
+      if (socket) socket.disconnect();
+    };
+  }, [socket]);
+
+  async function connectSocket() {
+    if (socket) return socket;
+    const mod = await import('socket.io-client');
+    const ioFn = mod.io ?? mod.default;
+    const s = ioFn();
+    setSocket(s);
+    s.on('room_update', ({ players: p, scores: sc }) => { setPlayers(p); if (sc) setScores(prev => ({ ...prev, ...sc })); });
+    s.on('new_round', ({ centerCard: c, playerCards, round: r }) => {
+      const myCardFromServer = playerCards[s.id] || c; // fallback to center only
+      const cMeta = c.map(() => ({ size: 20 + Math.floor(Math.random() * 18), rot: -30 + Math.floor(Math.random() * 61) }));
+      const mMeta = myCardFromServer.map(() => ({ size: 22 + Math.floor(Math.random() * 20), rot: -35 + Math.floor(Math.random() * 71) }));
+      setCenterCard(c);
+      setMyCard(myCardFromServer);
+      setCenterMeta(cMeta);
+      setMyMeta(mMeta);
+      setMatchSymbol([...new Set(c)].find(sy => new Set(myCardFromServer).has(sy)));
+      setRound(r);
+      setRoundActive(true);
+      setHintMsg('');
+      setSelectedWrong(null);
+    });
+    s.on('wrong_guess', () => { setSelectedWrong('locked'); setHintMsg('❌ Wrong! Waiting for next round...'); });
+    s.on('round_won', ({ winnerId, scores: sc }) => { setScores(sc); setHintMsg(winnerId === s.id ? '✅ You got it!' : '😅 Too slow!'); setRoundActive(false); setSelectedWrong('highlight-match'); });
+    return s;
+  }
+
+  async function createRoom() {
+    const s = await connectSocket();
+    s.emit('create_room', { playerName: nameInput || 'You' }, ({ roomId: rid } = {}) => { setRoomId(rid); });
+  }
+
+  async function joinRoom(id) {
+    const s = await connectSocket();
+    s.emit('join_room', { roomId: id, playerName: nameInput || 'You' }, (res) => { if (res?.error) setHintMsg(res.error); else setRoomId(id); });
+  }
 
   const restartGame = () => {
     setScreen('lobby');
@@ -189,15 +262,30 @@ export default function IdenticalGameInner() {
               onKeyPress={(e) => e.key === 'Enter' && startGame()}
             />
           </div>
-          <button
-            onClick={startGame}
-            className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
-          >
-            Play vs Bot
-          </button>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={startGame}
+              className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
+            >
+              Play vs Bot
+            </button>
+            <button
+              onClick={createRoom}
+              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+            >
+              Create Room
+            </button>
+            <div className="flex items-center gap-2">
+              <input value={roomId} onChange={(e)=>setRoomId(e.target.value)} className="px-3 py-2 rounded border" placeholder="Room ID" />
+              <button onClick={()=>joinRoom(roomId)} className="px-3 py-2 bg-indigo-600 text-white rounded">Join</button>
+            </div>
+          </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-8">
             Tap a symbol on your card that matches the center card
           </p>
+          {players.length > 0 && (
+            <div className="mt-4 text-sm text-gray-600">Players in room: {players.map(p=>p.name).join(', ')}</div>
+          )}
         </div>
       )}
 
@@ -242,16 +330,17 @@ export default function IdenticalGameInner() {
           <div className="flex flex-col items-center">
             <p className="text-xs uppercase text-gray-500 dark:text-gray-400 tracking-wider mb-3">Center Card</p>
             <div className="w-48 h-48 rounded-full bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 border-4 border-amber-200 dark:border-amber-700 flex flex-wrap items-center justify-center gap-2 p-4 shadow-lg">
-              <div className="grid grid-cols-3 gap-2 w-full h-full place-items-center">
-                {centerCard.map((sym, i) => (
-                  <div
-                    key={i}
-                    className={`text-3xl cursor-default ${selectedWrong === 'highlight-match' && sym === matchSymbol ? 'animate-pulse scale-125' : ''}`}
-                  >
-                    {sym}
-                  </div>
-                ))}
-              </div>
+                <div className="grid grid-cols-3 gap-2 w-full h-full place-items-center">
+                  {centerCard.map((sym, i) => (
+                    <div
+                      key={i}
+                      className={`cursor-default ${selectedWrong === 'highlight-match' && sym === matchSymbol ? 'animate-pulse scale-125' : ''}`}
+                      style={{ fontSize: `${centerMeta[i]?.size || 28}px`, transform: `rotate(${centerMeta[i]?.rot || 0}deg)` }}
+                    >
+                      {sym}
+                    </div>
+                  ))}
+                </div>
             </div>
           </div>
 
@@ -267,13 +356,14 @@ export default function IdenticalGameInner() {
                     key={i}
                     onClick={() => onSymbolClick(sym)}
                     disabled={!roundActive || selectedWrong !== null}
-                    className={`text-3xl cursor-pointer hover:scale-125 transition-transform rounded-lg p-2 ${
+                    className={`cursor-pointer transition-transform rounded-lg p-2 ${
                       selectedWrong === sym
                         ? 'animate-shake'
                         : selectedWrong === 'highlight-match' && sym === matchSymbol
                         ? 'animate-pulse scale-125'
                         : ''
                     } ${selectedWrong !== null ? 'opacity-50' : ''} hover:bg-green-100 dark:hover:bg-green-900/20`}
+                    style={{ fontSize: `${myMeta[i]?.size || 30}px`, transform: `rotate(${myMeta[i]?.rot || 0}deg)` }}
                   >
                     {sym}
                   </button>

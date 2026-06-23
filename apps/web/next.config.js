@@ -2,7 +2,7 @@
 /** Portfolio app: no server database; Netlify deploy from monorepo root (see netlify.toml). */
 const nextConfig = {
   reactCompiler: true,
-  
+  transpilePackages: ['three'],
   redirects() {
     return [
       {

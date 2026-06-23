@@ -1,0 +1,317 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); background: transparent; }
+  .game-root { padding: 1rem; max-width: 680px; }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .header h2 { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+  .room-badge { font-size: 12px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 4px 10px; color: var(--color-text-secondary); }
+  .players-row { display: flex; gap: 8px; margin-bottom: 1rem; }
+  .player-chip { display: flex; align-items: center; gap: 6px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 999px; padding: 4px 12px; font-size: 13px; color: var(--color-text-primary); }
+  .player-chip.active { border-color: #1D9E75; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; }
+  .dot.online { background: #1D9E75; }
+  .score { font-weight: 500; color: var(--color-text-secondary); font-size: 12px; margin-left: 2px; }
+  .center-label { text-align: center; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .center-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 50%; width: 180px; height: 180px; margin: 0 auto 1rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px; padding: 16px; position: relative; overflow: hidden; }
+  .card-symbols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; height: 100%; place-items: center; }
+  .sym { font-size: 28px; cursor: default; transition: transform 0.15s; user-select: none; }
+  .sym:hover { transform: scale(1.2); }
+  .sym.matched { animation: pop 0.4s ease; }
+  @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.5)} 100%{transform:scale(1)} }
+  .divider { text-align: center; font-size: 11px; color: var(--color-text-tertiary); margin: 0.5rem 0; }
+  .my-card-wrap { text-align: center; }
+  .my-card { background: var(--color-background-primary); border: 2px solid #1D9E75; border-radius: 50%; width: 200px; height: 200px; margin: 0 auto 0.75rem; display: grid; grid-template-columns: repeat(3, 1fr); place-items: center; padding: 18px; gap: 6px; position: relative; }
+  .my-sym { font-size: 30px; cursor: pointer; transition: transform 0.15s, filter 0.15s; border-radius: 8px; padding: 4px; }
+  .my-sym:hover { transform: scale(1.2); background: var(--color-background-secondary); }
+  .my-sym.wrong { animation: shake 0.3s; }
+  @keyframes shake { 0%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} 100%{transform:translateX(0)} }
+  .action-row { display: flex; gap: 8px; justify-content: center; margin-top: 0.5rem; }
+  .btn { padding: 8px 20px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); font-size: 14px; cursor: pointer; background: var(--color-background-primary); color: var(--color-text-primary); }
+  .btn:hover { background: var(--color-background-secondary); }
+  .btn.primary { background: #1D9E75; color: #fff; border-color: #1D9E75; }
+  .btn.primary:hover { background: #0F6E56; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1D9E75; color: #fff; padding: 8px 20px; border-radius: 999px; font-size: 14px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+  .status-bar { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 0.75rem; }
+  .timer { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .timer.urgent { color: #E24B4A; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+  .lobby { text-align: center; padding: 2rem 1rem; }
+  .lobby h3 { font-size: 18px; font-weight: 500; margin-bottom: 0.5rem; color: var(--color-text-primary); }
+  .lobby p { color: var(--color-text-secondary); font-size: 14px; margin-bottom: 1.5rem; }
+  .input-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 1rem; }
+  input[type=text] { padding: 8px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); font-size: 14px; background: var(--color-background-primary); color: var(--color-text-primary); width: 160px; }
+  .result-screen { text-align: center; padding: 2rem; }
+  .winner-text { font-size: 24px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 1rem; }
+  .scoreboard { list-style: none; margin: 0 auto 1.5rem; max-width: 200px; }
+  .scoreboard li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 14px; color: var(--color-text-primary); }
+  .hint-msg { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 0.5rem; min-height: 18px; text-align: center; }
+  .deck-count { font-size: 12px; color: var(--color-text-secondary); text-align: center; margin-bottom: 0.5rem; }
+</style>
+
+<div class="game-root">
+  <div id="lobbyScreen" class="screen active">
+    <div class="lobby">
+      <div style="font-size:48px;margin-bottom:1rem">🃏</div>
+      <h3>Identical Cards</h3>
+      <p>Race to find the matching symbol between two cards!</p>
+      <div class="input-row">
+        <input type="text" id="nameInput" placeholder="Your name" value="You" />
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button class="btn primary" onclick="startGame()">Play vs Bot</button>
+        <button class="btn" onclick="sendPrompt('How do I add real multiplayer to this Identical game with React Native + WebSockets?')">Add multiplayer ↗</button>
+      </div>
+      <p style="margin-top:1.5rem;font-size:12px;color:var(--color-text-tertiary)">Tap a symbol on your card that matches the center card</p>
+    </div>
+  </div>
+
+  <div id="gameScreen" class="screen">
+    <div class="header">
+      <div class="header" style="gap:8px">
+        <span style="font-size:18px;font-weight:500;color:var(--color-text-primary)">Identical</span>
+      </div>
+      <span class="room-badge">🏠 Room #4821</span>
+    </div>
+
+    <div class="players-row" id="playersRow"></div>
+
+    <div class="status-bar">
+      <span id="timerEl" class="timer">0.0s</span>
+    </div>
+
+    <div class="deck-count" id="deckCount"></div>
+
+    <div class="center-label">Center Card</div>
+    <div class="center-card" id="centerCard">
+      <div class="card-symbols" id="centerSymbols"></div>
+    </div>
+
+    <div class="divider">▼ your card ▼</div>
+
+    <div class="my-card-wrap">
+      <div class="my-card" id="myCard">
+        <div class="card-symbols" id="mySymbols"></div>
+      </div>
+      <div class="hint-msg" id="hintMsg"></div>
+    </div>
+  </div>
+
+  <div id="resultScreen" class="screen">
+    <div class="result-screen">
+      <div style="font-size:48px;margin-bottom:0.75rem" id="resultEmoji">🏆</div>
+      <div class="winner-text" id="winnerText"></div>
+      <ul class="scoreboard" id="scoreboard"></ul>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button class="btn primary" onclick="restartGame()">Play again</button>
+        <button class="btn" onclick="goLobby()">Lobby</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ALL_SYMBOLS = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐸','🐵','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦟','🦗','🕷','🦂','🐢','🦎','🐍','🦕','🐙','🦑','🦐','🦞','🦀','🐠','🐟','🐡','🐬','🦈','🐳','🐋','🐊','🦭'];
+
+let state = {
+  centerCard: [],
+  myCard: [],
+  botCard: [],
+  deck: [],
+  scores: { player: 0, bot: 0 },
+  matchSymbol: null,
+  roundStart: null,
+  timer: null,
+  round: 0,
+  maxRounds: 8,
+  playerName: 'You',
+  roundActive: false
+};
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function generateCard(forcedSymbol) {
+  const symbols = [...ALL_SYMBOLS];
+  shuffle(symbols);
+  const card = [forcedSymbol];
+  for (let s of symbols) {
+    if (s !== forcedSymbol && card.length < 8) card.push(s);
+  }
+  return shuffle(card);
+}
+
+function generateDeck(rounds) {
+  const deck = [];
+  for (let i = 0; i < rounds + 1; i++) {
+    const sym = ALL_SYMBOLS[Math.floor(Math.random() * ALL_SYMBOLS.length)];
+    deck.push(generateCard(sym));
+  }
+  return deck;
+}
+
+function startGame() {
+  const name = document.getElementById('nameInput').value.trim() || 'You';
+  state.playerName = name;
+  state.deck = generateDeck(state.maxRounds + 4);
+  state.scores = { player: 0, bot: 0 };
+  state.round = 0;
+  showScreen('gameScreen');
+  nextRound();
+}
+
+function nextRound() {
+  if (state.round >= state.maxRounds || state.deck.length < 3) {
+    endGame(); return;
+  }
+  state.roundActive = true;
+  state.centerCard = state.deck[state.round];
+  state.myCard = state.deck[state.round + 1];
+
+  const centerSet = new Set(state.centerCard);
+  const mySet = new Set(state.myCard);
+  state.matchSymbol = [...centerSet].find(s => mySet.has(s));
+
+  renderPlayers();
+  renderCard('centerSymbols', state.centerCard, false);
+  renderCard('mySymbols', state.myCard, true);
+  document.getElementById('hintMsg').textContent = '';
+  document.getElementById('deckCount').textContent = `Round ${state.round + 1} of ${state.maxRounds}`;
+
+  state.roundStart = Date.now();
+  clearInterval(state.timer);
+  state.timer = setInterval(updateTimer, 100);
+
+  scheduleBotMove();
+}
+
+function scheduleBotMove() {
+  const delay = 1500 + Math.random() * 3000;
+  state.botTimeout = setTimeout(() => {
+    if (!state.roundActive) return;
+    botWins();
+  }, delay);
+}
+
+function botWins() {
+  if (!state.roundActive) return;
+  state.roundActive = false;
+  clearTimeout(state.botTimeout);
+  clearInterval(state.timer);
+  state.scores.bot++;
+  state.round++;
+  showToast('🤖 Bot was faster!');
+  highlightMatch();
+  renderPlayers();
+  setTimeout(nextRound, 1400);
+}
+
+function onSymbolClick(sym) {
+  if (!state.roundActive) return;
+  if (sym === state.matchSymbol) {
+    state.roundActive = false;
+    clearTimeout(state.botTimeout);
+    clearInterval(state.timer);
+    state.scores.player++;
+    state.round++;
+    const elapsed = ((Date.now() - state.roundStart) / 1000).toFixed(1);
+    showToast(`✅ Correct! ${elapsed}s`);
+    highlightMatch();
+    renderPlayers();
+    document.getElementById('hintMsg').textContent = `✅ You got it in ${elapsed}s`;
+    setTimeout(nextRound, 1200);
+  } else {
+    document.getElementById('hintMsg').textContent = '❌ Not that one — keep looking!';
+    const syms = document.querySelectorAll('.my-sym');
+    syms.forEach(el => { if (el.dataset.sym === sym) { el.classList.add('wrong'); setTimeout(() => el.classList.remove('wrong'), 350); } });
+  }
+}
+
+function highlightMatch() {
+  document.querySelectorAll('.sym, .my-sym').forEach(el => {
+    if (el.dataset.sym === state.matchSymbol) el.classList.add('matched');
+  });
+  setTimeout(() => document.querySelectorAll('.matched').forEach(el => el.classList.remove('matched')), 600);
+}
+
+function renderCard(containerId, symbols, clickable) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  symbols.forEach(sym => {
+    const span = document.createElement('span');
+    span.textContent = sym;
+    span.dataset.sym = sym;
+    span.className = clickable ? 'my-sym' : 'sym';
+    span.style.fontSize = clickable ? '28px' : '26px';
+    if (clickable) span.onclick = () => onSymbolClick(sym);
+    el.appendChild(span);
+  });
+}
+
+function renderPlayers() {
+  const row = document.getElementById('playersRow');
+  row.innerHTML = `
+    <div class="player-chip active">
+      <span class="dot online"></span>
+      <span>${state.playerName}</span>
+      <span class="score">${state.scores.player} pts</span>
+    </div>
+    <div class="player-chip">
+      <span class="dot online"></span>
+      <span>🤖 Bot</span>
+      <span class="score">${state.scores.bot} pts</span>
+    </div>
+  `;
+}
+
+function updateTimer() {
+  const el = document.getElementById('timerEl');
+  const elapsed = (Date.now() - state.roundStart) / 1000;
+  el.textContent = elapsed.toFixed(1) + 's';
+  el.className = 'timer' + (elapsed > 3 ? ' urgent' : '');
+}
+
+function endGame() {
+  clearInterval(state.timer);
+  showScreen('resultScreen');
+  const won = state.scores.player >= state.scores.bot;
+  document.getElementById('resultEmoji').textContent = won ? '🏆' : '😅';
+  document.getElementById('winnerText').textContent = won
+    ? (state.scores.player === state.scores.bot ? "It's a tie!" : `${state.playerName} wins!`)
+    : 'Bot wins this time!';
+  const sb = document.getElementById('scoreboard');
+  sb.innerHTML = `
+    <li><span>${state.playerName}</span><span>${state.scores.player} cards</span></li>
+    <li><span>🤖 Bot</span><span>${state.scores.bot} cards</span></li>
+  `;
+}
+
+function restartGame() {
+  startGame();
+}
+
+function goLobby() {
+  showScreen('lobbyScreen');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1500);
+}
+</script>
