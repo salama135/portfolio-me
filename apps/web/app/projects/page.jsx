@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { withBase } from '../../lib/base-path.js';
 import Link from 'next/link';
 import { ContentEmptyState } from '../../components/content-empty-state.jsx';
 import { loadProjects } from '../../lib/content/load/projects.js';
@@ -39,7 +40,7 @@ export default async function ProjectsPage() {
                 {p.coverImage ? (
                   <div className="relative aspect-[16/10] w-full bg-apple-gray">
                     <Image
-                      src={p.coverImage}
+                      src={withBase(p.coverImage)}
                       alt={`${p.title} cover`}
                       fill
                       className="object-cover transition-transform duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:scale-[1.02]"

@@ -1,5 +1,6 @@
 'use client';
 
+import { withBase } from '../lib/base-path.js';
 import Image from 'next/image';
 import Script from 'next/script';
 import { useMemo, useState } from 'react';
@@ -112,7 +113,7 @@ export function AchievementsBoard({ achievements }) {
                 <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-apple-border-soft bg-apple-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
                   <div className="relative aspect-[4/3] w-full bg-apple-gray">
                     <Image
-                      src={a.certificateImage}
+                      src={withBase(a.certificateImage)}
                       alt={a.title}
                       fill
                       className="object-cover"

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { withBase } from '../../lib/base-path.js';
 import { loadInterests } from '../../lib/content/load/interests.js';
 
 export const metadata = {
@@ -24,7 +25,7 @@ export default async function InterestsPage() {
             {item.image ? (
               <div className="relative mb-5 aspect-[4/3] w-full overflow-hidden rounded-xl bg-apple-gray">
                 <Image
-                  src={item.image}
+                  src={withBase(item.image)}
                   alt={`${item.title} (interest photo)`}
                   fill
                   className="object-cover"
