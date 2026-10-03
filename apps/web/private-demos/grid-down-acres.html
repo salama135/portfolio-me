@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Grid Down Acres</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Karla:wght@400;600;800&display=swap">
+<style>
+:root{
+  --chalk:#fbf7ea; --ink:#1c2a23; --field:#2f6b46; --sun:#f0b429; --barn:#a8483a; --sky:#8fd3dc;
+  --card:var(--chalk); --text:var(--ink); --edge:var(--ink);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --card:#1c2a23; --text:#fbf7ea; --edge:#fbf7ea; }
+}
+:root[data-theme="dark"]{ --card:#1c2a23; --text:#fbf7ea; --edge:#fbf7ea; }
+*{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top,0px)}
+body{height:100%; margin:0; background:#8fd3dc; color:var(--text); overflow:hidden;
+  font-family:Karla,system-ui,-apple-system,Segoe UI,sans-serif; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none}
+#c{position:fixed; inset:0; width:100%; height:100%; display:block; touch-action:none; outline:none}
+#hud{position:fixed; inset:0; pointer-events:none;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) calc(env(safe-area-inset-right,0px) + 10px) calc(env(safe-area-inset-bottom,0px) + 10px) calc(env(safe-area-inset-left,0px) + 10px)}
+.card{background:var(--card); color:var(--text); border:2px solid var(--edge); border-radius:4px; box-shadow:3px 3px 0 var(--edge)}
+#jobs{position:absolute; left:calc(env(safe-area-inset-left,0px) + 10px); top:calc(env(safe-area-inset-top,0px) + 10px); width:min(62vw,270px); padding:8px 10px 9px; transform:rotate(-.6deg)}
+#jobs h2{font-family:"Alfa Slab One",Georgia,serif; font-weight:400; font-size:15px; margin:0 0 5px; letter-spacing:.02em}
+#joblist{list-style:none; margin:0; padding:0; font-size:12.5px; line-height:1.25}
+#joblist li{display:grid; grid-template-columns:16px 1fr; column-gap:6px; padding:3px 0; border-top:1px dashed color-mix(in srgb,var(--edge) 35%,transparent)}
+#joblist .bx{width:14px; height:14px; border:2px solid var(--edge); border-radius:2px; margin-top:1px; font-size:11px; line-height:10px; text-align:center; font-weight:800}
+#joblist .nm{font-weight:800}
+#joblist .pg{grid-column:2; opacity:.75; font-variant-numeric:tabular-nums}
+#joblist li.done .bx{background:var(--field); color:#fff; border-color:var(--field)}
+#joblist li.done .nm{text-decoration:line-through; text-decoration-thickness:2px}
+#endbtn{pointer-events:auto; margin-top:7px; width:100%; font:800 12px Karla,system-ui,sans-serif; padding:6px 8px; background:transparent; color:var(--text); border:2px solid var(--edge); border-radius:3px; cursor:pointer; touch-action:manipulation}
+#endbtn.arm{background:var(--barn); color:#fff; border-color:var(--barn)}
+#stat{position:absolute; right:calc(env(safe-area-inset-right,0px) + 10px); top:calc(env(safe-area-inset-top,0px) + 10px); padding:6px 10px 7px; text-align:right; min-width:96px; transform:rotate(.5deg)}
+#clock{font-family:"Alfa Slab One",Georgia,serif; font-size:20px; line-height:1; font-variant-numeric:tabular-nums}
+#batt,#carry{font-size:12px; font-weight:600; margin-top:3px}
+#batt.on{color:var(--field)} :root[data-theme="dark"] #batt.on{color:var(--sun)}
+#cross{position:absolute; left:50%; top:50%; width:8px; height:8px; margin:-4px 0 0 -4px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1.5px rgba(28,42,35,.7)}
+#cross.ok{background:var(--sun); transform:scale(1.5)}
+#prompt{position:absolute; left:50%; bottom:calc(env(safe-area-inset-bottom,0px) + 128px); transform:translateX(-50%); max-width:min(84vw,420px); text-align:center;
+  font-weight:800; font-size:14px; padding:7px 12px; background:var(--card); color:var(--text); border:2px solid var(--edge); border-radius:4px; box-shadow:3px 3px 0 var(--edge); opacity:0; transition:opacity .12s}
+#prompt.show{opacity:1}
+#prompt.no{font-weight:600; opacity:.88; box-shadow:none}
+#prompt kbd{font:800 12px Karla,sans-serif; background:var(--sun); color:#1c2a23; border-radius:3px; padding:1px 6px; margin-right:6px}
+#toast{position:absolute; left:50%; top:calc(env(safe-area-inset-top,0px) + 150px); transform:translate(-50%,-6px); width:min(88vw,430px); padding:9px 12px; font-size:13.5px; line-height:1.35;
+  background:#1c2a23; color:#fbf7ea; border-left:6px solid var(--sun); border-radius:3px; opacity:0; transition:opacity .25s, transform .25s}
+#toast.show{opacity:1; transform:translate(-50%,0)}
+#toast b{color:var(--sun)}
+#mini{position:absolute; left:50%; top:58%; transform:translateX(-50%); width:min(78vw,300px); display:none}
+#mini.show{display:block}
+#mini .lbl{font-weight:800; font-size:13px; text-align:center; margin-bottom:6px; color:#fff; text-shadow:0 1px 0 #1c2a23, 0 0 6px rgba(28,42,35,.8)}
+#mini .bar{position:relative; height:26px; background:#1c2a23; border:2px solid #fbf7ea; border-radius:4px; overflow:hidden}
+#mini .y{position:absolute; left:30%; width:40%; top:0; bottom:0; background:#b58a1e}
+#mini .g{position:absolute; left:43%; width:14%; top:0; bottom:0; background:#49a868}
+#mk{position:absolute; top:-2px; bottom:-2px; width:5px; margin-left:-2.5px; background:#fff; left:0}
+#verdict{position:absolute; left:50%; top:46%; transform:translate(-50%,-50%); font-family:"Alfa Slab One",Georgia,serif; font-size:22px; color:#fff; text-shadow:0 2px 0 #1c2a23, 0 0 10px rgba(28,42,35,.7); opacity:0; transition:opacity .2s; white-space:nowrap}
+#verdict.show{opacity:1}
+#stick{position:absolute; width:108px; height:108px; margin:-54px 0 0 -54px; border-radius:50%; border:2px solid rgba(255,255,255,.75); background:rgba(28,42,35,.22); display:none}
+#knob{position:absolute; left:50%; top:50%; width:44px; height:44px; margin:-22px 0 0 -22px; border-radius:50%; background:rgba(255,255,255,.85)}
+#act{pointer-events:auto; position:absolute; right:calc(env(safe-area-inset-right,0px) + 18px); bottom:calc(env(safe-area-inset-bottom,0px) + 26px); width:86px; height:86px; border-radius:50%;
+  font-family:"Alfa Slab One",Georgia,serif; font-size:17px; background:var(--sun); color:#1c2a23; border:3px solid #1c2a23; box-shadow:0 4px 0 #1c2a23; display:none; touch-action:none}
+#act:active{transform:translateY(3px); box-shadow:0 1px 0 #1c2a23}
+body.touch #act{display:block}
+.ov{position:fixed; inset:0; display:flex; align-items:center; justify-content:center; padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 16px); background:rgba(28,42,35,.55); overflow:auto}
+.ov.hidden{display:none}
+.sheet{width:min(100%,440px); max-height:100%; overflow:auto; background:var(--card); color:var(--text); border:3px solid var(--edge); border-radius:6px; box-shadow:6px 6px 0 var(--edge); padding:20px 20px 18px}
+.sheet h1{font-family:"Alfa Slab One",Georgia,serif; font-weight:400; font-size:34px; line-height:.98; margin:0 0 10px; letter-spacing:.01em}
+.sheet p{margin:0 0 10px; font-size:15px; line-height:1.45}
+.sheet .how{font-size:13.5px; border-top:2px solid var(--edge); padding-top:10px; margin-top:12px}
+.sheet .how div{margin-bottom:4px}
+.go{display:block; width:100%; margin-top:14px; padding:13px 14px; font-family:"Alfa Slab One",Georgia,serif; font-size:18px; background:var(--sun); color:#1c2a23; border:3px solid #1c2a23; border-radius:4px; box-shadow:0 4px 0 #1c2a23; cursor:pointer; touch-action:manipulation}
+.go:active{transform:translateY(3px); box-shadow:0 1px 0 #1c2a23}
+.go:focus-visible,#endbtn:focus-visible{outline:3px solid var(--sky); outline-offset:2px}
+#ledger h1{font-size:26px}
+table.led{width:100%; border-collapse:collapse; font-size:14px; font-variant-numeric:tabular-nums}
+table.led td{padding:3px 0; vertical-align:top}
+table.led td:last-child{text-align:right; white-space:nowrap; padding-left:10px; font-weight:600}
+table.led tr.sec td{font-weight:800; padding-top:9px; border-bottom:2px solid var(--edge)}
+table.led tr.tot td{font-weight:800; border-top:2px solid var(--edge); padding-top:6px; font-size:16px}
+table.led .neg{color:var(--barn)} :root[data-theme="dark"] table.led .neg{color:#f08a78}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) table.led .neg{color:#f08a78} :root:not([data-theme="light"]) #batt.on{color:var(--sun)} }
+.meter{height:16px; border:2px solid var(--edge); border-radius:3px; margin:6px 0 4px; overflow:hidden}
+.meter i{display:block; height:100%; background:var(--field); width:0}
+.small{font-size:13px; opacity:.8}
+</style>
+</head>
+<body>
+<canvas id="c" tabindex="0" aria-label="Farm view"></canvas>
+
+<div id="hud">
+  <div id="jobs" class="card">
+    <h2>Today's jobs</h2>
+    <ul id="joblist"></ul>
+    <button id="endbtn" type="button">Call it a day</button>
+  </div>
+  <div id="stat" class="card">
+    <div id="clock">7:00</div>
+    <div id="batt">No power</div>
+    <div id="carry"></div>
+  </div>
+  <div id="toast"></div>
+  <div id="cross"></div>
+  <div id="verdict"></div>
+  <div id="mini"><div class="lbl" id="minilbl"></div><div class="bar"><div class="y"></div><div class="g"></div><div id="mk"></div></div></div>
+  <div id="prompt"></div>
+  <div id="stick"><div id="knob"></div></div>
+  <button id="act" type="button">Use</button>
+</div>
+
+<div id="intro" class="ov">
+  <div class="sheet">
+    <h1>Grid Down Acres</h1>
+    <p>You sold the townhouse, bought a wrecked farmhouse at the end of the cul-de-sac, and told the power company to stop calling.</p>
+    <p>Day one. Four jobs, one pair of hands, and a farmhand called Jess who has opinions about your work.</p>
+    <div class="how">
+      <div><b>Phone:</b> drag the left side to walk, drag the right side to look, tap Use.</div>
+      <div><b>Keyboard:</b> WASD to walk, mouse to look, E or click to use, Q to end the day.</div>
+      <div>When a bar appears, stop the marker in the green. Sloppy work stays sloppy.</div>
+    </div>
+    <button class="go" id="startbtn" type="button">Start the day</button>
+  </div>
+</div>
+
+<div id="ledger" class="ov hidden">
+  <div class="sheet">
+    <h1 id="ledtitle">End of day one</h1>
+    <table class="led" id="ledtable"></table>
+    <p style="margin-top:14px;margin-bottom:0"><b>Self-sufficiency</b> <span id="sspct"></span></p>
+    <div class="meter"><i id="ssbar"></i></div>
+    <p class="small" id="ledline"></p>
+    <button class="go" id="againbtn" type="button">Start day one again</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var canvas=$('c');
+if(typeof THREE==='undefined'){ $('intro').querySelector('.sheet').innerHTML='<h1>Grid Down Acres</h1><p>The 3D library did not load. Check your connection and reload the page.</p>'; return; }
+var renderer;
+try{ renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true}); }
+catch(e){ $('intro').querySelector('.sheet').innerHTML='<h1>Grid Down Acres</h1><p>This browser could not start WebGL, so the farm cannot be drawn. Try another browser or device.</p>'; return; }
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+
+var scene=new THREE.Scene();
+scene.background=new THREE.Color(0x8fd3dc);
+scene.fog=new THREE.Fog(0x8fd3dc,70,190);
+var camera=new THREE.PerspectiveCamera(68,1,0.1,420);
+camera.rotation.order='YXZ';
+scene.add(camera);
+
+/* ---------- helpers ---------- */
+var seed=20261002;
+function rnd(){ seed|=0; seed=seed+0x6D2B79F5|0; var t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }
+function clamp(v,a,b){return v<a?a:v>b?b:v;}
+function lerp(a,b,t){return a+(b-a)*t;}
+function M(c,o){ var p={color:c}; if(o){ for(var k in o) p[k]=o[k]; } return new THREE.MeshLambertMaterial(p); }
+function flat(g){ var n=g.index?g.toNonIndexed():g; n.computeVertexNormals(); return n; }
+function add(mesh,x,y,z,parent,noShadow){ mesh.position.set(x,y,z); if(!noShadow){mesh.castShadow=true; mesh.receiveShadow=true;} (parent||scene).add(mesh); return mesh; }
+function box(w,h,d,mat,x,y,z,parent,noShadow){ return add(new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat),x,y,z,parent,noShadow); }
+function prism(w,h,d,mat){ var s=new THREE.Shape(); s.moveTo(-w/2,0); s.lineTo(w/2,0); s.lineTo(0,h); s.lineTo(-w/2,0);
+  var g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:false}); g.translate(0,0,-d/2); return new THREE.Mesh(g,mat); }
+
+var cols=[];
+function col(x0,z0,x1,z1){ var c={x0:x0,z0:z0,x1:x1,z1:z1,on:true}; cols.push(c); return c; }
+function resolve(p,r){
+  for(var i=0;i<cols.length;i++){ var c=cols[i]; if(!c.on) continue;
+    var nx=clamp(p.x,c.x0,c.x1), nz=clamp(p.z,c.z0,c.z1), dx=p.x-nx, dz=p.z-nz, d2=dx*dx+dz*dz;
+    if(d2>=r*r) continue;
+    if(d2>1e-8){ var d=Math.sqrt(d2); p.x=nx+dx/d*r; p.z=nz+dz/d*r; }
+    else { var a=p.x-c.x0, b=c.x1-p.x, e=p.z-c.z0, f=c.z1-p.z, m=Math.min(a,b,e,f);
+      if(m===a) p.x=c.x0-r; else if(m===b) p.x=c.x1+r; else if(m===e) p.z=c.z0-r; else p.z=c.z1+r; }
+  }
+}
+var items=[];
+var HM=new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false});
+function hit(mesh,it){ mesh.userData.it=it; items.push(mesh); return mesh; }
+function hbox(w,h,d,x,y,z,it,parent){ var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),HM); m.position.set(x,y,z); (parent||scene).add(m); return hit(m,it); }
+
+var C={dirt:0x8a6a48, wood:0xa9794d, woodNew:0xd9ad72, woodDark:0x6e4b2f, cream:0xf1e4c6, roof:0xc8623c, barn:0xa8483a, tin:0x9fb0b3,
+  panel:0x234a7a, frame:0xdfe5e8, leaf:0x3f8f5a, leaf2:0x5aa96b, wool:0xf7f2e8, face:0x3a302c, water:0x4f9aa0, glass:0x35505a, gravel:0xbfb096, metal:0x7d8a8c};
+var m={}; for(var key in C){ m[key]=M(C[key]); }
+
+/* ---------- lights and sky ---------- */
+var hemi=new THREE.HemisphereLight(0xdff3ff,0x7a8f5a,0.7); scene.add(hemi);
+var sun=new THREE.DirectionalLight(0xfff1d6,0.95); sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);
+var sc=sun.shadow.camera; sc.left=-48; sc.right=48; sc.top=48; sc.bottom=-48; sc.near=10; sc.far=220; sun.shadow.bias=-0.0006;
+scene.add(sun); scene.add(sun.target);
+var sunBall=new THREE.Mesh(new THREE.SphereGeometry(7,12,8),new THREE.MeshBasicMaterial({color:0xfff2b0,fog:false})); scene.add(sunBall);
+var clouds=[];
+(function(){ var cm=new THREE.MeshBasicMaterial({color:0xffffff,fog:false,transparent:true,opacity:0.9});
+  for(var i=0;i<7;i++){ var g=new THREE.Group(); var n=2+Math.floor(rnd()*3);
+    for(var j=0;j<n;j++){ var b=new THREE.Mesh(new THREE.BoxGeometry(10+rnd()*10,3+rnd()*2,6+rnd()*5),cm); b.position.set(j*7-n*3,rnd()*2,rnd()*4); g.add(b); }
+    g.position.set(-160+rnd()*320,55+rnd()*25,-140+rnd()*220); scene.add(g); clouds.push(g); } })();
+
+/* ---------- ground ---------- */
+(function(){
+  var g=new THREE.PlaneGeometry(360,360,72,72); g.rotateX(-Math.PI/2); g=g.toNonIndexed();
+  var pos=g.attributes.position, arr=new Float32Array(pos.count*3), c=new THREE.Color(), a=new THREE.Color(), b=new THREE.Color();
+  for(var i=0;i<pos.count;i+=3){
+    var x=(pos.getX(i)+pos.getX(i+1)+pos.getX(i+2))/3, z=(pos.getZ(i)+pos.getZ(i+1)+pos.getZ(i+2))/3;
+    if(z>46){ c.setHex(0x86c765); c.offsetHSL(0,0,(rnd()-.5)*0.015); }
+    else if(Math.abs(x)<38&&z>-32&&z<34){ a.setHex(0x86b565); b.setHex(0xb3b86c); c.copy(a).lerp(b,rnd()*0.8); }
+    else { a.setHex(0x6fa85c); b.setHex(0x8cc070); c.copy(a).lerp(b,rnd()); }
+    for(var k=0;k<3;k++){ arr[(i+k)*3]=c.r; arr[(i+k)*3+1]=c.g; arr[(i+k)*3+2]=c.b; }
+  }
+  g.setAttribute('color',new THREE.BufferAttribute(arr,3));
+  var gm=new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true})); gm.receiveShadow=true; scene.add(gm);
+})();
+box(4.2,0.06,31,m.gravel,0,0.03,22.5,null,true).receiveShadow=true;
+box(360,0.06,7,M(0x55595c),0,0.03,40.5,null,true).receiveShadow=true;
+for(var ri=-8;ri<=8;ri++){ box(3,0.07,0.25,M(0xe9e2c9),ri*10,0.035,40.5,null,true); }
+
+/* ---------- lot fence, trees, suburb ---------- */
+(function(){
+  var postG=new THREE.BoxGeometry(0.16,1.2,0.16), pts=[];
+  function run(x0,z0,x1,z1){ var L=Math.hypot(x1-x0,z1-z0), n=Math.round(L/4);
+    for(var i=0;i<=n;i++){ pts.push([lerp(x0,x1,i/n),lerp(z0,z1,i/n)]); }
+    [0.45,0.95].forEach(function(y){ var r=box(Math.abs(x1-x0)||0.07,0.09,Math.abs(z1-z0)||0.07,m.wood,(x0+x1)/2,y,(z0+z1)/2,null,true); r.castShadow=true; }); }
+  run(-38,-32,38,-32); run(-38,-32,-38,34); run(38,-32,38,34); run(-38,34,-3,34); run(3,34,38,34);
+  var im=new THREE.InstancedMesh(postG,m.woodDark,pts.length), d=new THREE.Object3D();
+  pts.forEach(function(p,i){ d.position.set(p[0],0.6,p[1]); d.updateMatrix(); im.setMatrixAt(i,d.matrix); });
+  im.castShadow=true; scene.add(im);
+
+  var tr=[[-31,-27],[-34,-9],[-32,15],[-29,29],[31,-28],[34,-5],[33,27],[-7,-29],[5,-30],[25,31],[-21,31],[-27,2],[28,-12],[-48,-20],[50,6],[-52,20],[46,-36],[-10,-48],[20,-50],[60,-20],[-60,-40]];
+  var tg=flat(new THREE.CylinderGeometry(0.22,0.34,2.4,6)), fg=flat(new THREE.IcosahedronGeometry(1.7,0));
+  tr.forEach(function(p){ var s=0.8+rnd()*0.7;
+    add(new THREE.Mesh(tg,m.woodDark),p[0],1.2*s,p[1]).scale.setScalar(s);
+    var f1=add(new THREE.Mesh(fg,rnd()<0.5?m.leaf:m.leaf2),p[0],3.2*s,p[1]); f1.scale.set(s,s*1.1,s); f1.rotation.y=rnd()*6;
+    var f2=add(new THREE.Mesh(fg,m.leaf2),p[0]+0.6*s,4.3*s,p[1]-0.3*s); f2.scale.setScalar(s*0.65); f2.rotation.y=rnd()*6;
+    if(Math.abs(p[0])<38&&p[1]>-32&&p[1]<34) col(p[0]-0.35,p[1]-0.35,p[0]+0.35,p[1]+0.35); });
+
+  // the neighbours: tidy, identical, still on the grid
+  var wallM=[M(0xcfc9bd),M(0xbfc6c9),M(0xd6cdb8)], roofM=M(0x5d6266);
+  for(var i=-3;i<=3;i++){ var x=i*24, z=56;
+    box(11,4,8,wallM[(i+3)%3],x,2,z);
+    var r=prism(12,2.4,9,roofM); add(r,x,4,z);
+    box(2.6,2.2,0.1,M(0xe8e8e8),x-2.5,1.1,51.95,null,true);
+    box(1.1,2,0.1,M(0x4b5a66),x+2.5,1,51.95,null,true); }
+  // utility poles on the street, with your service line cut
+  var poleM=M(0x5a4634);
+  for(var j=-3;j<=3;j++){ var px=j*30+12; add(new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.18,8,6),poleM),px,4,36); box(1.8,0.12,0.12,poleM,px,7.5,36,null,true); }
+  for(var w=-3;w<3;w++){ box(30,0.035,0.035,M(0x222222),w*30+27,7.45,36,null,true); }
+  var cut=box(0.04,3.2,0.04,M(0x222222),11.6,6.0,35.4,null,true); cut.rotation.x=0.25;
+})();
+
+/* ---------- farmhouse ---------- */
+var winMat=new THREE.MeshLambertMaterial({color:C.glass,emissive:0x000000});
+var bulbMat=new THREE.MeshBasicMaterial({color:0x6b6f66});
+(function(){
+  box(10,4.2,8,m.cream,-16,2.1,-18);
+  var r=prism(11.2,2.7,9.2,m.roof); add(r,-16,4.2,-18);
+  box(1.6,0.1,1.4,M(0x2a221e),-18.2,5.2,-16.6,null,true).rotation.z=-0.45; // hole in the roof
+  box(0.9,2.0,0.9,M(0x9b6b55),-13,5.6,-19.5);
+  box(1.25,2.3,0.12,m.woodDark,-16,1.15,-13.95,null,true);
+  [[-19.2,-13.95],[-12.8,-13.95]].forEach(function(p){ box(1.5,1.3,0.1,winMat,p[0],2.4,p[1],null,true); box(1.7,0.12,0.16,m.wood,p[0],1.7,p[1],null,true); });
+  var bw=box(1.5,0.18,0.14,m.wood,-12.8,2.5,-13.88,null,true); bw.rotation.z=0.5; // boarded window
+  var we=box(0.1,1.3,1.5,winMat,-10.95,2.6,-16,null,true);
+  box(5.4,0.22,2.4,m.wood,-16,0.11,-12.8);
+  [-18.5,-13.5].forEach(function(x){ box(0.16,2.5,0.16,m.woodDark,x,1.35,-11.75); });
+  var pr=box(5.8,0.14,2.8,m.roof,-16,2.7,-12.7); pr.rotation.x=0.12;
+  for(var i=0;i<6;i++){ var b=new THREE.Mesh(new THREE.SphereGeometry(0.07,6,5),bulbMat); b.position.set(-18.3+i*0.92,2.42-Math.sin(i/5*Math.PI)*0.18,-11.6); scene.add(b); }
+  // vines taking the west corner
+  for(var v=0;v<9;v++){ box(0.5+rnd()*0.7,0.5+rnd()*0.9,0.12,rnd()<0.5?m.leaf:m.leaf2,-20.6+rnd()*1.6,0.5+rnd()*3.2,-13.93,null,true); }
+  col(-21,-22,-11,-14);
+})();
+
+/* ---------- wind turbine ---------- */
+var turbine=new THREE.Group();
+(function(){
+  add(new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.16,9,6),m.frame),-25,4.5,-12);
+  box(0.3,0.3,0.6,m.frame,-25,9,-12);
+  turbine.position.set(-25,9,-11.65); scene.add(turbine);
+  for(var i=0;i<3;i++){ var g=new THREE.Group(); var b=new THREE.Mesh(new THREE.BoxGeometry(0.22,2.3,0.04),m.cream); b.position.y=1.15; b.castShadow=true; g.add(b); g.rotation.z=i*Math.PI*2/3; turbine.add(g); }
+})();
+
+/* ---------- jobs state ---------- */
+var J={
+  barn:{name:'Patch the barn wall',n:0,max:8,qs:[],done:false,q:0},
+  solar:{name:'Go solar',n:0,max:4,qs:[],done:false,q:0},
+  plot:{name:'Plant the veg plot',n:0,max:12,qs:[],done:false,q:0},
+  sheep:{name:'Round up the sheep',n:0,max:5,qs:[],done:false,q:0,t0:null}
+};
+var carry={type:null,n:0}, water=0, CAN=6, gateClosed=false;
+var started=false, over=false, clock=0, DAYLEN=540, batt=0;
+function avg(a){ if(!a.length) return 1; var s=0; a.forEach(function(v){s+=v;}); return s/a.length; }
+function grade(q){ return q>=0.9?'A':q>=0.75?'B':q>=0.55?'C':'D'; }
+
+/* ---------- barn + wall repair ---------- */
+(function(){
+  box(12,5,9,m.barn,16,2.5,-16);
+  var r=prism(13.2,3.3,10.2,m.tin); add(r,16,5,-16);
+  box(3.6,3.7,0.12,m.woodDark,18.6,1.85,-11.44,null,true);
+  var x1=box(0.16,4.6,0.06,m.cream,18.6,1.85,-11.36,null,true); x1.rotation.z=0.75;
+  var x2=box(0.16,4.6,0.06,m.cream,18.6,1.85,-11.36,null,true); x2.rotation.z=-0.75;
+  box(1.2,1.2,0.1,M(0x2a1c18),16,4.4,-11.45,null,true);
+  box(3.4,3.1,0.06,M(0x17110f),12.64,1.6,-11.46,null,true); // the hole
+  var sp=box(0.36,1.5,0.07,m.woodDark,11.0,0.8,-11.4,null,true); sp.rotation.z=0.12;
+  var sp2=box(0.36,1.1,0.07,m.woodDark,14.5,2.4,-11.4,null,true); sp2.rotation.z=-0.2;
+  col(10,-20.5,22,-11.5);
+
+  function slot(i){
+    var x=11.2+i*0.41, placed=false;
+    hbox(0.41,3.0,0.5,x,1.6,-11.3,{
+      look:function(){ if(placed) return null;
+        if(carry.type==='plank') return {t:'Nail a plank over the gap',ok:true,tool:'hammer'};
+        if(carry.type) return {t:'Your hands are full',ok:false};
+        return {t:'This gap needs a plank. The pile is behind you',ok:false}; },
+      act:function(){
+        startMini('Hit the nail straight',1.15+J.barn.n*0.09,function(d){
+          var q=qOf(d); placed=true; carry.n--; if(carry.n<=0){carry.type=null;carry.n=0;}
+          var p=box(0.38,3.0,0.08,m.woodNew,x,1.6+d*0.5,-11.38); p.rotation.z=d*0.42;
+          box(0.05,0.05,0.03,m.metal,0,1.2,0.05,p,true); box(0.05,0.05,0.03,m.metal,0,-1.2,0.05,p,true);
+          J.barn.qs.push(q); J.barn.n++; sfx('thunk'); verdict(q,['Dead straight','It will hold','Wonky','Jess winced']);
+          if(J.barn.n>=8) finish('barn',avg(J.barn.qs),12.6,-9.5);
+          renderJobs(); });
+      }});
+  }
+  for(var i=0;i<8;i++) slot(i);
+
+  for(var k=0;k<5;k++){ var pl=box(3,0.08,0.38,m.woodNew,13+(k%2)*0.1,0.12+k*0.09,-7.5+(k%3-1)*0.06); pl.rotation.y=(k%2?1:-1)*0.03; }
+  box(0.3,0.12,1.1,m.woodDark,12,0.04,-7.5); box(0.3,0.12,1.1,m.woodDark,14,0.04,-7.5);
+  col(11.4,-8.1,14.6,-6.9);
+  hbox(3.2,0.9,1.2,13,0.45,-7.5,{
+    look:function(){ if(J.barn.done) return null;
+      if(carry.type==='plank') return {t:'Put the planks back',ok:true};
+      if(carry.type) return {t:'Your hands are full',ok:false};
+      return {t:'Pick up planks',ok:true}; },
+    act:function(){ if(carry.type==='plank'){carry.type=null;carry.n=0;} else {carry.type='plank';carry.n=Math.min(4,8-J.barn.n);} sfx('pick'); renderJobs(); }});
+})();
+
+/* ---------- solar ---------- */
+var led=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,6),new THREE.MeshBasicMaterial({color:0x7a1f1f}));
+var lever;
+(function(){
+  // pallet of panels
+  box(1.9,0.14,1.4,m.wood,-4.7,0.07,-9);
+  var stack=[];
+  for(var i=0;i<4;i++){ var g=panelMesh(); g.position.set(-4.7,0.2+i*0.09,-9); g.rotation.y=(i%2?1:-1)*0.04; scene.add(g); stack.push(g); }
+  col(-5.65,-9.7,-3.75,-8.3);
+  var taken=0;
+  hbox(2.0,1.0,1.5,-4.7,0.5,-9,{
+    look:function(){ if(carry.type==='panel') return {t:'Put the panel back',ok:true};
+      if(taken>=4) return null;
+      if(carry.type) return {t:'Your hands are full',ok:false};
+      return {t:'Pick up a solar panel',ok:true}; },
+    act:function(){ if(carry.type==='panel'){ carry.type=null; carry.n=0; taken--; stack[taken].visible=true; }
+      else { carry.type='panel'; carry.n=1; stack[taken].visible=false; taken++; } sfx('pick'); renderJobs(); }});
+
+  // rack
+  var rack=new THREE.Group(); rack.position.set(-4.7,0,-18); scene.add(rack);
+  [-3.4,-1.15,1.15,3.4].forEach(function(x){ box(0.1,0.62,0.1,m.metal,x,0.31,0.5,rack); box(0.1,1.3,0.1,m.metal,x,0.65,-0.5,rack); });
+  var tilt=new THREE.Group(); tilt.position.set(0,0.98,0); tilt.rotation.x=0.6; rack.add(tilt);
+  box(7.3,0.07,0.07,m.metal,0,0,0.42,tilt); box(7.3,0.07,0.07,m.metal,0,0,-0.42,tilt);
+  col(-8.5,-18.7,-0.9,-17.3);
+  var ghostM=new THREE.MeshBasicMaterial({color:0xf0b429,transparent:true,opacity:0.22,depthWrite:false});
+  function mount(i){
+    var lx=-2.7+i*1.8, placed=false;
+    var ghost=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.04,1.0),ghostM); ghost.position.set(lx,0.07,0); tilt.add(ghost);
+    hbox(1.7,0.4,1.1,lx,0.12,0,{
+      look:function(){ if(placed) return null;
+        if(carry.type==='panel') return {t:'Mount the panel',ok:true,tool:'panel'};
+        if(carry.type) return {t:'Your hands are full',ok:false};
+        return {t:'Empty mount. Panels are on the pallet by the drive',ok:false}; },
+      act:function(){
+        startMini('Line the panel up with the sun',1.3+J.solar.n*0.14,function(d){
+          var q=qOf(d); placed=true; carry.type=null; carry.n=0; ghost.visible=false;
+          var p=panelMesh(); p.position.set(lx,0.08,0); p.rotation.z=d*0.5; p.rotation.y=d*0.35; tilt.add(p);
+          J.solar.qs.push(q); J.solar.n++; sfx('thunk'); verdict(q,['Square to the sun','Close enough','Crooked','Aimed at the neighbours']);
+          if(J.solar.n===4) say('<b>Jess:</b> Four panels up. Now go and flip the main switch on the house wall.');
+          renderJobs(); });
+      }},tilt);
+  }
+  for(var k=0;k<4;k++) mount(k);
+
+  // inverter and battery on the east wall of the house
+  box(0.24,0.9,0.7,m.frame,-10.86,1.5,-19.4);
+  lever=box(0.08,0.3,0.08,M(0xc0392b),-10.7,1.4,-19.25,null,true);
+  led.position.set(-10.72,1.8,-19.6); scene.add(led);
+  box(0.5,1.15,1.3,M(0x3d5a4a),-10.72,0.58,-20.9);
+  box(0.06,0.06,3.0,M(0x222222),-10.8,1.0,-18.2,null,true);
+  hbox(0.7,1.4,1.2,-10.7,1.4,-19.4,{
+    look:function(){ if(J.solar.done) return null;
+      if(J.solar.n<4) return {t:'Main switch. Needs 4 panels on the rack, you have '+J.solar.n,ok:false};
+      return {t:'Flip the main switch',ok:true}; },
+    act:function(){ lever.position.y=1.62; led.material.color.setHex(0x4dff88);
+      winMat.emissive.setHex(0xffc35a); winMat.color.setHex(0xffe2a0); bulbMat.color.setHex(0xffd36b);
+      finish('solar',avg(J.solar.qs),-6,-15); }});
+})();
+function panelMesh(){ var g=new THREE.Group();
+  var f=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.05,1.0),m.frame); f.castShadow=true; f.receiveShadow=true; g.add(f);
+  var c=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.02,0.9),m.panel); c.position.y=0.03; g.add(c);
+  for(var i=1;i<4;i++){ var l=new THREE.Mesh(new THREE.BoxGeometry(0.02,0.022,0.9),m.frame); l.position.set(-0.75+i*0.375,0.031,0); g.add(l); }
+  return g; }
+
+/* ---------- veg plot + rain tank ---------- */
+(function(){
+  var cx=-12, cz=8, S=1.3;
+  box(5.5,0.2,0.14,m.wood,cx,0.1,cz-2.02); box(5.5,0.2,0.14,m.wood,cx,0.1,cz+2.02);
+  box(0.14,0.2,4.18,m.wood,cx-2.68,0.1,cz); box(0.14,0.2,4.18,m.wood,cx+2.68,0.1,cz);
+  var weedG=flat(new THREE.ConeGeometry(0.1,0.34,4)), sproutG=flat(new THREE.ConeGeometry(0.09,0.3,5));
+  var weedM=M(0xa7a24f), seedM=M(0xe7d9a8), ridgeM=M(0x523623);
+  function tile(i,j){
+    var x=cx+(i-1.5)*S, z=cz+(j-1)*S, st=0;
+    var mat=M(0x9c8b5c), base=box(1.22,0.14,1.22,mat,x,0.07,z,null,true); base.receiveShadow=true;
+    var weeds=new THREE.Group(), ridges=new THREE.Group(), seeds=new THREE.Group(), sprouts=new THREE.Group();
+    [weeds,ridges,seeds,sprouts].forEach(function(g){ g.position.set(x,0.14,z); scene.add(g); });
+    for(var a=0;a<3;a++){ var w=new THREE.Mesh(weedG,weedM); w.position.set((rnd()-.5)*0.8,0.15,(rnd()-.5)*0.8); weeds.add(w); }
+    for(var b=-1;b<=1;b++){ var r=new THREE.Mesh(new THREE.BoxGeometry(1.1,0.07,0.16),ridgeM); r.position.set(0,0.02,b*0.38); ridges.add(r);
+      for(var c2=-1;c2<=1;c2++){ var s=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.04,0.06),seedM); s.position.set(c2*0.34,0.07,b*0.38); seeds.add(s);
+        var p=new THREE.Mesh(sproutG,m.leaf2); p.position.set(c2*0.34,0.2,b*0.38); sprouts.add(p); } }
+    ridges.visible=seeds.visible=sprouts.visible=false;
+    hit(base,{
+      look:function(){ if(st>=3) return null;
+        if(carry.type) return {t:'Your hands are full',ok:false};
+        if(st===0) return {t:'Till the soil',ok:true,tool:'hoe'};
+        if(st===1) return {t:'Sow seeds',ok:true,tool:'seeds'};
+        if(water>0) return {t:'Water the seeds',ok:true,tool:'can'};
+        return {t:'The watering can is empty. Fill it at the rain tank',ok:false,tool:'can'}; },
+      act:function(){
+        if(st===0){ st=1; weeds.visible=false; ridges.visible=true; mat.color.setHex(0x6b4a32); sfx('dig'); }
+        else if(st===1){ st=2; seeds.visible=true; sfx('pick'); }
+        else { st=3; water--; seeds.visible=false; sprouts.visible=true; mat.color.setHex(0x4a3222); sfx('water');
+          J.plot.n++; if(J.plot.n>=12) finish('plot',1,cx,cz); }
+        renderJobs(); }});
+  }
+  for(var i=0;i<4;i++) for(var j=0;j<3;j++) tile(i,j);
+
+  // rain tank with a catch roof
+  add(new THREE.Mesh(flat(new THREE.CylinderGeometry(1.0,1.0,2.1,10)),m.water),-18.5,1.05,8);
+  add(new THREE.Mesh(flat(new THREE.CylinderGeometry(1.06,1.06,0.12,10)),m.metal),-18.5,2.16,8);
+  box(0.12,0.12,0.3,m.metal,-17.45,0.5,8);
+  [-19.6,-17.4].forEach(function(x){ box(0.1,3.3,0.1,m.woodDark,x,1.65,6.7); box(0.1,2.7,0.1,m.woodDark,x,1.35,9.3); });
+  var cr=box(2.8,0.07,3.2,m.tin,-18.5,3.05,8); cr.rotation.x=0.2;
+  col(-19.5,7,-17.5,9);
+  hit(add(new THREE.Mesh(new THREE.CylinderGeometry(1.15,1.15,2.2,8),HM),-18.5,1.1,8,null,true),{
+    look:function(){ if(J.plot.done) return null;
+      if(carry.type) return {t:'Your hands are full',ok:false};
+      if(water>=CAN) return {t:'The watering can is full',ok:false,tool:'can'};
+      return {t:'Fill the watering can',ok:true,tool:'can'}; },
+    act:function(){ water=CAN; sfx('water'); renderJobs(); }});
+})();
+
+/* ---------- sheep pen + sheep ---------- */
+var PEN={x0:9,x1:19,z0:6,z1:14};
+function inPen(x,z){ return x>PEN.x0+0.2&&x<PEN.x1-0.2&&z>PEN.z0+0.2&&z<PEN.z1-0.15; }
+var gate=new THREE.Group(), gateCol, gateTarget=-1.75;
+var sheep=[];
+(function(){
+  function fence(x0,z0,x1,z1){ var L=Math.hypot(x1-x0,z1-z0), n=Math.max(1,Math.round(L/2));
+    for(var i=0;i<=n;i++){ box(0.14,1.15,0.14,m.woodDark,lerp(x0,x1,i/n),0.58,lerp(z0,z1,i/n)); }
+    [0.35,0.7,1.02].forEach(function(y){ box(Math.abs(x1-x0)||0.07,0.09,Math.abs(z1-z0)||0.07,m.wood,(x0+x1)/2,y,(z0+z1)/2); }); }
+  fence(9,6,19,6); fence(9,6,9,14); fence(19,6,19,14); fence(9,14,12.5,14); fence(15.5,14,19,14);
+  col(9,5.85,19,6.15); col(8.85,6,9.15,14); col(18.85,6,19.15,14); col(9,13.85,12.5,14.15); col(15.5,13.85,19,14.15);
+  gateCol=col(12.5,13.85,15.5,14.15); gateCol.on=false;
+  gate.position.set(12.5,0,14); gate.rotation.y=gateTarget; scene.add(gate);
+  [0.35,0.7,1.02].forEach(function(y){ box(3,0.09,0.07,m.woodNew,1.5,y,0,gate); });
+  var br=box(3.1,0.08,0.06,m.woodNew,1.5,0.68,0,gate); br.rotation.z=0.22;
+  box(0.1,1.05,0.1,m.woodNew,2.95,0.58,0,gate);
+  hbox(3,1.4,0.5,1.5,0.75,0,{
+    look:function(){ if(J.sheep.done) return null;
+      return gateClosed?{t:'Open the gate',ok:true}:{t:'Shut the gate',ok:true}; },
+    act:function(){ gateClosed=!gateClosed; gateCol.on=gateClosed; gateTarget=gateClosed?0:-1.75; sfx('thunk');
+      if(gateClosed){ var n=countIn();
+        if(n>=5){ var el=clock-(J.sheep.t0===null?clock:J.sheep.t0); finish('sheep',clamp(1-(el-75)/165*0.65,0.35,1),14,16.5); }
+        else say('<b>Jess:</b> You have shut the gate with '+(5-n)+' still out here. Bold.'); }
+      renderJobs(); }},gate);
+  box(2.2,0.35,0.6,m.wood,14,0.3,7.2); box(2.0,0.1,0.4,M(0xd8c56a),14,0.46,7.2,null,true); // trough
+
+  var bodyG=flat(new THREE.IcosahedronGeometry(0.55,0));
+  [[27,3],[25,21],[5,23],[31,14],[16,27]].forEach(function(p,i){
+    var g=new THREE.Group();
+    var b=new THREE.Mesh(bodyG,m.wool); b.scale.set(1,0.82,1.35); b.position.y=0.78; b.castShadow=true; g.add(b);
+    var h=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.32,0.38),m.face); h.position.set(0,0.98,0.74); h.castShadow=true; g.add(h);
+    var t=new THREE.Mesh(new THREE.BoxGeometry(0.4,0.16,0.3),m.wool); t.position.set(0,1.16,0.62); g.add(t);
+    [[-0.25,0.35],[0.25,0.35],[-0.25,-0.35],[0.25,-0.35]].forEach(function(l){ var leg=new THREE.Mesh(new THREE.BoxGeometry(0.11,0.5,0.11),m.face); leg.position.set(l[0],0.25,l[1]); g.add(leg); });
+    scene.add(g);
+    sheep.push({x:p[0],z:p[1],h:rnd()*6,wt:rnd()*3,wa:rnd()*6,ws:0,side:i%2?1:-1,ph:rnd()*6,baa:0,mesh:g});
+  });
+})();
+function countIn(){ var n=0; sheep.forEach(function(s){ if(inPen(s.x,s.z)) n++; }); return n; }
+
+/* ---------- grass tufts and blooms ---------- */
+(function(){
+  var g=flat(new THREE.ConeGeometry(0.12,0.4,4)), n=520, im=new THREE.InstancedMesh(g,M(0x6f9f4e),n), d=new THREE.Object3D();
+  for(var i=0;i<n;i++){ var x=-37+rnd()*74, z=-31+rnd()*64; if(Math.abs(x)<2.4&&z>6) x+=5;
+    d.position.set(x,0.18,z); d.scale.setScalar(0.6+rnd()*0.9); d.rotation.y=rnd()*6; d.updateMatrix(); im.setMatrixAt(i,d.matrix); }
+  scene.add(im);
+})();
+var blooms=[], stemG=new THREE.BoxGeometry(0.03,0.34,0.03), headG=flat(new THREE.IcosahedronGeometry(0.12,0));
+var headM=[0xf06ea9,0xf0b429,0xffffff,0xf58a3c,0x9b7be0].map(function(c){return M(c);});
+function bloom(cx,cz,r,n){
+  for(var i=0;i<n;i++){ var a=Math.random()*6.283, d=0.6+Math.random()*r, x=cx+Math.cos(a)*d, z=cz+Math.sin(a)*d;
+    var g=new THREE.Group(); var s=new THREE.Mesh(stemG,m.leaf); s.position.y=0.17; g.add(s);
+    var h=new THREE.Mesh(headG,headM[i%headM.length]); h.position.y=0.4; g.add(h);
+    g.position.set(x,0,z); g.scale.setScalar(0.001); scene.add(g); blooms.push({g:g,t:-Math.random()*1.2,s:0.8+Math.random()*0.8}); }
+}
+
+/* ---------- player ---------- */
+var P={x:0,z:11,yaw:0,pitch:-0.05};
+var keys={}, stickV={x:0,y:0}, walkT=0, swing=0, cool=0;
+var hand=new THREE.Group(); camera.add(hand);
+var tools={};
+(function(){
+  function T(name,build){ var g=new THREE.Group(); build(g); g.visible=false; hand.add(g); tools[name]=g; }
+  function b(w,h,d,mat,x,y,z,g){ var q=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat); q.position.set(x,y,z); g.add(q); return q; }
+  T('hammer',function(g){ b(0.035,0.36,0.035,m.wood,0,0.05,0,g); b(0.07,0.07,0.17,m.metal,0,0.25,-0.02,g); g.rotation.x=-0.5; });
+  T('hoe',function(g){ b(0.035,0.8,0.035,m.wood,0,0.1,0,g); b(0.16,0.02,0.13,m.metal,0,0.5,-0.07,g); g.rotation.x=-0.9; });
+  T('seeds',function(g){ b(0.17,0.2,0.1,M(0xcdb68a),0,0.05,0,g); b(0.12,0.05,0.07,m.leaf,0,0.05,0.03,g); });
+  T('can',function(g){ var c=new THREE.Mesh(flat(new THREE.CylinderGeometry(0.09,0.09,0.17,8)),m.water); c.position.y=0.05; g.add(c); var s=b(0.03,0.03,0.2,m.water,0,0.1,-0.16,g); s.rotation.x=0.5; b(0.02,0.12,0.14,m.metal,0,0.14,0.06,g); });
+  T('plank',function(g){ b(0.15,0.035,0.95,m.woodNew,-0.05,0,-0.1,g); g.rotation.y=0.25; });
+  T('panel',function(g){ b(0.62,0.03,0.42,m.frame,-0.22,-0.02,-0.05,g); b(0.56,0.02,0.36,m.panel,-0.22,0,-0.05,g); g.rotation.x=0.5; });
+})();
+function setTool(name){ for(var k in tools) tools[k].visible=(k===name); }
+
+/* ---------- HUD ---------- */
+var elPrompt=$('prompt'), elCross=$('cross'), elToast=$('toast'), elMini=$('mini'), elMk=$('mk'), elVerdict=$('verdict');
+var isTouch=false;
+try{ isTouch=!!(window.matchMedia&&window.matchMedia('(pointer:coarse)').matches); }catch(e){}
+if(isTouch) document.body.classList.add('touch');
+function renderJobs(){
+  var rows=[['barn',J.barn.n+' of 8 planks'],
+    ['solar',J.solar.n<4?J.solar.n+' of 4 panels':'Flip the main switch'],
+    ['plot',J.plot.n+' of 12 squares'],
+    ['sheep',J.sheep.n+' of 5 in the pen'+(J.sheep.n===5&&!gateClosed?', shut the gate':'')]];
+  $('joblist').innerHTML=rows.map(function(r){ var j=J[r[0]];
+    return '<li class="'+(j.done?'done':'')+'"><span class="bx">'+(j.done?'✓':'')+'</span><span class="nm">'+j.name+'</span><span class="pg">'+(j.done?'Grade '+grade(j.q):r[1])+'</span></li>'; }).join('');
+  var c='';
+  if(carry.type==='plank') c='Carrying '+carry.n+(carry.n===1?' plank':' planks');
+  else if(carry.type==='panel') c='Carrying a solar panel';
+  else if(!J.plot.done&&(water>0||J.plot.n>0)) c='Watering can '+water+' of '+CAN;
+  $('carry').textContent=c;
+}
+var toastQ=[], toastT=0;
+function say(html){ toastQ.push(html); }
+function tickToast(dt){ if(toastT>0){ toastT-=dt; if(toastT<=0) elToast.classList.remove('show'); return; }
+  if(toastQ.length){ elToast.innerHTML=toastQ.shift(); elToast.classList.add('show'); toastT=4.6; } }
+var verdictT=0;
+function verdict(q,words){ var w=q>=0.9?words[0]:q>=0.7?words[1]:q>=0.45?words[2]:words[3];
+  elVerdict.textContent=w; elVerdict.classList.add('show'); verdictT=1.1; sfx(q>=0.7?'good':'bad'); }
+
+var LINES={
+  barn:[['<b>Jess:</b> Huh. That wall is actually straight. Who helped you?'],['<b>Jess:</b> It will keep the rain out. Most of the rain.'],['<b>Jess:</b> I have seen straighter boards on a shipwreck.']],
+  solar:[['<b>Jess:</b> Lights are on and nobody sent a bill. Welcome off the grid.'],['<b>Jess:</b> Power is power. The battery will forgive the angles.'],['<b>Jess:</b> Half your panels are aimed at next door\'s trampoline, but the lights work.']],
+  plot:[['<b>Jess:</b> Twelve squares of veg. Only a few thousand more and you break even.']],
+  sheep:[['<b>Jess:</b> Fastest I have seen a beginner pen sheep. They must feel sorry for you.'],['<b>Jess:</b> All five in. Nobody tell them the gate latch is plastic.'],['<b>Jess:</b> That took so long they got bored and walked in on their own.']]
+};
+function finish(k,q,x,z){
+  var j=J[k]; if(j.done) return; j.done=true; j.q=q; sfx('done');
+  bloom(x,z,4.5,26);
+  var L=LINES[k], idx=L.length===1?0:(q>=0.85?0:q>=0.6?1:2); say(L[Math.min(idx,L.length-1)][0]);
+  renderJobs();
+  if(J.barn.done&&J.solar.done&&J.plot.done&&J.sheep.done){ say('<b>Jess:</b> That is everything on the list. Go and look at the numbers.'); setTimeout(function(){ endDay(); },6500); }
+}
+
+/* ---------- timing bar ---------- */
+var mini={on:false,p:0,dir:1,speed:1,cb:null};
+function qOf(d){ var a=Math.abs(d); return a<0.07?1:Math.max(0.15,1-(a-0.07)/0.43*0.9); }
+function startMini(label,speed,cb){ mini.on=true; mini.p=Math.random()*0.25; mini.dir=1; mini.speed=speed; mini.cb=cb;
+  $('minilbl').textContent=label+(isTouch?'. Tap Use':'. Press E'); elMini.classList.add('show'); }
+function stopMini(){ if(!mini.on) return; mini.on=false; elMini.classList.remove('show'); swing=1; var cb=mini.cb; mini.cb=null; cb(mini.p-0.5); }
+
+/* ---------- interaction ---------- */
+var ray=new THREE.Raycaster(); ray.far=4.3;
+var cur=null, curLook=null, ZERO=new THREE.Vector2(0,0);
+function scan(){
+  cur=null; curLook=null;
+  camera.updateMatrixWorld();
+  ray.setFromCamera(ZERO,camera);
+  var hs=ray.intersectObjects(items,false);
+  for(var i=0;i<hs.length;i++){ var it=hs[i].object.userData.it, l=it.look(); if(l){ cur=it; curLook=l; break; } }
+  if(mini.on){ elPrompt.classList.remove('show'); elCross.classList.remove('ok'); return; }
+  if(curLook){ elPrompt.innerHTML=(curLook.ok&&!isTouch?'<kbd>E</kbd>':'')+curLook.t; elPrompt.className='show'+(curLook.ok?'':' no'); elCross.classList.toggle('ok',!!curLook.ok); }
+  else { elPrompt.classList.remove('show'); elCross.classList.remove('ok'); }
+  var tool=curLook&&curLook.tool?curLook.tool:(carry.type==='plank'?'plank':carry.type==='panel'?'panel':null);
+  if(carry.type==='panel') tool='panel';
+  setTool(tool);
+}
+function doAction(){
+  if(!started||over) return;
+  if(mini.on){ stopMini(); return; }
+  if(cool>0) return;
+  if(cur&&curLook&&curLook.ok){ cool=0.22; swing=1; cur.act(); }
+}
+
+/* ---------- sheep AI ---------- */
+function updateSheep(dt){
+  var inside=0;
+  for(var i=0;i<sheep.length;i++){ var s=sheep[i];
+    var dx=s.x-P.x, dz=s.z-P.z, d=Math.hypot(dx,dz)||0.001, isIn=inPen(s.x,s.z);
+    if(isIn) inside++;
+    var vx=0, vz=0, sp=0, calm=isIn&&gateClosed;
+    if(d<8&&!calm){
+      if(J.sheep.t0===null) J.sheep.t0=clock;
+      var k=1-d/8; vx=dx/d; vz=dz/d; sp=1.8+3.4*k;
+      if(d<2.2){ vx+=-dz/d*s.side*1.4; vz+=dx/d*s.side*1.4; }
+      if(!isIn&&!gateClosed&&s.z>13.6){ var gd=Math.hypot(s.x-14,s.z-14.6);
+        if(gd<11){ var tz=Math.abs(s.x-14)<1.2?11:15, ax=14-s.x, az=tz-s.z, al=Math.hypot(ax,az)||1, w=1.3*(1-gd/11)+0.5; vx+=ax/al*w; vz+=az/al*w; } }
+      s.wt=0; s.baa-=dt; if(s.baa<=0&&d<5){ s.baa=3+Math.random()*4; sfx('baa'); }
+    } else {
+      s.wt-=dt;
+      if(s.wt<=0){ s.wt=2+Math.random()*4; s.ws=Math.random()<0.45?0:0.6;
+        s.wa=isIn?Math.atan2(10-s.z,14-s.x)+(Math.random()-0.5)*2.2:Math.random()*6.283; }
+      vx=Math.cos(s.wa); vz=Math.sin(s.wa); sp=s.ws;
+    }
+    for(var j=0;j<sheep.length;j++){ if(j===i) continue; var o=sheep[j], ox=s.x-o.x, oz=s.z-o.z, od=Math.hypot(ox,oz);
+      if(od<1.3&&od>0.001){ vx+=ox/od*0.8; vz+=oz/od*0.8; if(sp<0.5) sp=0.5; } }
+    var l=Math.hypot(vx,vz);
+    if(l>0.001&&sp>0){ vx/=l; vz/=l; s.x+=vx*sp*dt; s.z+=vz*sp*dt;
+      var th=Math.atan2(vx,vz), df=th-s.h; while(df>Math.PI) df-=6.2832; while(df<-Math.PI) df+=6.2832; s.h+=df*Math.min(1,dt*8); s.ph+=dt*sp*4; }
+    s.x=clamp(s.x,-36,36); s.z=clamp(s.z,-30,32);
+    resolve(s,0.5);
+    s.mesh.position.set(s.x,sp>1?Math.abs(Math.sin(s.ph))*0.1:0,s.z); s.mesh.rotation.y=s.h;
+  }
+  if(inside!==J.sheep.n&&!J.sheep.done){ J.sheep.n=inside; renderJobs(); }
+}
+
+/* ---------- day, sun, battery ---------- */
+var skyDay=new THREE.Color(0x8fd3dc), skyWarm=new THREE.Color(0xf6c79b), skyTmp=new THREE.Color();
+function updateDay(dt){
+  var t=clamp(clock/DAYLEN,0,1), ang=Math.PI*(0.07+0.86*t), e=Math.sin(ang);
+  sun.position.set(Math.cos(ang)*80,e*70+6,38); sun.target.position.set(0,0,0);
+  sunBall.position.set(Math.cos(ang)*300,e*230+10,150);
+  var k=clamp((e-0.2)/0.5,0,1);
+  skyTmp.copy(skyWarm).lerp(skyDay,k); scene.background.copy(skyTmp); scene.fog.color.copy(skyTmp);
+  sun.intensity=0.55+0.5*k; hemi.intensity=0.55+0.2*k;
+  sun.color.setRGB(1,0.86+0.1*k,0.68+0.2*k);
+  var mins=Math.floor(7*60+t*12*60), hh=Math.floor(mins/60), mm=mins%60;
+  $('clock').textContent=hh+':'+(mm<10?'0':'')+mm;
+  if(J.solar.done){ batt=Math.min(100,batt+e*J.solar.q*dt*0.45); $('batt').textContent='Battery '+Math.floor(batt)+'%'; $('batt').className='on'; }
+  if(t>=1&&!over){ say('<b>Jess:</b> Sun is down. Tools down.'); endDay(); }
+}
+
+/* ---------- ledger ---------- */
+function money(v){ var s=Math.abs(v).toFixed(2); return (v<0?'-$':'$')+s; }
+function eff(k){ var j=J[k]; if(j.done) return j.q; var frac=j.n/j.max; return frac*avg(j.qs)*0.5; }
+function endDay(){
+  if(over) return; over=true;
+  try{ if(document.exitPointerLock) document.exitPointerLock(); }catch(e){}
+  mini.on=false; elMini.classList.remove('show'); elPrompt.classList.remove('show');
+  J.sheep.n=countIn();
+  var qb=eff('barn'), qs=eff('solar'), qp=eff('plot'), qh=eff('sheep');
+  var inc=[['Barn wall, patched',120*qb],['Electric bill you no longer get',85*qs],['Veg in the ground, projected',60*qp],['Wool, eventually',40*qh]];
+  var cost=[['Lumber',90],['Solar panel payment',95],['Seed and compost',22],['Sheep feed',35],['County permit: altering a barn',48],['HOA fine: visible vegetables',13.56]];
+  var ti=0, tc=0, h='<tr class="sec"><td>Earned</td><td></td></tr>';
+  inc.forEach(function(r){ ti+=r[1]; h+='<tr><td>'+r[0]+'</td><td>'+money(r[1])+'</td></tr>'; });
+  h+='<tr class="sec"><td>Spent</td><td></td></tr>';
+  cost.forEach(function(r){ tc+=r[1]; h+='<tr><td>'+r[0]+'</td><td class="neg">'+money(-r[1])+'</td></tr>'; });
+  var profit=Math.round((ti-tc)*100)/100;
+  h+='<tr class="tot"><td>'+(profit>=0?'Profit':'Loss')+' for the day</td><td class="'+(profit<0?'neg':'')+'">'+money(profit)+'</td></tr>';
+  $('ledtable').innerHTML=h;
+  var ss=Math.round(35*(J.solar.done?J.solar.q:0)+25*qp+15*qh+25*qb);
+  $('sspct').textContent=ss+'%'; $('ssbar').style.width=ss+'%';
+  var all=J.barn.done&&J.solar.done&&J.plot.done&&J.sheep.done;
+  $('ledtitle').textContent=all?'End of day one':'Day one, cut short';
+  $('ledline').textContent=profit>0?'A whole '+money(profit)+'. Jess says that is more than most first-timers manage, and that you should not spend it all at once.'
+    :(all?'You lost '+money(-profit)+' and made your own electricity doing it. Straighter planks and squarer panels would close the gap.'
+      :'You lost '+money(-profit)+'. Unfinished jobs only pay half for the part you did, so finish the list next time.');
+  $('ledger').classList.remove('hidden');
+}
+
+/* ---------- input ---------- */
+var locked=false, mouseDrag=null, tMove=null, tLook=null, elStick=$('stick'), elKnob=$('knob');
+function tryLock(){ try{ var p=canvas.requestPointerLock&&canvas.requestPointerLock(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
+document.addEventListener('pointerlockchange',function(){ locked=(document.pointerLockElement===canvas); });
+document.addEventListener('mousemove',function(e){ if(!locked||!started||over) return; lookBy(e.movementX||0,e.movementY||0,0.0023); });
+function lookBy(dx,dy,s){ P.yaw-=dx*s; P.pitch=clamp(P.pitch-dy*s,-1.35,1.35); }
+canvas.addEventListener('pointerdown',function(e){
+  if(!started||over) return;
+  if(e.pointerType==='mouse'){ if(locked){ doAction(); } else { mouseDrag={x:e.clientX,y:e.clientY,moved:0}; } return; }
+  e.preventDefault();
+  if(!isTouch){ isTouch=true; document.body.classList.add('touch'); }
+  try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
+  if(e.clientX<window.innerWidth*0.45&&!tMove){ tMove={id:e.pointerId,x0:e.clientX,y0:e.clientY};
+    elStick.style.left=e.clientX+'px'; elStick.style.top=e.clientY+'px'; elStick.style.display='block'; elKnob.style.transform='translate(0,0)'; }
+  else if(!tLook){ tLook={id:e.pointerId,x:e.clientX,y:e.clientY,moved:0,t:performance.now()}; }
+});
+canvas.addEventListener('pointermove',function(e){
+  if(e.pointerType==='mouse'){ if(mouseDrag&&!locked){ var dx=e.clientX-mouseDrag.x, dy=e.clientY-mouseDrag.y; mouseDrag.x=e.clientX; mouseDrag.y=e.clientY; mouseDrag.moved+=Math.abs(dx)+Math.abs(dy); lookBy(dx,dy,0.005); } return; }
+  if(tMove&&e.pointerId===tMove.id){ var vx=(e.clientX-tMove.x0)/46, vy=(e.clientY-tMove.y0)/46, l=Math.hypot(vx,vy); if(l>1){vx/=l;vy/=l;} stickV.x=vx; stickV.y=vy; elKnob.style.transform='translate('+vx*32+'px,'+vy*32+'px)'; }
+  else if(tLook&&e.pointerId===tLook.id){ var ax=e.clientX-tLook.x, ay=e.clientY-tLook.y; tLook.x=e.clientX; tLook.y=e.clientY; tLook.moved+=Math.abs(ax)+Math.abs(ay); lookBy(ax,ay,0.0058); }
+});
+function pUp(e){
+  if(e.pointerType==='mouse'){ if(mouseDrag){ if(mouseDrag.moved<6){ if(!locked) tryLock(); doAction(); } mouseDrag=null; } return; }
+  if(tMove&&e.pointerId===tMove.id){ tMove=null; stickV.x=stickV.y=0; elStick.style.display='none'; }
+  else if(tLook&&e.pointerId===tLook.id){ if(tLook.moved<9&&performance.now()-tLook.t<280) doAction(); tLook=null; }
+}
+canvas.addEventListener('pointerup',pUp); canvas.addEventListener('pointercancel',pUp);
+canvas.addEventListener('contextmenu',function(e){ e.preventDefault(); });
+$('act').addEventListener('pointerdown',function(e){ e.preventDefault(); e.stopPropagation(); doAction(); });
+window.addEventListener('keydown',function(e){
+  if(e.repeat&&(e.code==='KeyE'||e.code==='Space'||e.code==='Enter')) return;
+  keys[e.code]=true;
+  if(!started||over) return;
+  if(e.code==='KeyE'||e.code==='Space'||e.code==='Enter'){ e.preventDefault(); doAction(); }
+  if(e.code==='KeyQ') armEnd();
+  if(e.code.indexOf('Arrow')===0) e.preventDefault();
+});
+window.addEventListener('keyup',function(e){ keys[e.code]=false; });
+window.addEventListener('blur',function(){ keys={}; });
+var endArm=0;
+function armEnd(){ if(!started||over) return; if(endArm>0){ endDay(); return; } endArm=3; $('endbtn').textContent='Sure? Press again to end the day'; $('endbtn').classList.add('arm'); }
+$('endbtn').addEventListener('click',function(e){ e.stopPropagation(); armEnd(); });
+$('startbtn').addEventListener('click',function(){
+  $('intro').classList.add('hidden'); started=true; initAudio(); canvas.focus();
+  say('<b>Jess:</b> Morning. Power is cut, the barn has a hole in it, and your sheep are loose. Pick one.');
+  say('Barn is ahead on the right, house ahead on the left. Veg plot is to your left, sheep pen to your right.');
+});
+$('againbtn').addEventListener('click',function(){ window.location.reload(); });
+
+/* ---------- audio ---------- */
+var AC=null;
+function initAudio(){ try{ var A=window.AudioContext||window.webkitAudioContext; if(A){ AC=new A(); if(AC.resume) AC.resume(); } }catch(e){ AC=null; } }
+function tone(f,dur,type,vol,slide,delay){ if(!AC) return; try{ var t=AC.currentTime+(delay||0), o=AC.createOscillator(), g=AC.createGain();
+  o.type=type||'sine'; o.frequency.setValueAtTime(f,t); if(slide) o.frequency.exponentialRampToValueAtTime(slide,t+dur);
+  g.gain.setValueAtTime(vol||0.08,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t+dur+0.02); }catch(e){} }
+function sfx(k){
+  if(k==='thunk') tone(150,0.13,'square',0.11,55);
+  else if(k==='good'){ tone(660,0.12,'triangle',0.09); tone(880,0.18,'triangle',0.09,0,0.09); }
+  else if(k==='bad') tone(210,0.22,'sawtooth',0.05,110);
+  else if(k==='dig') tone(120,0.1,'triangle',0.14,65);
+  else if(k==='water') tone(950,0.28,'sine',0.05,380);
+  else if(k==='baa') tone(340,0.38,'sawtooth',0.035,255);
+  else if(k==='pick') tone(420,0.08,'triangle',0.08,640);
+  else if(k==='done') [523,659,784,1047].forEach(function(f,i){ tone(f,0.28,'triangle',0.09,0,i*0.11); });
+}
+
+/* ---------- resize ---------- */
+var handBase=new THREE.Vector3();
+function resize(){
+  var w=window.innerWidth||800, h=window.innerHeight||600;
+  renderer.setSize(w,h,false); camera.aspect=w/h; camera.fov=w<h?80:68; camera.updateProjectionMatrix();
+  var th=Math.tan(camera.fov*Math.PI/360);
+  handBase.set(Math.min(0.36,0.6*th*camera.aspect*0.62),-0.6*th*0.6,-0.6); hand.position.copy(handBase);
+}
+window.addEventListener('resize',resize); resize();
+
+/* ---------- main loop ---------- */
+var hudT=0;
+function update(dt){
+  if(started&&!over){
+    clock+=dt;
+    if(cool>0) cool-=dt;
+    if(endArm>0){ endArm-=dt; if(endArm<=0){ $('endbtn').textContent='Call it a day'; $('endbtn').classList.remove('arm'); } }
+    var f=0, r=0;
+    if(keys.KeyW||keys.ArrowUp) f+=1; if(keys.KeyS||keys.ArrowDown) f-=1;
+    if(keys.KeyD||keys.ArrowRight) r+=1; if(keys.KeyA||keys.ArrowLeft) r-=1;
+    f-=stickV.y; r+=stickV.x;
+    var l=Math.hypot(f,r); if(l>1){ f/=l; r/=l; l=1; }
+    if(mini.on){ f=0; r=0; l=0; }
+    var spd=(carry.type==='panel'?4.2:5.6), sy=Math.sin(P.yaw), cy=Math.cos(P.yaw);
+    P.x+=(-sy*f+cy*r)*spd*dt; P.z+=(-cy*f-sy*r)*spd*dt;
+    P.x=clamp(P.x,-37,37); P.z=clamp(P.z,-31,33);
+    resolve(P,0.42);
+    walkT+=dt*l*9;
+    if(mini.on){ mini.p+=mini.dir*mini.speed*dt; if(mini.p>1){mini.p=1;mini.dir=-1;} if(mini.p<0){mini.p=0;mini.dir=1;} elMk.style.left=(mini.p*100)+'%'; }
+    updateSheep(dt);
+    updateDay(dt);
+  }
+  camera.position.set(P.x,1.65+Math.sin(walkT)*0.035,P.z);
+  camera.rotation.set(P.pitch,P.yaw,0);
+  if(swing>0) swing=Math.max(0,swing-dt*4);
+  hand.rotation.x=-Math.sin(swing*Math.PI)*0.9;
+  hand.position.y=handBase.y+Math.sin(walkT)*0.012;
+  if(started&&!over) scan();
+  tickToast(dt);
+  if(verdictT>0){ verdictT-=dt; if(verdictT<=0) elVerdict.classList.remove('show'); }
+  gate.rotation.y+=(gateTarget-gate.rotation.y)*Math.min(1,dt*7);
+  turbine.rotation.z-=dt*(J.solar.done?3.2:1.4);
+  for(var i=0;i<clouds.length;i++){ clouds[i].position.x+=dt*1.2; if(clouds[i].position.x>190) clouds[i].position.x=-190; }
+  for(var b=blooms.length-1;b>=0;b--){ var bl=blooms[b]; bl.t+=dt*1.6; if(bl.t>0){ var k=Math.min(1,bl.t), e=1-Math.pow(1-k,3); bl.g.scale.setScalar(Math.max(0.001,e*bl.s)); if(k>=1) blooms.splice(b,1); } }
+}
+var last=0;
+function frame(now){
+  var dt=Math.min(0.05,(now-last)/1000||0.016); last=now;
+  update(dt);
+  renderer.render(scene,camera);
+  requestAnimationFrame(frame);
+}
+renderJobs(); updateDay(0); scene.updateMatrixWorld(true);
+window.__game={P:P,J:J,items:items,sheep:sheep,carry:carry,update:update,doAction:doAction,stopMini:stopMini,mini:mini,endDay:endDay,scene:scene,camera:camera,
+  state:function(){ return {started:started,over:over,clock:clock,water:water,gateClosed:gateClosed,prompt:curLook}; }};
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

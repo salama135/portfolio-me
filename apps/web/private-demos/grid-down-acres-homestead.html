@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Grid Down Acres: Homestead</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Karla:wght@400;600;800&display=swap">
+<style>
+:root{
+  --chalk:#fbf7ea; --ink:#1c2a23; --field:#2f6b46; --sun:#f0b429; --barn:#a8483a; --sky:#8fd3dc;
+  --card:var(--chalk); --text:var(--ink); --edge:var(--ink); --dim:rgba(28,42,35,.62); --neg:#a8483a; --pos:#2f6b46;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --card:#1c2a23; --text:#fbf7ea; --edge:#fbf7ea; --dim:rgba(251,247,234,.66); --neg:#f08a78; --pos:#7fd39a; }
+}
+:root[data-theme="dark"]{ --card:#1c2a23; --text:#fbf7ea; --edge:#fbf7ea; --dim:rgba(251,247,234,.66); --neg:#f08a78; --pos:#7fd39a; }
+*{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top,0px)}
+body{height:100%; margin:0; background:#8fd3dc; color:var(--text); overflow:hidden;
+  font-family:Karla,system-ui,-apple-system,Segoe UI,sans-serif; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none}
+#c{position:fixed; inset:0; width:100%; height:100%; display:block; touch-action:none}
+#dusk{position:fixed; inset:0; background:#1b2440; opacity:0; pointer-events:none; transition:opacity .5s}
+#dusk.on{opacity:.55}
+#top{position:fixed; left:0; right:0; top:0; pointer-events:none;
+  padding:calc(env(safe-area-inset-top,0px) + 8px) calc(env(safe-area-inset-right,0px) + 8px) 0 calc(env(safe-area-inset-left,0px) + 8px)}
+.bar{background:var(--card); color:var(--text); border:2px solid var(--edge); border-radius:4px; box-shadow:3px 3px 0 var(--edge); padding:6px 9px 7px}
+.row1{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+#day{font-family:"Alfa Slab One",Georgia,serif; font-size:17px; line-height:1.1}
+#wx{font-size:13px; font-weight:800}
+#wx2{font-size:12.5px; color:var(--dim); font-weight:600}
+.chips{display:grid; grid-template-columns:repeat(5,auto); gap:4px 12px; margin-top:5px; font-variant-numeric:tabular-nums; justify-content:space-between}
+.chip{font-size:12px; line-height:1.15}
+.chip b{display:block; font-size:15px; font-weight:800}
+.chip.low b{color:var(--neg)}
+#toast{position:fixed; left:50%; top:calc(env(safe-area-inset-top,0px) + 108px); transform:translate(-50%,-6px); width:min(92vw,430px); padding:9px 12px; font-size:13.5px; line-height:1.35;
+  background:#1c2a23; color:#fbf7ea; border-left:6px solid var(--sun); border-radius:3px; opacity:0; transition:opacity .25s, transform .25s; pointer-events:none}
+#toast.show{opacity:1; transform:translate(-50%,0)}
+#toast b{color:var(--sun)}
+#endbtn{position:fixed; right:calc(env(safe-area-inset-right,0px) + 12px); bottom:calc(env(safe-area-inset-bottom,0px) + 14px);
+  font-family:"Alfa Slab One",Georgia,serif; font-size:16px; padding:12px 16px; background:var(--sun); color:#1c2a23; border:3px solid #1c2a23; border-radius:4px; box-shadow:0 4px 0 #1c2a23; cursor:pointer; touch-action:manipulation; max-width:70vw}
+#endbtn:active{transform:translateY(3px); box-shadow:0 1px 0 #1c2a23}
+#endbtn.arm{background:var(--barn); color:#fff}
+#sheet{position:fixed; left:0; right:0; bottom:0; max-height:52%; overflow:auto; background:var(--card); color:var(--text); border-top:3px solid var(--edge);
+  padding:12px calc(env(safe-area-inset-right,0px) + 14px) calc(env(safe-area-inset-bottom,0px) + 14px) calc(env(safe-area-inset-left,0px) + 14px); transform:translateY(105%); transition:transform .18s}
+#sheet.show{transform:none}
+#sheet .in{max-width:520px; margin:0 auto}
+#sheet h2{font-family:"Alfa Slab One",Georgia,serif; font-weight:400; font-size:19px; margin:0 34px 2px 0}
+#sheet .sub{font-size:13.5px; color:var(--dim); margin:0 0 9px; line-height:1.35}
+#sheetx{position:absolute; right:calc(env(safe-area-inset-right,0px) + 10px); top:8px; width:34px; height:34px; border:2px solid var(--edge); border-radius:4px; background:transparent; color:var(--text); font:800 16px Karla,sans-serif; cursor:pointer}
+.opt{display:grid; grid-template-columns:1fr auto; gap:2px 10px; width:100%; text-align:left; padding:9px 10px; margin:0 0 7px; background:transparent; color:var(--text); border:2px solid var(--edge); border-radius:4px; font:inherit; cursor:pointer; touch-action:manipulation}
+.opt .t{font-weight:800; font-size:14.5px}
+.opt .c{font-weight:800; font-size:13px; white-space:nowrap; font-variant-numeric:tabular-nums}
+.opt .d{grid-column:1 / -1; font-size:12.5px; color:var(--dim); line-height:1.3}
+.opt:disabled{opacity:.5; cursor:default; border-style:dashed}
+.opt:not(:disabled):active{background:var(--sun); color:#1c2a23}
+.opt:not(:disabled):active .d{color:#1c2a23}
+.opt.go{background:var(--sun); color:#1c2a23; border-color:#1c2a23} .opt.go .d{color:#1c2a23}
+.opt:focus-visible,#endbtn:focus-visible,#sheetx:focus-visible{outline:3px solid var(--sky); outline-offset:2px}
+.ov{position:fixed; inset:0; display:flex; align-items:center; justify-content:center; padding:calc(env(safe-area-inset-top,0px) + 14px) 14px calc(env(safe-area-inset-bottom,0px) + 14px); background:rgba(28,42,35,.55); overflow:auto}
+.ov.hidden{display:none}
+.paper{width:min(100%,440px); max-height:100%; overflow:auto; background:var(--card); color:var(--text); border:3px solid var(--edge); border-radius:6px; box-shadow:6px 6px 0 var(--edge); padding:18px 18px 12px}
+.paper h1{font-family:"Alfa Slab One",Georgia,serif; font-weight:400; font-size:27px; line-height:1; margin:0 0 10px}
+.paper p{margin:0 0 10px; font-size:14.5px; line-height:1.45}
+table.led{width:100%; border-collapse:collapse; font-size:14px; font-variant-numeric:tabular-nums; margin-bottom:10px}
+table.led td{padding:3px 0; vertical-align:top}
+table.led td:last-child{text-align:right; white-space:nowrap; padding-left:10px; font-weight:600}
+table.led tr.sec td{font-weight:800; padding-top:8px; border-bottom:2px solid var(--edge)}
+table.led tr.tot td{font-weight:800; border-top:2px solid var(--edge); padding-top:6px; font-size:15.5px}
+.neg{color:var(--neg)} .pos{color:var(--pos)}
+.meter{height:16px; border:2px solid var(--edge); border-radius:3px; margin:4px 0 8px; overflow:hidden}
+.meter i{display:block; height:100%; background:var(--field); width:0}
+.note{font-size:13.5px; border-left:5px solid var(--sun); padding:2px 0 2px 9px; margin:0 0 10px; line-height:1.4}
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="Your homestead"></canvas>
+<div id="dusk"></div>
+
+<div id="top">
+  <div class="bar">
+    <div class="row1"><span id="day"></span><span id="wx"></span><span id="wx2"></span></div>
+    <div class="chips">
+      <div class="chip" id="cmoney">Money<b></b></div>
+      <div class="chip" id="cenergy">Energy<b></b></div>
+      <div class="chip" id="cpower">Power<b></b></div>
+      <div class="chip" id="cwater">Water<b></b></div>
+      <div class="chip" id="css">Off-grid<b></b></div>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+<button id="endbtn" type="button">End the day</button>
+
+<div id="sheet"><div class="in">
+  <button id="sheetx" type="button" aria-label="Close">X</button>
+  <h2 id="sheett"></h2><p class="sub" id="sheets"></p><div id="sheeto"></div>
+</div></div>
+
+<div id="modal" class="ov"><div class="paper"><h1 id="mt"></h1><div id="mb"></div><div id="mo"></div></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var canvas=$('c');
+function fatal(msg){ $('mt').textContent='Grid Down Acres'; $('mb').innerHTML='<p>'+msg+'</p>'; $('mo').innerHTML=''; }
+if(typeof THREE==='undefined'){ fatal('The 3D library did not load. Check your connection and reload the page.'); return; }
+var renderer;
+try{ renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true}); }
+catch(e){ fatal('This browser could not start WebGL, so the farm cannot be drawn. Try another browser or device.'); return; }
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+
+/* ================= rules ================= */
+var N=16, DAYS=10, START=650;
+var DEF={
+  plot:{n:'Veg plot',w:1,h:1,c:12,e:1,d:'Grow lettuce, potatoes or tomatoes'},
+  meadow:{n:'Wildflower patch',w:1,h:1,c:8,e:1,d:'Bees love it. So, secretly, does the HOA'},
+  solar:{n:'Solar panel',w:1,h:1,c:110,e:2,d:'6 power on a sunny day, 2 under cloud, 0 in a storm'},
+  battery:{n:'Battery',w:1,h:1,c:80,e:1,d:'Stores 8 more power'},
+  tank:{n:'Rain tank',w:1,h:1,c:55,e:1,d:'Holds 40 more water and catches more rain'},
+  pump:{n:'Well pump',w:1,h:1,c:130,e:2,d:'Turns 2 power into 15 water every night'},
+  turbine:{n:'Wind turbine',w:1,h:1,c:150,e:3,d:'1 to 2 power most days, 5 in a storm'},
+  hive:{n:'Beehive',w:1,h:1,c:70,e:1,d:'Honey every 2 days, daily with 2 wildflower patches close by. Crops within 2 squares yield 1 more'},
+  coop:{n:'Chicken coop',w:2,h:2,c:100,e:3,d:'3 eggs a day. Costs $5 feed and 2 water a night'},
+  pen:{n:'Sheep pen',w:2,h:2,c:170,e:3,d:'Wool every 3 days if they get 3 water a night',req:1},
+  green:{n:'Greenhouse',w:2,h:2,c:190,e:4,d:'4 greens a night for 1 power and 3 water, whatever the weather'}
+};
+var ORDER=['plot','meadow','solar','battery','tank','pump','turbine','hive','coop','pen','green'];
+var CROP={lettuce:{n:'Lettuce',seed:4,days:2,y:3,water:2,col:0x9ad96f},potato:{n:'Potatoes',seed:6,days:3,y:5,water:2,col:0x4f8a45},tomato:{n:'Tomatoes',seed:10,days:4,y:6,water:4,col:0x5aa04c}};
+var PRICE={wool:18,honey:14,tomato:8,lettuce:6,greens:6,potato:5,egg:4};
+var SELL=['wool','honey','tomato','lettuce','greens','potato','egg'], EAT=['potato','egg','lettuce','greens','tomato'], PERISH=['lettuce','tomato','greens'];
+var NAME={wool:'wool',honey:'honey',tomato:'tomatoes',lettuce:'lettuce',greens:'greens',potato:'potatoes',egg:'eggs'};
+var WX={sun:{n:'Sunny',solar:6,wind:1,rain:0,mult:1,sky:0x9fd8e6,li:1},cloud:{n:'Cloudy',solar:2,wind:2,rain:0,mult:1,sky:0xbccbcc,li:0.75},
+  rain:{n:'Rain',solar:1,wind:2,rain:12,mult:0,sky:0x93a9b0,li:0.6},storm:{n:'Storm',solar:0,wind:5,rain:18,mult:0,sky:0x70818b,li:0.45},
+  heat:{n:'Heatwave',solar:7,wind:1,rain:0,mult:2,sky:0xf2dca6,li:1.1}};
+var HOUSE=[{n:'Fix the roof',c:90,e:4,d:'Sleep dry. 2 more energy every day'},{n:'Rebuild the kitchen',c:130,e:4,d:'Jam and pickles: nothing spoils and everything sells for 25% more'},{n:'Rewire and insulate',c:140,e:4,d:'House uses 2 power a night instead of 3. Battery holds 6 more'}];
+var BARN=[{n:'Patch the walls',c:100,e:4,d:'Keeps foxes out and lets you keep sheep'},{n:'Rebuild the hay loft',c:90,e:3,d:'Chicken feed drops from $5 to $2 a night'},{n:'Open a farm shop',c:180,e:5,d:'Sell 16 things a day instead of 6'}];
+
+var S={day:1,money:START,energy:10,batt:3,water:20,house:0,barn:0,stock:{wool:0,honey:0,tomato:0,lettuce:0,greens:0,potato:0,egg:0},
+  weather:[],tractor:false,grid:false,viral:false,eggOrder:false,foxProof:false,used:{},pw:[],fd:[],over:false};
+var L={stand:0,other:0,scrap:0,gen:0,groc:0,feed:0,seed:0,fines:0,build:0,repair:0};
+var grid=[], ents=[];
+for(var gi=0;gi<N;gi++){ grid.push([]); for(var gj=0;gj<N;gj++) grid[gi].push(null); }
+(function(){ var bag=['sun','sun','sun','sun','cloud','cloud','rain','rain','storm','heat'];
+  S.weather.push('sun'); for(var d=1;d<DAYS;d++) S.weather.push(bag[Math.floor(Math.random()*bag.length)]);
+  if(S.weather.indexOf('rain')<0&&S.weather.indexOf('storm')<0) S.weather[3]='rain'; })();
+
+function count(t){ var n=0; for(var i=0;i<ents.length;i++) if(ents[i].type===t) n++; return n; }
+function battCap(){ return 6+8*count('battery')+(S.house>=3?6:0); }
+function waterCap(){ return 20+40*count('tank'); }
+function maxEnergy(){ return 10+(S.house>=1?2:0)+(S.tractor?3:0); }
+function houseUse(){ return S.house>=3?2:3; }
+function weekend(){ return S.day%7===6||S.day%7===0; }
+function standCap(){ return (S.barn>=3?16:6)*(weekend()?2:1)*(S.viral?2:1); }
+function priceOf(k){ return Math.round(PRICE[k]*(S.house>=2?1.25:1)); }
+function stockTotal(){ var n=0; for(var k in S.stock) n+=S.stock[k]; return n; }
+function avg(a){ if(!a.length) return 0; var s=0; for(var i=0;i<a.length;i++) s+=a[i]; return s/a.length; }
+function selfSuff(){ return Math.round(40*avg(S.pw)*(S.grid?0.5:1)+35*avg(S.fd)+25*(S.house+S.barn)/6); }
+function pay(c,cat){ S.money-=c; L[cat]+=c; }
+function earn(c,cat){ S.money+=c; L[cat]+=c; }
+function why(c,e){ if(S.energy<e) return 'Not enough energy left today'; if(S.money<c) return 'Not enough money'; return ''; }
+function cost(c,e){ var a=[]; if(c) a.push('$'+c); if(e) a.push(e+' energy'); return a.join(', '); }
+function near(e,type,r){ var n=0; for(var i=0;i<ents.length;i++){ var o=ents[i]; if(o.type===type&&Math.max(Math.abs(o.i-e.i),Math.abs(o.j-e.j))<=r) n++; } return n; }
+function free(i,j,w,h){ for(var a=i;a<i+w;a++) for(var b=j;b<j+h;b++){ if(a<0||b<0||a>=N||b>=N||grid[a][b]) return false; } return true; }
+
+function place(type,i,j,extra){
+  var d=DEF[type]||{w:1,h:1}, e={type:type,i:i,j:j,w:(extra&&extra.w)||d.w||1,h:(extra&&extra.h)||d.h||1};
+  if(type==='plot'){ e.crop=null; e.g=0; e.dry=0; }
+  if(type==='coop'){ e.hens=3; }
+  if(type==='pen'){ e.wool=0; }
+  if(type==='hive'){ e.prog=0; }
+  if(type==='solar'){ e.broken=false; }
+  for(var a=i;a<i+e.w;a++) for(var b=j;b<j+e.h;b++) grid[a][b]=e;
+  ents.push(e); if(view) view.add(e); return e;
+}
+function removeEnt(e){ for(var a=e.i;a<e.i+e.w;a++) for(var b=e.j;b<e.j+e.h;b++) grid[a][b]=null;
+  ents.splice(ents.indexOf(e),1); if(view) view.remove(e); S.batt=Math.min(S.batt,battCap()); S.water=Math.min(S.water,waterCap()); }
+function build(type,i,j){ var d=DEF[type]; if(why(d.c,d.e)||!free(i,j,d.w,d.h)) return null; if(d.req&&S.barn<d.req) return null;
+  pay(d.c,'build'); S.energy-=d.e; return place(type,i,j); }
+function plant(e,k){ var c=CROP[k]; if(why(c.seed,1)||e.crop) return false; pay(c.seed,'seed'); S.energy-=1; e.crop=k; e.g=0; e.dry=0; if(view) view.refresh(e); return true; }
+function ripe(e){ return e.type==='plot'&&e.crop&&e.g>=CROP[e.crop].days; }
+function harvest(e){ if(!ripe(e)||S.energy<1) return 0; var y=CROP[e.crop].y+(near(e,'hive',2)?1:0); S.stock[e.crop]+=y; S.energy-=1; e.crop=null; e.g=0; if(view) view.refresh(e); return y; }
+function repair(which){ var list=which==='house'?HOUSE:BARN, st=list[S[which]]; if(!st||why(st.c,st.e)) return false; pay(st.c,'repair'); S.energy-=st.e; S[which]++; if(view) view.refreshAll(); return true; }
+
+/* ---------- the night ---------- */
+function night(){
+  var w=WX[S.weather[S.day-1]], rows=[], notes=[], i, e;
+  // power
+  var gen=0; ents.forEach(function(e){ if(e.type==='solar'&&!e.broken) gen+=w.solar; if(e.type==='turbine') gen+=w.wind; });
+  S.batt=Math.min(battCap(),S.batt+gen);
+  var need=houseUse(), met=Math.min(need,S.batt); S.batt-=met; var short=need-met;
+  ents.forEach(function(e){ if(e.type==='pump'){ need+=2; e.ran=S.batt>=2; if(e.ran){S.batt-=2; met+=2;} }
+    if(e.type==='green'){ need+=1; e.pow=S.batt>=1; if(e.pow){S.batt-=1; met+=1;} } });
+  rows.push(['Power made today',gen]); rows.push(['Power needed tonight',need+', you had '+met]);
+  if(short>0){ var gc=short*(S.grid?2:6); pay(gc,'gen'); rows.push([S.grid?'Bought from the grid':'Generator fuel',-gc,1]); }
+  S.pw.push(met/need);
+  // water
+  var conts=1+count('tank'), rain=w.rain*conts, pumped=0;
+  ents.forEach(function(e){ if(e.type==='pump'&&e.ran) pumped+=15; });
+  S.water=Math.min(waterCap(),S.water+rain+pumped);
+  if(rain+pumped>0) rows.push(['Water collected',rain+pumped]);
+  var died=0, thirsty=0;
+  ents.forEach(function(e){ if(e.type!=='plot'||!e.crop||ripe(e)) return;
+    var wn=CROP[e.crop].water*w.mult;
+    if(S.water>=wn){ S.water-=wn; e.g++; e.dry=0; } else { e.dry++; thirsty++; if(e.dry>=2){ e.crop=null; e.g=0; e.dry=0; died++; } } });
+  if(thirsty) notes.push(thirsty+(thirsty===1?' plot':' plots')+' went without water'+(died?', and '+died+' died':'')+'.');
+  // animals and greenhouse
+  var feed=0, eggs=0, greens=0;
+  ents.forEach(function(e){
+    if(e.type==='coop'){ var f=S.barn>=2?2:5; feed+=f; if(S.water>=2){ S.water-=2; eggs+=e.hens; } }
+    if(e.type==='pen'){ if(S.water>=3){ S.water-=3; if(e.wool<3) e.wool++; } }
+    if(e.type==='green'){ if(e.pow&&S.water>=3){ S.water-=3; greens+=4; } }
+    if(e.type==='hive'){ e.prog+=near(e,'meadow',2)>=2?2:1; if(e.prog>=2){ e.prog-=2; S.stock.honey++; } } });
+  if(feed){ pay(feed,'feed'); rows.push(['Chicken feed',-feed,1]); }
+  S.stock.egg+=eggs; S.stock.greens+=greens;
+  // supper
+  var own=0; for(i=0;i<EAT.length&&own<3;i++){ while(S.stock[EAT[i]]>0&&own<3){ S.stock[EAT[i]]--; own++; } }
+  S.fd.push(own/3);
+  if(own<3){ var g=(3-own)*7; pay(g,'groc'); rows.push(['Groceries from the supermarket',-g,1]); }
+  rows.push(['Meals from your own land',own+' of 3']);
+  // egg order
+  if(S.eggOrder&&S.stock.egg>0){ S.stock.egg--; earn(6,'other'); rows.push(['Mrs. Alvarez, one egg',6,1]); }
+  // farm stand
+  var cap=standCap(), sold=0, take=0;
+  for(i=0;i<SELL.length&&sold<cap;i++){ var k=SELL[i], n=Math.min(S.stock[k],cap-sold); if(n>0){ S.stock[k]-=n; sold+=n; take+=n*priceOf(k); } }
+  if(sold){ earn(take,'stand'); rows.push(['Farm stand, '+sold+' sold'+(weekend()?' (weekend)':''),take,1]); }
+  else rows.push(['Farm stand','nothing to sell']);
+  // spoilage
+  if(S.house<2){ var sp=0; PERISH.forEach(function(k){ var l=Math.ceil(S.stock[k]/2); S.stock[k]-=l; sp+=l; }); if(sp) notes.push(sp+' unsold veg went soft overnight. A kitchen would have pickled it.'); }
+  // storm
+  if(S.weather[S.day-1]==='storm'){ var br=0; ents.forEach(function(e){ if(e.type==='solar'&&!e.broken&&Math.random()<0.25){ e.broken=true; br++; } });
+    if(br) notes.push('The storm knocked '+br+(br===1?' panel':' panels')+' loose. Tap them to fix them.'); }
+  if(S.tractor&&Math.random()<0.25){ pay(25,'fines'); rows.push(['Tractor repair. Again',-25,1]); }
+  var jess;
+  if(short>0&&!S.grid) jess='The generator ran all night. Very off-grid of you.';
+  else if(own===0) jess='You drove to the supermarket for lettuce. In the truck. Past your own garden.';
+  else if(died) jess='Plants need water. I am told this is widely known.';
+  else if(own===3&&short===0) jess='Fed and powered by your own land. Do not let it go to your head.';
+  else jess='Still standing. So is the barn, mostly.';
+  S.viral=false;
+  if(view) view.refreshAll();
+  return {rows:rows,notes:notes,jess:jess};
+}
+
+/* ---------- events ---------- */
+var EV=[
+ {id:'inspector',cond:function(){return ents.filter(function(e){return DEF[e.type];}).length>=3;},t:'The county inspector',
+  x:'A man with a clipboard is measuring your yard and frowning at it. "Unpermitted agricultural alterations."',
+  o:[{t:'Pay for the permit',c:'$45',ok:function(){return S.money>=45;},f:function(){pay(45,'fines'); return 'Permit paid. He measured the mailbox on the way out.';}},
+     {t:'Do the paperwork yourself',c:'3 energy',ok:function(){return S.energy>=3;},f:function(){S.energy-=3; return 'Form 22-B, in triplicate. Your morning is gone.';}}]},
+ {id:'tractor',cond:function(){return S.day>=2;},t:"Dale's tractor",
+  x:'Dale from two doors down is selling his tractor. It is far too big for a backyard. "She mostly runs."',
+  o:[{t:'Buy it',c:'$160',d:'3 more energy every day. It will break down sometimes',ok:function(){return S.money>=160;},f:function(){pay(160,'build'); S.tractor=true; S.energy+=3; return 'It does not fit through the gate. You have a new gate now.';}},
+     {t:'Say no',c:'',f:function(){return 'Dale says the offer stands. Dale always says that.';}}]},
+ {id:'raccoon',cond:function(){return S.batt>=3;},t:'Something in the wiring',
+  x:'A raccoon has moved into the inverter box and is chewing the battery cable.',
+  o:[{t:'Fit armoured cable',c:'$30',ok:function(){return S.money>=30;},f:function(){pay(30,'fines'); return 'The raccoon has been rehoused. It looked offended.';}},
+     {t:'Leave it',c:'',d:'Lose everything stored in the battery',f:function(){S.batt=0; return 'The battery is flat. The raccoon is warm.';}}]},
+ {id:'hoa',cond:function(){return count('plot')>=2;},t:'A letter from the HOA',
+  x:'"Visible vegetables are not in keeping with the character of Willow Crescent."',
+  o:[{t:'Pay the fine',c:'$25',ok:function(){return S.money>=25&&count('meadow')<3;},f:function(){pay(25,'fines'); return 'Fine paid. The vegetables remain visible.';}},
+     {t:'Write a furious reply',c:'2 energy',ok:function(){return S.energy>=2&&count('meadow')<3;},f:function(){S.energy-=2; return 'Four pages. You cited the Constitution twice.';}},
+     {t:'Point at your wildflowers',c:'',d:'Needs 3 wildflower patches',ok:function(){return count('meadow')>=3;},f:function(){earn(20,'other'); return 'The HOA president quietly paid $20 for a bag of your wildflower seed.';}}]},
+ {id:'market',cond:function(){return stockTotal()>=4;},t:'The Saturday market',
+  x:'There is a spare table at the market in town. It would eat most of your morning.',
+  o:[{t:'Go to market',c:'4 energy',d:'Sell everything in stock now for 50% more',ok:function(){return S.energy>=4;},f:function(){ S.energy-=4; var t=0; SELL.forEach(function(k){ t+=Math.round(S.stock[k]*priceOf(k)*1.5); S.stock[k]=0; }); earn(t,'other'); return 'Sold out by ten. You made $'+t+' and a man asked if the eggs were "artisanal".';}},
+     {t:'Stay home',c:'',f:function(){return 'The farm stand will do.';}}]},
+ {id:'fox',cond:function(){return count('coop')>0&&S.barn<1;},t:'Fox prints',
+  x:'There are fox prints all round the chicken coop this morning, and one hen looks nervous.',
+  o:[{t:'Reinforce the run',c:'2 energy',ok:function(){return S.energy>=2;},f:function(){S.energy-=2; return 'Wire dug in a foot deep. Sleep well, hens.';}},
+     {t:'Hope for the best',c:'',d:'You will lose a hen',f:function(){ents.forEach(function(e){ if(e.type==='coop'&&e.hens>1) e.hens--; }); if(view) view.refreshAll(); return 'It was not for the best. One fewer egg a day.';}}]},
+ {id:'sheep',cond:function(){return count('pen')>0;},t:'Sheep on the loose',
+  x:"Your sheep are on the neighbour's lawn, eating his hostas with real commitment.",
+  o:[{t:'Round them up yourself',c:'3 energy',ok:function(){return S.energy>=3;},f:function(){S.energy-=3; return 'Forty minutes, two falls, one apology to the neighbour.';}},
+     {t:"Pay the neighbour's kid",c:'$20',ok:function(){return S.money>=20;},f:function(){pay(20,'fines'); return 'She did it in four minutes with a bucket of feed.';}}]},
+ {id:'grid',cond:function(){return S.day>=3;},t:'The power company calls',
+  x:'A rep is at the gate offering to reconnect you, with a $120 signing bonus.',
+  o:[{t:'Take the money',c:'+$120',d:'Shortfalls cost less, but your off-grid score for power is halved',f:function(){earn(120,'other'); S.grid=true; return 'You are back on the grid. Jess is not speaking to you.';}},
+     {t:'Tell him where to put his meter',c:'',f:function(){return 'He left a brochure. Jess is using it to light the stove.';}}]},
+ {id:'viral',cond:function(){return stockTotal()>=3||count('plot')>=3;},t:'You are trending',
+  x:'Someone posted your farm stand online and called it "authentic". Cars are slowing down.',
+  o:[{t:'Put out more crates',c:'',d:'The stand can sell twice as much today',f:function(){S.viral=true; return 'A woman photographed a potato for ten minutes.';}}]},
+ {id:'eggs',cond:function(){return count('coop')>0;},t:'A standing order',
+  x:'Mrs. Alvarez across the road wants one egg a day, and she will pay $6 for it, which is too much.',
+  o:[{t:'Agree',c:'+$6 a day',f:function(){S.eggOrder=true; return 'She says the supermarket ones "taste of nothing".';}}]}
+];
+function pickEvent(){ if(S.day<2||Math.random()>0.8) return null;
+  var el=EV.filter(function(e){ return !S.used[e.id]&&e.cond(); }); if(!el.length) return null;
+  var ev=el[Math.floor(Math.random()*el.length)]; S.used[ev.id]=true; return ev; }
+
+/* ================= view ================= */
+var scene=new THREE.Scene(); scene.background=new THREE.Color(0x9fd8e6);
+var cam=new THREE.OrthographicCamera(-1,1,1,-1,0.1,220), camT=new THREE.Vector3(0,0,1), camGoal=null, zoom=12;
+var hemi=new THREE.HemisphereLight(0xe6f6ff,0x7a8f5a,0.75); scene.add(hemi);
+var sun=new THREE.DirectionalLight(0xfff1d6,0.9); sun.position.set(-18,34,22); sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
+var sc=sun.shadow.camera; sc.left=-16; sc.right=16; sc.top=16; sc.bottom=-16; sc.near=5; sc.far=90; sun.shadow.bias=-0.0008; scene.add(sun); scene.add(sun.target);
+
+function M(c,o){ var p={color:c}; if(o){ for(var k in o) p[k]=o[k]; } return new THREE.MeshLambertMaterial(p); }
+function flat(g){ var n=g.index?g.toNonIndexed():g; n.computeVertexNormals(); return n; }
+function box(w,h,d,mat,x,y,z,parent,noShadow){ var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat); m.position.set(x,y,z); if(!noShadow){m.castShadow=true; m.receiveShadow=true;} parent.add(m); return m; }
+function prism(w,h,d,mat,parent,y){ var s=new THREE.Shape(); s.moveTo(-w/2,0); s.lineTo(w/2,0); s.lineTo(0,h); s.lineTo(-w/2,0);
+  var g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:false}); g.translate(0,0,-d/2); var m=new THREE.Mesh(g,mat); m.position.y=y; m.castShadow=true; m.receiveShadow=true; parent.add(m); return m; }
+var m={wood:M(0xa9794d),woodNew:M(0xd9ad72),woodDark:M(0x6e4b2f),roof:M(0xc8623c),barn:M(0xa8483a),tin:M(0x9fb0b3),panel:M(0x234a7a),frame:M(0xdfe5e8),
+  leaf:M(0x3f8f5a),leaf2:M(0x5aa96b),wool:M(0xf7f2e8),face:M(0x3a302c),water:M(0x4f9aa0),metal:M(0x7d8a8c),soil:M(0x6b4a32),dark:M(0x1d1613),
+  gravel:M(0xbfb096),hay:M(0xe2c45a),rust:M(0x9a5a3a),red:M(0xd64b3a),white:M(0xfafafa),yellow:M(0xf0b429)};
+var winMat=new THREE.MeshLambertMaterial({color:0x35505a,emissive:0x000000});
+var wallMat=M(0xcdc5b2);
+
+// ground
+(function(){
+  var out=new THREE.Mesh(new THREE.PlaneGeometry(140,140),M(0x7fb568)); out.rotation.x=-Math.PI/2; out.position.y=-0.02; out.receiveShadow=true; scene.add(out);
+  var g=new THREE.PlaneGeometry(N,N,N,N); g.rotateX(-Math.PI/2); g=g.toNonIndexed();
+  var pos=g.attributes.position, arr=new Float32Array(pos.count*3), c=new THREE.Color();
+  for(var i=0;i<pos.count;i+=6){ var cx=0, cz=0; for(var k=0;k<6;k++){ cx+=pos.getX(i+k); cz+=pos.getZ(i+k); } cx/=6; cz/=6;
+    var ti=Math.floor(cx+8), tj=Math.floor(cz+8), chk=(ti+tj)%2;
+    c.setHex(chk?0xa9b96a:0xa1b262); c.offsetHSL((Math.random()-.5)*0.02,0,(Math.random()-.5)*0.03);
+    for(k=0;k<6;k++){ arr[(i+k)*3]=c.r; arr[(i+k)*3+1]=c.g; arr[(i+k)*3+2]=c.b; } }
+  g.setAttribute('color',new THREE.BufferAttribute(arr,3));
+  var lot=new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true})); lot.receiveShadow=true; scene.add(lot);
+  box(2,0.04,7,m.gravel,0,0.02,4.5,scene,true).receiveShadow=true;
+  box(140,0.04,2.6,M(0x55595c),0,0.0,10.2,scene,true).receiveShadow=true;
+  for(var r=-12;r<=12;r++) box(1,0.05,0.1,M(0xe9e2c9),r*3,0.01,10.2,scene,true);
+  // fence
+  var posts=[]; for(var a=0;a<=N;a+=2){ posts.push([a-8,-8],[-8,a-8],[8,a-8]); if(Math.abs(a-8)>1) posts.push([a-8,8]); }
+  var im=new THREE.InstancedMesh(new THREE.BoxGeometry(0.1,0.6,0.1),m.woodDark,posts.length), d=new THREE.Object3D();
+  posts.forEach(function(p,i2){ d.position.set(p[0],0.3,p[1]); d.updateMatrix(); im.setMatrixAt(i2,d.matrix); }); im.castShadow=true; scene.add(im);
+  [0.25,0.5].forEach(function(y){ box(16,0.05,0.04,m.wood,0,y,-8,scene,true); box(0.04,0.05,16,m.wood,-8,y,0,scene,true); box(0.04,0.05,16,m.wood,8,y,0,scene,true);
+    box(7,0.05,0.04,m.wood,-4.5,y,8,scene,true); box(7,0.05,0.04,m.wood,4.5,y,8,scene,true); });
+  // neighbours: tidy, identical, on the grid
+  var wm=[M(0xcfc9bd),M(0xbfc6c9),M(0xd6cdb8)], rm=M(0x5d6266);
+  for(var h=-3;h<=3;h++){ var hg=new THREE.Group(); hg.position.set(h*7,0,14.5); scene.add(hg); box(3.6,1.5,2.6,wm[(h+3)%3],0,0.75,0,hg); prism(4,0.9,2.9,rm,hg,1.5);
+    box(5.5,0.03,1.6,M(0x86c765),0,0.0,-2.2,hg,true); }
+  for(var s=-2;s<=1;s++){ var sg=new THREE.Group(); sg.position.set(-12.5,0,s*7+2); sg.rotation.y=Math.PI/2; scene.add(sg); box(3.6,1.5,2.6,wm[(s+3)%3],0,0.75,0,sg); prism(4,0.9,2.9,rm,sg,1.5); }
+  // trees beyond the fence
+  var tg=flat(new THREE.CylinderGeometry(0.1,0.14,0.9,6)), fg=flat(new THREE.IcosahedronGeometry(0.75,0));
+  [[-9.5,-9.5],[-4,-9.6],[2,-9.4],[7,-9.8],[10,-6],[10.2,0],[9.8,5],[-9.6,-3],[-1,-11],[5,-11.5],[12,-10],[13,3]].forEach(function(p){
+    var t=new THREE.Mesh(tg,m.woodDark); t.position.set(p[0],0.45,p[1]); t.castShadow=true; scene.add(t);
+    var f=new THREE.Mesh(fg,Math.random()<0.5?m.leaf:m.leaf2); f.position.set(p[0],1.35,p[1]); f.rotation.y=Math.random()*6; f.scale.setScalar(0.8+Math.random()*0.5); f.castShadow=true; scene.add(f); });
+})();
+
+var cursor=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:0xf0b429,transparent:true,opacity:0.55,depthWrite:false}));
+cursor.rotation.x=-Math.PI/2; cursor.position.y=0.03; cursor.visible=false; scene.add(cursor);
+var flagG=flat(new THREE.OctahedronGeometry(0.16,0)), flagY=new THREE.MeshBasicMaterial({color:0xf0b429}), flagR=new THREE.MeshBasicMaterial({color:0xe2472f});
+var flowerM=[0xf06ea9,0xf0b429,0xffffff,0xf58a3c,0x9b7be0].map(function(c){return M(c);});
+var spin=[], wander=[], flags=[], pickables=[];
+
+var MK={
+  house:function(e,g){
+    box(2.5,1.5,2.3,wallMat,0,0.75,0,g);
+    prism(2.9,1.0,2.6,m.roof,g,1.5);
+    e.hole=box(0.5,0.05,0.5,m.dark,0.62,2.02,0.5,g,true); e.hole.rotation.z=-0.6;
+    box(0.4,0.75,0.06,m.woodDark,0,0.38,1.16,g,true);
+    box(0.5,0.45,0.06,winMat,-0.75,0.85,1.16,g,true); box(0.5,0.45,0.06,winMat,0.75,0.85,1.16,g,true); box(0.06,0.45,0.5,winMat,1.26,0.85,0,g,true);
+    e.boards=new THREE.Group(); g.add(e.boards);
+    var b1=box(0.62,0.08,0.05,m.wood,0.75,0.85,1.2,e.boards,true); b1.rotation.z=0.5; var b2=box(0.05,0.08,0.62,m.wood,1.3,0.85,0,e.boards,true); b2.rotation.x=0.5;
+    box(0.3,0.7,0.3,M(0x9b6b55),0.6,2.0,-0.6,g);
+    e.vines=new THREE.Group(); g.add(e.vines);
+    for(var v=0;v<10;v++) box(0.2+Math.random()*0.3,0.2+Math.random()*0.4,0.06,v%2?m.leaf:m.leaf2,-1.1+Math.random()*0.6,0.2+Math.random()*1.1,1.17,e.vines,true);
+    e.herbs=new THREE.Group(); g.add(e.herbs);
+    box(0.5,0.12,0.14,m.woodNew,-0.75,0.56,1.24,e.herbs,true); box(0.44,0.1,0.1,m.leaf2,-0.75,0.66,1.24,e.herbs,true);
+    box(0.5,0.12,0.14,m.woodNew,0.75,0.56,1.24,e.herbs,true); box(0.44,0.1,0.1,m.red,0.75,0.66,1.24,e.herbs,true);
+    e.roofPV=new THREE.Group(); g.add(e.roofPV);
+    var rp=box(0.9,0.04,1.6,m.panel,0.72,2.05,0,e.roofPV,true); rp.rotation.z=-0.6;
+  },
+  barn:function(e,g){
+    box(3.5,1.9,2.5,m.barn,0,0.95,0,g);
+    prism(3.9,1.2,2.8,m.tin,g,1.9);
+    box(1.1,1.3,0.06,m.woodDark,0.9,0.65,1.26,g,true);
+    var x1=box(0.07,1.6,0.03,m.white,0.9,0.65,1.3,g,true); x1.rotation.z=0.7; var x2=box(0.07,1.6,0.03,m.white,0.9,0.65,1.3,g,true); x2.rotation.z=-0.7;
+    e.hole=box(1.0,1.1,0.05,m.dark,-0.9,0.7,1.26,g,true);
+    e.patch=new THREE.Group(); g.add(e.patch); for(var p=0;p<5;p++) box(0.19,1.15,0.05,m.woodNew,-1.3+p*0.2,0.7,1.28,e.patch,true);
+    e.hayG=new THREE.Group(); g.add(e.hayG); box(0.5,0.35,0.7,m.hay,1.95,0.18,0.5,e.hayG); box(0.5,0.35,0.7,m.hay,1.95,0.18,-0.3,e.hayG); box(0.5,0.35,0.7,m.hay,1.95,0.53,0.1,e.hayG);
+    e.shop=new THREE.Group(); g.add(e.shop);
+    for(var s=0;s<6;s++){ var a=box(0.3,0.05,0.7,s%2?m.white:m.red,-1.65+s*0.3,1.35,1.55,e.shop); a.rotation.x=0.35; }
+    box(1.7,0.4,0.5,m.woodNew,-0.9,0.2,1.6,e.shop); box(0.3,0.16,0.3,m.red,-1.4,0.48,1.6,e.shop,true); box(0.3,0.16,0.3,m.leaf2,-0.9,0.48,1.6,e.shop,true); box(0.3,0.16,0.3,m.yellow,-0.4,0.48,1.6,e.shop,true);
+  },
+  stand:function(e,g){ box(1.5,0.4,0.6,m.woodNew,0,0.2,0,g); box(0.06,1.1,0.06,m.woodDark,-0.75,0.55,-0.3,g); box(0.06,1.1,0.06,m.woodDark,0.75,0.55,-0.3,g);
+    for(var s=0;s<5;s++){ var a=box(0.34,0.05,0.9,s%2?m.white:m.yellow,-0.68+s*0.34,1.1,0,g); a.rotation.x=0.25; }
+    e.crates=new THREE.Group(); g.add(e.crates); box(0.3,0.16,0.3,m.red,-0.45,0.48,0,e.crates,true); box(0.3,0.16,0.3,m.leaf2,0,0.48,0,e.crates,true); box(0.3,0.16,0.3,m.hay,0.45,0.48,0,e.crates,true); },
+  path:function(){},
+  junk:function(e,g){ box(0.8,0.3,0.45,m.rust,0,0.2,0,g).rotation.y=0.4; box(0.4,0.22,0.4,m.rust,0.05,0.44,0.02,g).rotation.y=0.4;
+    var t=new THREE.Mesh(flat(new THREE.CylinderGeometry(0.16,0.16,0.1,8)),m.dark); t.position.set(-0.3,0.06,0.3); g.add(t); },
+  bramble:function(e,g){ var bg=flat(new THREE.IcosahedronGeometry(0.28,0)); for(var i=0;i<3;i++){ var b=new THREE.Mesh(bg,M(0x4a6a3a)); b.position.set((Math.random()-.5)*0.4,0.2+Math.random()*0.1,(Math.random()-.5)*0.4); b.rotation.set(Math.random()*3,Math.random()*3,0); b.castShadow=true; g.add(b); } },
+  plot:function(e,g){ box(0.92,0.08,0.92,m.soil,0,0.04,0,g,true).receiveShadow=true;
+    [-0.5,0.5].forEach(function(s){ box(1,0.1,0.05,m.wood,0,0.05,s*0.97,g,true); box(0.05,0.1,1,m.wood,s*0.97,0.05,0,g,true); });
+    e.pm=M(0x9ad96f); e.plants=new THREE.Group(); g.add(e.plants); var pg=flat(new THREE.ConeGeometry(0.13,0.34,5));
+    e.fruit=new THREE.Group(); g.add(e.fruit); var sg=new THREE.SphereGeometry(0.06,6,5);
+    for(var a=-1;a<=1;a++) for(var b=-1;b<=1;b++){ var p=new THREE.Mesh(pg,e.pm); p.position.set(a*0.28,0.25,b*0.28); p.castShadow=true; e.plants.add(p);
+      var f=new THREE.Mesh(sg,m.red); f.position.set(a*0.28+0.06,0.36,b*0.28+0.05); e.fruit.add(f); } },
+  meadow:function(e,g){ box(0.94,0.05,0.94,M(0x6faa55),0,0.025,0,g,true).receiveShadow=true;
+    var hg=flat(new THREE.IcosahedronGeometry(0.07,0)); for(var i=0;i<9;i++){ var x=(Math.random()-.5)*0.8, z=(Math.random()-.5)*0.8, hgt=0.12+Math.random()*0.16;
+      box(0.02,hgt,0.02,m.leaf,x,hgt/2+0.05,z,g,true); var h=new THREE.Mesh(hg,flowerM[i%5]); h.position.set(x,hgt+0.08,z); g.add(h); } },
+  solar:function(e,g){ box(0.08,0.4,0.08,m.metal,0,0.2,0,g); e.pv=new THREE.Group(); e.pv.position.y=0.45; g.add(e.pv);
+    box(0.86,0.05,0.7,m.frame,0,0,0,e.pv); box(0.78,0.03,0.62,m.panel,0,0.03,0,e.pv,true); },
+  battery:function(e,g){ box(0.6,0.7,0.4,M(0x3d5a4a),0,0.35,0,g); box(0.5,0.08,0.02,m.yellow,0,0.5,0.21,g,true); box(0.08,0.08,0.02,M(0x7fe08a),0.2,0.25,0.21,g,true); },
+  tank:function(e,g){ var t=new THREE.Mesh(flat(new THREE.CylinderGeometry(0.4,0.4,0.85,10)),m.water); t.position.y=0.43; t.castShadow=true; g.add(t);
+    var l=new THREE.Mesh(flat(new THREE.CylinderGeometry(0.43,0.43,0.06,10)),m.metal); l.position.y=0.88; g.add(l); },
+  pump:function(e,g){ box(0.5,0.12,0.5,m.gravel,0,0.06,0,g); box(0.14,0.6,0.14,m.red,0,0.4,0,g); var h=box(0.5,0.06,0.06,m.metal,0.15,0.7,0,g); h.rotation.z=0.4; box(0.06,0.06,0.25,m.metal,0,0.45,0.18,g,true); },
+  turbine:function(e,g){ var p=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.07,2.6,6),m.frame); p.position.y=1.3; p.castShadow=true; g.add(p);
+    var hub=new THREE.Group(); hub.position.set(0,2.6,0.1); g.add(hub); for(var i=0;i<3;i++){ var a=new THREE.Group(); var b=box(0.09,0.75,0.02,m.white,0,0.38,0,a); a.rotation.z=i*Math.PI*2/3; hub.add(a); }
+    hub.rotation.y=Math.PI/4; spin.push({o:hub,e:e}); },
+  hive:function(e,g){ box(0.5,0.08,0.5,m.woodDark,0,0.1,0,g); box(0.42,0.22,0.42,m.white,0,0.25,0,g); box(0.42,0.22,0.42,m.yellow,0,0.48,0,g); box(0.5,0.06,0.5,m.tin,0,0.62,0,g); },
+  coop:function(e,g){ fenceRing(g,2,2); box(0.8,0.55,0.7,m.barn,-0.4,0.5,-0.45,g); prism(0.95,0.35,0.85,m.tin,g,0.78).position.set(-0.4,0.78,-0.45);
+    box(0.1,0.3,0.1,m.woodDark,-0.7,0.15,-0.7,g); box(0.1,0.3,0.1,m.woodDark,-0.1,0.15,-0.2,g); var r=box(0.22,0.03,0.5,m.wood,-0.4,0.14,0.1,g,true); r.rotation.x=0.45;
+    e.birds=[]; var bg=flat(new THREE.IcosahedronGeometry(0.11,0));
+    for(var i=0;i<3;i++){ var c=new THREE.Group(); var b=new THREE.Mesh(bg,m.white); b.position.y=0.13; b.castShadow=true; c.add(b); box(0.04,0.05,0.06,m.red,0,0.25,0.06,c,true); box(0.03,0.03,0.05,m.yellow,0,0.16,0.12,c,true);
+      g.add(c); e.birds.push(c); wander.push({o:c,x:Math.random()-.5,z:Math.random()*0.6,r:0.8,t:0,a:0,s:0.35}); } },
+  pen:function(e,g){ fenceRing(g,2,2); box(0.6,0.12,0.2,m.wood,0.5,0.1,-0.75,g);
+    var bg=flat(new THREE.IcosahedronGeometry(0.22,0));
+    for(var i=0;i<2;i++){ var c=new THREE.Group(); var b=new THREE.Mesh(bg,m.wool); b.scale.set(1,0.85,1.3); b.position.y=0.3; b.castShadow=true; c.add(b);
+      box(0.13,0.14,0.15,m.face,0,0.38,0.3,c,true); [[-0.1,0.13],[0.1,0.13],[-0.1,-0.13],[0.1,-0.13]].forEach(function(l){ box(0.04,0.2,0.04,m.face,l[0],0.1,l[1],c,true); });
+      g.add(c); wander.push({o:c,x:Math.random()-.5,z:Math.random()-.5,r:0.7,t:0,a:0,s:0.25}); } },
+  green:function(e,g){ box(1.8,0.1,1.8,m.wood,0,0.05,0,g); var gm=new THREE.MeshLambertMaterial({color:0xcfeee6,transparent:true,opacity:0.45});
+    box(1.7,0.75,1.7,gm,0,0.48,0,g,true); var r=prism(1.7,0.5,1.7,gm,g,0.85); r.castShadow=false;
+    [-0.85,0.85].forEach(function(s){ box(0.05,0.85,0.05,m.frame,s,0.48,0.85,g,true); box(0.05,0.85,0.05,m.frame,s,0.48,-0.85,g,true); });
+    for(var i=0;i<3;i++) box(1.4,0.22,0.3,m.leaf2,0,0.22,-0.5+i*0.5,g,true); }
+};
+function fenceRing(g,w,h){ var x=w/2-0.06, z=h/2-0.06;
+  [[-x,-z],[x,-z],[-x,z],[x,z],[0,-z],[0,z],[-x,0],[x,0]].forEach(function(p){ box(0.06,0.42,0.06,m.woodDark,p[0],0.21,p[1],g); });
+  [0.18,0.34].forEach(function(y){ box(w-0.12,0.04,0.03,m.wood,0,y,-z,g,true); box(w-0.12,0.04,0.03,m.wood,0,y,z,g,true); box(0.03,0.04,h-0.12,m.wood,-x,y,0,g,true); box(0.03,0.04,h-0.12,m.wood,x,y,0,g,true); }); }
+
+var view={
+  add:function(e){ var g=new THREE.Group(); g.position.set(e.i-8+e.w/2,0,e.j-8+e.h/2); g.userData.ent=e; e.g=e.g||0; e.mesh=g;
+    MK[e.type](e,g); scene.add(g); if(e.type!=='path') pickables.push(g);
+    if(e.type==='plot'||e.type==='pen'||e.type==='solar'){ var f=new THREE.Mesh(flagG,flagY); f.position.y=e.type==='pen'?1.0:0.95; f.visible=false; g.add(f); e.flag=f; flags.push(f); }
+    if(DEF[e.type]){ g.scale.setScalar(0.01); e.pop=0; }
+    view.refresh(e); },
+  remove:function(e){ scene.remove(e.mesh); var k=pickables.indexOf(e.mesh); if(k>=0) pickables.splice(k,1);
+    for(var i=spin.length-1;i>=0;i--) if(spin[i].e===e) spin.splice(i,1); },
+  refresh:function(e){
+    if(e.type==='plot'){ var c=e.crop?CROP[e.crop]:null; e.plants.visible=!!c; e.fruit.visible=false;
+      if(c){ var k=Math.min(1,e.g/c.days), s=0.3+0.7*k; e.plants.children.forEach(function(p){ p.scale.setScalar(s); p.position.y=0.08+0.17*s; });
+        e.pm.color.setHex(e.dry?0xc9b85a:c.col); e.fruit.visible=(e.crop==='tomato'&&k>=1); }
+      e.flag.visible=ripe(e); e.flag.material=flagY; }
+    if(e.type==='solar'){ e.pv.rotation.set(e.broken?0.1:0.5,0,e.broken?0.9:0); e.flag.visible=e.broken; e.flag.material=flagR; }
+    if(e.type==='pen'){ e.flag.visible=e.wool>=3; }
+    if(e.type==='coop'){ e.birds.forEach(function(b,i){ b.visible=i<e.hens; }); }
+    if(e.type==='house'){ e.hole.visible=S.house<1; e.boards.visible=S.house<2; e.herbs.visible=S.house>=2; e.vines.visible=S.house>=1; e.roofPV.visible=S.house>=3;
+      wallMat.color.setHex(S.house>=2?0xf4e8cc:0xcdc5b2); var lit=S.pw.length&&S.pw[S.pw.length-1]>=0.99; winMat.emissive.setHex(lit?0xffb84a:0x000000); winMat.color.setHex(lit?0xffe2a0:0x35505a); }
+    if(e.type==='barn'){ e.hole.visible=S.barn<1; e.patch.visible=S.barn>=1; e.hayG.visible=S.barn>=2; e.shop.visible=S.barn>=3; }
+    if(e.type==='stand'){ e.crates.visible=stockTotal()>0; }
+  },
+  refreshAll:function(){ ents.forEach(view.refresh); }
+};
+
+// fixed layout
+place('house',2,2,{w:3,h:3}); place('barn',10,2,{w:4,h:3}); place('stand',9,15,{w:2,h:1});
+for(var pj=9;pj<N;pj++){ place('path',7,pj); place('path',8,pj); }
+[[5,7],[12,8],[2,11],[14,12]].forEach(function(p){ place('junk',p[0],p[1]); });
+[[6,3],[1,7],[4,13],[11,11],[13,6],[9,6],[3,9],[10,13],[5,10],[14,9]].forEach(function(p){ place('bramble',p[0],p[1]); });
+
+// rain
+var rainN=150, rainM=new THREE.InstancedMesh(new THREE.BoxGeometry(0.02,0.5,0.02),new THREE.MeshBasicMaterial({color:0xdcefff,transparent:true,opacity:0.7}),rainN), rainP=[], dummy=new THREE.Object3D();
+for(var ri=0;ri<rainN;ri++) rainP.push([Math.random()*30-15,Math.random()*14,Math.random()*30-15]);
+rainM.visible=false; rainM.frustumCulled=false; scene.add(rainM);
+
+/* ================= UI ================= */
+var elToast=$('toast'), toastQ=[], toastT=0;
+function say(h){ if(h) toastQ.push(h); }
+function setChip(id,txt,low){ var c=$(id); c.querySelector('b').textContent=txt; c.classList.toggle('low',!!low); }
+function hud(){
+  $('day').textContent='Day '+Math.min(S.day,DAYS)+' of '+DAYS;
+  var w=WX[S.weather[Math.min(S.day,DAYS)-1]]; $('wx').textContent=w.n+(weekend()?', weekend':'');
+  $('wx2').textContent=S.day<DAYS?'Tomorrow: '+WX[S.weather[S.day]].n:'Last day';
+  setChip('cmoney','$'+S.money,S.money<0); setChip('cenergy',S.energy+' of '+maxEnergy(),S.energy===0);
+  setChip('cpower',S.batt+' of '+battCap(),S.batt<houseUse()); setChip('cwater',S.water+' of '+waterCap(),S.water<4); setChip('css',selfSuff()+'%');
+  scene.background.setHex(w.sky); sun.intensity=0.9*w.li; hemi.intensity=0.55+0.25*w.li;
+  rainM.visible=(w.rain>0);
+  if(endArm){ endArm=false; $('endbtn').classList.remove('arm'); } $('endbtn').textContent='End the day';
+}
+var sel=null;
+function closeSheet(){ $('sheet').classList.remove('show'); cursor.visible=false; sel=null; camGoal=null; $('endbtn').style.display=''; }
+function openSheet(title,sub,opts){
+  $('sheett').textContent=title; $('sheets').textContent=sub||''; var o=$('sheeto'); o.innerHTML='';
+  opts.forEach(function(op){ var b=document.createElement('button'); b.type='button'; b.className='opt'+(op.go?' go':'');
+    var no=op.no||''; b.disabled=!!no;
+    b.innerHTML='<span class="t"></span><span class="c"></span><span class="d"></span>';
+    b.children[0].textContent=op.t; b.children[1].textContent=op.c||''; b.children[2].textContent=no||op.d||''; if(!(no||op.d)) b.children[2].remove();
+    b.addEventListener('click',function(){ op.f(); hud(); }); o.appendChild(b); });
+  $('sheet').classList.add('show'); $('sheet').scrollTop=0; $('endbtn').style.display='none';
+}
+$('sheetx').addEventListener('click',closeSheet);
+function stockLine(){ var a=[]; SELL.forEach(function(k){ if(S.stock[k]) a.push(S.stock[k]+' '+NAME[k]); }); return a.length?a.join(', '):'nothing yet'; }
+
+function select(i,j){
+  if(i<0||j<0||i>=N||j>=N){ closeSheet(); return; }
+  var e=grid[i][j];
+  if(e&&e.type==='path'){ closeSheet(); return; }
+  sel={i:i,j:j};
+  var w=e?e.w:1, h=e?e.h:1, ci=e?e.i:i, cj=e?e.j:j;
+  cursor.scale.set(w,h,1); cursor.position.set(ci-8+w/2,0.03,cj-8+h/2); cursor.visible=true;
+  camGoal=new THREE.Vector3(cursor.position.x+0.26*zoom,0,cursor.position.z+0.26*zoom);
+  sheetFor(i,j);
+}
+function reopen(){ if(sel) select(sel.i,sel.j); }
+function removeOpt(e,label){ return {t:label||'Remove it',c:'',d:'No refund',f:function(){ removeEnt(e); closeSheet(); }}; }
+function sheetFor(i,j){
+  var e=grid[i][j], opts=[];
+  if(!e){
+    ORDER.forEach(function(k){ var d=DEF[k], no=why(d.c,d.e);
+      if(d.req&&S.barn<d.req) no='Patch the barn walls first';
+      else if(!free(i,j,d.w,d.h)) no='Needs a clear '+d.w+' by '+d.h+' space from this square';
+      opts.push({t:d.n,c:cost(d.c,d.e),d:d.d,no:no,f:function(){ var n=build(k,i,j); if(!n) return;
+        if(k==='plot'){ reopen(); } else { closeSheet(); }
+        if(k==='solar'&&count('solar')===1) say('<b>Jess:</b> One panel. The fridge is thrilled.');
+        if(k==='coop') say('<b>Jess:</b> Three hens. Name them and you will never eat chicken again.'); }}); });
+    openSheet('Build here','Empty ground. Pick something to put on it.',opts); return;
+  }
+  if(e.type==='plot'){
+    if(!e.crop){ ['lettuce','potato','tomato'].forEach(function(k){ var c=CROP[k]; opts.push({t:'Plant '+c.n.toLowerCase(),c:cost(c.seed,1),d:c.days+' days, '+c.y+' to harvest at $'+priceOf(k)+' each, '+c.water+' water a night',no:why(c.seed,1),f:function(){ plant(e,k); closeSheet(); }}); });
+      opts.push(removeOpt(e,'Remove the plot')); openSheet('Veg plot','Bare soil.'+(near(e,'hive',2)?' Bees nearby: 1 extra at harvest.':''),opts); }
+    else if(ripe(e)){ var all=ents.filter(ripe);
+      opts.push({t:'Harvest',c:'1 energy',go:1,no:why(0,1),f:function(){ var k=e.crop, y=harvest(e); say('Picked '+y+' '+NAME[k]+'.'); reopen(); }});
+      if(all.length>1) opts.push({t:'Harvest all '+all.length+' ripe plots',c:all.length+' energy',no:why(0,all.length),f:function(){ var n=0; all.forEach(function(p){ n+=harvest(p); }); say('Picked '+n+' things from '+all.length+' plots.'); closeSheet(); }});
+      openSheet(CROP[e.crop].n,'Ripe and ready.',opts); }
+    else { var c2=CROP[e.crop]; opts.push({t:'Dig it up',c:'',d:'Lose the crop, keep the plot',f:function(){ e.crop=null; e.g=0; e.dry=0; view.refresh(e); reopen(); }});
+      openSheet(c2.n,'Day '+e.g+' of '+c2.days+'. Drinks '+c2.water+' water a night unless it rains.'+(e.dry?' It went thirsty last night. One more dry night kills it.':''),opts); }
+    return;
+  }
+  if(e.type==='house'||e.type==='barn'){
+    var list=e.type==='house'?HOUSE:BARN, st=S[e.type], done=list.slice(0,st).map(function(x){return x.n.toLowerCase();});
+    list.forEach(function(x,idx){ if(idx<st) return; opts.push({t:x.n,c:cost(x.c,x.e),d:x.d,no:idx>st?'Do the job above first':why(x.c,x.e),go:idx===st&&!why(x.c,x.e),f:function(){ if(repair(e.type)){ say(REPAIR_SAY[e.type][st]); reopen(); } }}); });
+    openSheet(e.type==='house'?'The farmhouse':'The barn',(done.length?'Done: '+done.join(', ')+'. ':'A wreck. ')+(st>=3?'Fully restored.':''),opts); return;
+  }
+  if(e.type==='stand'){ openSheet('Farm stand','Sells up to '+standCap()+' things tonight, dearest first'+(weekend()?' (weekend crowd)':'')+'. In stock: '+stockLine()+'. You eat 3 of your own each night before anything is sold.',[]); return; }
+  if(e.type==='junk'){ opts.push({t:'Haul it away',c:'3 energy',d:'Sell the scrap for $30',no:why(0,3),f:function(){ S.energy-=3; earn(30,'scrap'); removeEnt(e); closeSheet(); say('<b>Jess:</b> That was a 1987 station wagon. Somebody loved it once.'); }}); openSheet('Rusting junk','Left by the last owner, along with the mortgage.',opts); return; }
+  if(e.type==='bramble'){ opts.push({t:'Clear the brambles',c:'1 energy',no:why(0,1),f:function(){ S.energy-=1; removeEnt(e); closeSheet(); }}); openSheet('Brambles','Ten years of nobody mowing.',opts); return; }
+  var d=DEF[e.type], sub=d.d+'.';
+  if(e.type==='solar'&&e.broken){ sub='Knocked loose by the storm. Makes nothing until it is fixed.'; opts.push({t:'Fix the panel',c:cost(15,1),go:1,no:why(15,1),f:function(){ pay(15,'fines'); S.energy-=1; e.broken=false; view.refresh(e); closeSheet(); }}); }
+  if(e.type==='pen'){ sub=e.wool>=3?'The sheep are ready to shear.':'Wool in '+(3-e.wool)+(3-e.wool===1?' more night':' more nights')+', if they get their water.';
+    if(e.wool>=3) opts.push({t:'Shear the sheep',c:'2 energy',d:'2 wool at $'+priceOf('wool')+' each',go:1,no:why(0,2),f:function(){ S.energy-=2; S.stock.wool+=2; e.wool=0; view.refresh(e); closeSheet(); say('<b>Jess:</b> That is the worst haircut I have ever seen, and the sheep agrees.'); }}); }
+  if(e.type==='coop') sub=e.hens+' hens, '+e.hens+' eggs a night. Feed $'+(S.barn>=2?2:5)+' and 2 water.';
+  if(e.type==='hive') sub=(near(e,'meadow',2)>=2?'Honey every night.':'Honey every 2 nights. Put 2 wildflower patches within 2 squares to double it.');
+  opts.push(removeOpt(e)); openSheet(d.n,sub,opts);
+}
+var REPAIR_SAY={house:['<b>Jess:</b> A roof with no holes in it. Fancy.','<b>Jess:</b> A kitchen. You can now pickle your mistakes.','<b>Jess:</b> Rewired. The house hums. In a good way.'],
+  barn:['<b>Jess:</b> Four walls. The fox is furious.','<b>Jess:</b> Hay loft is up. The hens get the cheap stuff now.','<b>Jess:</b> A farm shop. Charge double and call it "heritage".']};
+
+function modal(title,html,opts){
+  $('mt').textContent=title; $('mb').innerHTML=html; var o=$('mo'); o.innerHTML='';
+  opts.forEach(function(op){ var b=document.createElement('button'); b.type='button'; b.className='opt'+(op.go?' go':''); b.disabled=!!op.no;
+    b.innerHTML='<span class="t"></span><span class="c"></span><span class="d"></span>';
+    b.children[0].textContent=op.t; b.children[1].textContent=op.c||''; b.children[2].textContent=op.d||''; if(!op.d) b.children[2].remove();
+    b.addEventListener('click',function(){ $('modal').classList.add('hidden'); op.f(); }); o.appendChild(b); });
+  $('modal').classList.remove('hidden'); $('modal').querySelector('.paper').scrollTop=0;
+}
+function money(v){ return (v<0?'-$':'$')+Math.abs(v); }
+function rowsHtml(rows){ return '<table class="led">'+rows.map(function(r){ if(r.sec) return '<tr class="sec"><td>'+r.sec+'</td><td></td></tr>';
+  var v=r[1], cls=''; if(r[2]){ cls=v<0?'neg':'pos'; v=money(v); } return '<tr'+(r.tot?' class="tot"':'')+'><td>'+r[0]+'</td><td class="'+cls+'">'+v+'</td></tr>'; }).join('')+'</table>'; }
+
+var endArm=false;
+function endDay(){
+  if(S.over||!$('modal').classList.contains('hidden')) return;
+  if(S.energy>=3&&!endArm){ endArm=true; $('endbtn').textContent=S.energy+' energy left. End anyway?'; $('endbtn').classList.add('arm'); return; }
+  closeSheet(); $('dusk').classList.add('on');
+  var r=night(), last=S.day>=DAYS;
+  var html=rowsHtml(r.rows.concat([{0:'Money, end of day',1:S.money,2:1,tot:1}]));
+  r.notes.forEach(function(n){ html+='<p class="note">'+n+'</p>'; });
+  html+='<p><b>Jess:</b> '+r.jess+'</p><p style="margin-bottom:4px"><b>Off-grid</b> '+selfSuff()+'%</p><div class="meter"><i style="width:'+selfSuff()+'%"></i></div>';
+  hud();
+  modal('Night '+S.day,html,[{t:last?'See how the season went':'Wake up on day '+(S.day+1),go:1,f:morning}]);
+}
+function morning(){
+  $('dusk').classList.remove('on');
+  S.day++;
+  if(S.day>DAYS){ ledger(); return; }
+  S.energy=maxEnergy(); hud();
+  var ev=pickEvent();
+  if(ev){ modal(ev.t,'<p>'+ev.x+'</p>',ev.o.map(function(o){ var ok=!o.ok||o.ok(); return {t:o.t,c:o.c,d:o.d,no:!ok,f:function(){ say(o.f()); hud(); view.refreshAll(); }}; })); }
+  else if(weekend()) say('It is the weekend. The farm stand can sell twice as much today.');
+}
+function ledger(){
+  S.over=true; S.day=DAYS; hud();
+  var inc=L.stand+L.other+L.scrap, run=L.gen+L.groc+L.feed+L.seed+L.fines, cap=L.build+L.repair, ss=selfSuff();
+  var rows=[{sec:'Earned'},['Farm stand',L.stand,1],['Market, orders and oddments',L.other,1],['Scrap',L.scrap,1],
+    {sec:'Running costs'},['Generator and grid',-L.gen,1],['Supermarket groceries',-L.groc,1],['Feed and seed',-(L.feed+L.seed),1],['Fines, permits and breakdowns',-L.fines,1],
+    {0:'Profit from farming',1:inc-run,2:1,tot:1},
+    {sec:'Spent on the place'},['Building',-L.build,1],['House and barn repairs',-L.repair,1],
+    {0:'Bank: started $'+START+', now',1:S.money,2:1,tot:1}];
+  var p=inc-run, line;
+  if(ss>=75) line='Properly off the grid. The neighbours have started asking questions, and one has asked for a hen.';
+  else if(ss>=50) line='Half off the grid. The generator still knows your name.';
+  else line='Still very much a suburb with a vegetable problem.';
+  var html=rowsHtml(rows)+'<p style="margin-bottom:4px"><b>Off-grid</b> '+ss+'%</p><div class="meter"><i style="width:'+ss+'%"></i></div><p>'+line+'</p><p><b>Jess:</b> '+
+    (p>0?'Ten days of work for a farming profit of '+money(p)+'. That is about '+money(Math.round(p/10))+' a day. Do not quit the day job you already quit.':'You farmed for ten days and it cost you '+money(-p)+' before you even count the building. Welcome to agriculture.')+'</p>';
+  modal('The season ledger',html,[{t:'Start a new season',go:1,f:function(){ window.location.reload(); }}]);
+}
+$('endbtn').addEventListener('click',endDay);
+
+/* ================= input ================= */
+var ptrs={}, pinch0=0, zoom0=0, ray=new THREE.Raycaster(), ground=new THREE.Plane(new THREE.Vector3(0,1,0),0), hitV=new THREE.Vector3();
+function resize(){ var w=window.innerWidth||800, h=window.innerHeight||600, a=w/h; renderer.setSize(w,h,false);
+  cam.left=-zoom*a; cam.right=zoom*a; cam.top=zoom; cam.bottom=-zoom; cam.updateProjectionMatrix(); }
+function camPlace(){ camT.x=Math.max(-10,Math.min(10,camT.x)); camT.z=Math.max(-10,Math.min(11,camT.z)); cam.position.set(camT.x+40,40,camT.z+40); cam.lookAt(camT); }
+(function(){ var a=(window.innerWidth||800)/(window.innerHeight||600); zoom=Math.max(8.5,Math.min(17,8.5/a)); })();
+resize(); camPlace(); window.addEventListener('resize',resize);
+function pick(x,y){
+  var w=window.innerWidth, h=window.innerHeight; ray.setFromCamera(new THREE.Vector2(x/w*2-1,-(y/h)*2+1),cam);
+  var hs=ray.intersectObjects(pickables,true);
+  if(hs.length){ var o=hs[0].object; while(o&&!o.userData.ent) o=o.parent; if(o){ var e=o.userData.ent;
+      if(e.w>1||e.h>1||e.type!=='plot'){ select(e.i,e.j); return; } } }
+  if(ray.ray.intersectPlane(ground,hitV)) select(Math.floor(hitV.x+8),Math.floor(hitV.z+8)); else closeSheet();
+}
+canvas.addEventListener('pointerdown',function(e){ try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
+  ptrs[e.pointerId]={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,moved:0};
+  var ids=Object.keys(ptrs); if(ids.length===2){ var a=ptrs[ids[0]], b=ptrs[ids[1]]; pinch0=Math.hypot(a.x-b.x,a.y-b.y)||1; zoom0=zoom; } });
+canvas.addEventListener('pointermove',function(e){ var p=ptrs[e.pointerId]; if(!p) return;
+  var dx=e.clientX-p.x, dy=e.clientY-p.y; p.x=e.clientX; p.y=e.clientY; p.moved+=Math.abs(dx)+Math.abs(dy);
+  var ids=Object.keys(ptrs);
+  if(ids.length>=2){ var a=ptrs[ids[0]], b=ptrs[ids[1]]; zoom=Math.max(4.5,Math.min(20,zoom0*pinch0/(Math.hypot(a.x-b.x,a.y-b.y)||1))); resize(); return; }
+  if(p.moved>8){ var wpp=2*zoom/(window.innerHeight||600), r=-dx*wpp*0.7071, f=dy*wpp/0.5774*0.7071; camGoal=null; camT.x+=r-f; camT.z+=-r-f; } });
+function pUp(e){ var p=ptrs[e.pointerId]; if(!p) return; delete ptrs[e.pointerId];
+  if(p.moved<9&&e.type==='pointerup'&&Object.keys(ptrs).length===0&&!S.over) pick(e.clientX,e.clientY); }
+canvas.addEventListener('pointerup',pUp); canvas.addEventListener('pointercancel',pUp);
+canvas.addEventListener('wheel',function(e){ e.preventDefault(); zoom=Math.max(4.5,Math.min(20,zoom*(e.deltaY>0?1.1:0.91))); resize(); },{passive:false});
+canvas.addEventListener('contextmenu',function(e){ e.preventDefault(); });
+
+/* ================= loop ================= */
+var T=0;
+function tick(dt){
+  T+=dt;
+  if(camGoal){ camT.x+=(camGoal.x-camT.x)*Math.min(1,dt*6); camT.z+=(camGoal.z-camT.z)*Math.min(1,dt*6); if(Math.abs(camGoal.x-camT.x)+Math.abs(camGoal.z-camT.z)<0.02) camGoal=null; }
+  camPlace();
+  var wname=S.weather[Math.min(S.day,DAYS)-1], wind=WX[wname].wind;
+  for(var i=0;i<spin.length;i++) spin[i].o.rotation.z-=dt*(1+wind*1.6);
+  for(i=0;i<wander.length;i++){ var a=wander[i]; a.t-=dt; if(a.t<=0){ a.t=1+Math.random()*3; a.a=Math.random()*6.283; a.mv=Math.random()<0.6; }
+    if(a.mv){ a.x+=Math.cos(a.a)*a.s*dt; a.z+=Math.sin(a.a)*a.s*dt; if(Math.abs(a.x)>a.r||Math.abs(a.z)>a.r){ a.x=Math.max(-a.r,Math.min(a.r,a.x)); a.z=Math.max(-a.r,Math.min(a.r,a.z)); a.a+=Math.PI; } a.o.rotation.y=Math.atan2(Math.cos(a.a),Math.sin(a.a)); }
+    a.o.position.set(a.x,0,a.z); }
+  for(i=0;i<flags.length;i++){ if(flags[i].visible){ flags[i].rotation.y=T*2; flags[i].position.y=0.95+Math.sin(T*3+i)*0.06; } }
+  for(i=0;i<ents.length;i++){ var e=ents[i]; if(e.pop!==undefined&&e.pop<1){ e.pop=Math.min(1,e.pop+dt*4); var k=1-Math.pow(1-e.pop,3); e.mesh.scale.setScalar(Math.max(0.01,k)); } }
+  if(rainM.visible){ for(i=0;i<rainN;i++){ var p=rainP[i]; p[1]-=dt*16; if(p[1]<0) p[1]=14; dummy.position.set(camT.x+p[0],p[1],camT.z+p[2]); dummy.updateMatrix(); rainM.setMatrixAt(i,dummy.matrix); } rainM.instanceMatrix.needsUpdate=true; }
+  if(toastT>0){ toastT-=dt; if(toastT<=0) elToast.classList.remove('show'); }
+  else if(toastQ.length){ elToast.innerHTML=toastQ.shift(); elToast.classList.add('show'); toastT=4.2; }
+}
+var last=0;
+function frame(now){ var dt=Math.min(0.05,(now-last)/1000||0.016); last=now; tick(dt); renderer.render(scene,cam); requestAnimationFrame(frame); }
+
+hud();
+modal('Grid Down Acres','<p>You sold the townhouse, bought the wreck at the end of Willow Crescent, and told the power company to stop calling.</p>'+
+  '<p>You have 10 days, $'+START+' and a farmhand called Jess. Every night the house needs 3 power and you need 3 meals. Whatever your land cannot supply, you buy: generator fuel and supermarket lettuce.</p>'+
+  '<p>Tap any empty square to build on it. Tap the house, the barn or anything else to work on it. Drag to move, pinch to zoom. Everything costs energy, so you will not finish the list.</p>',
+  [{t:'Start day 1',go:1,f:function(){ say('<b>Jess:</b> Morning. Start with a solar panel and a couple of veg plots, or do not, and see what the generator costs.'); }}]);
+window.__game={S:S,L:L,ents:ents,grid:grid,build:build,plant:plant,harvest:harvest,repair:repair,ripe:ripe,night:night,select:select,tick:tick,endDay:endDay,selfSuff:selfSuff,free:free,scene:scene,cam:cam,pick:pick};
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

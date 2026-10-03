@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Building kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Grandstander:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --panel:#fff1c2; --panel-2:#ffe7a1; --ink:#5b2a48; --ink-soft:#8a5c78;
+  --edge:#e9cf86; --accent:#d6456b; --accent-ink:#fff6dc; --teal:#2f9c95; --shadow:rgba(91,42,72,.22);
+  --sky-a:#bfe6e6; --sky-b:#fde8bf;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --panel:#3b2440; --panel-2:#4a2e50; --ink:#ffe9b8; --ink-soft:#d9b9c6;
+    --edge:#5e3c63; --accent:#f0688a; --accent-ink:#2b1730; --teal:#58c7bf; --shadow:rgba(0,0,0,.45);
+    --sky-a:#1d2444; --sky-b:#4a3562;
+  }
+}
+:root[data-theme="dark"]{
+  --panel:#3b2440; --panel-2:#4a2e50; --ink:#ffe9b8; --ink-soft:#d9b9c6;
+  --edge:#5e3c63; --accent:#f0688a; --accent-ink:#2b1730; --teal:#58c7bf; --shadow:rgba(0,0,0,.45);
+  --sky-a:#1d2444; --sky-b:#4a3562;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  background:linear-gradient(180deg,var(--sky-a),var(--sky-b)); color:var(--ink); overflow:hidden;
+  font-family:"Grandstander","Comic Sans MS","Trebuchet MS",system-ui,sans-serif; font-size:15px; line-height:1.3;
+  -webkit-tap-highlight-color:transparent;
+}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.panel{background:var(--panel);border:2px solid var(--edge);border-radius:16px;box-shadow:0 4px 0 var(--edge),0 10px 22px var(--shadow)}
+.btn{height:40px;padding:0 12px;border-radius:12px;border:2px solid var(--edge);background:var(--panel-2);font-weight:600;white-space:nowrap}
+.btn:hover{border-color:var(--ink-soft)}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+#side{position:fixed;left:12px;top:calc(12px + env(safe-area-inset-top,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));width:310px;display:flex;flex-direction:column;z-index:6;overflow:hidden}
+#side header{padding:12px 14px 10px;border-bottom:2px solid var(--edge)}
+#side h1{margin:0;font-size:22px;font-weight:800;line-height:1}
+#side header p{margin:6px 0 0;font-size:12.5px;color:var(--ink-soft)}
+#list{overflow:auto;flex:1;padding:4px 8px 12px;overscroll-behavior:contain}
+#list h2{font-size:15px;font-weight:800;margin:16px 6px 2px}
+#list h3{font-size:12.5px;font-weight:800;margin:10px 6px 2px;color:var(--ink-soft);display:flex;justify-content:space-between}
+#list button{display:block;width:100%;text-align:left;border:0;background:none;padding:6px 8px;border-radius:9px;font-weight:600;font-size:14px}
+#list button small{display:block;font-weight:400;font-size:12px;opacity:.8}
+#list button:hover{background:var(--panel-2)}
+#list button[aria-current="true"]{background:var(--accent);color:var(--accent-ink)}
+#list button.all{border:2px solid var(--edge);margin:4px 0}
+#closeList{display:none}
+#info{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));left:346px;padding:12px 14px;z-index:5;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+#info .t{flex:1 1 280px;min-width:0}
+#pname{font-size:21px;font-weight:800;line-height:1.1;margin:0 0 2px}
+#pdesc{margin:0 0 6px;font-size:13.5px;color:var(--ink-soft)}
+#chips{display:flex;flex-wrap:wrap;gap:6px}
+#chips span{background:var(--panel-2);border:1.5px solid var(--edge);border-radius:999px;padding:2px 10px;font-size:13px;font-weight:600;white-space:nowrap}
+#chips b{font-weight:800}
+#nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+#openList{display:none}
+#cols{display:flex;gap:6px;align-items:center;font-size:13px;font-weight:600}
+#cols label{display:flex;align-items:center;gap:3px}
+#cols input{width:34px;height:34px;border:2px solid var(--edge);border-radius:10px;padding:2px;background:var(--panel-2)}
+#tog{position:fixed;right:12px;top:calc(12px + env(safe-area-inset-top,0px));display:flex;gap:6px;padding:6px;z-index:5}
+#scrim{display:none}
+@media (max-width:820px){
+  #side{left:0;right:0;top:auto;bottom:0;width:auto;height:74%;border-radius:20px 20px 0 0;transform:translateY(105%);transition:transform .25s;padding-bottom:env(safe-area-inset-bottom,0px)}
+  body.open #side{transform:none}
+  #closeList{display:block;position:absolute;right:10px;top:8px;height:36px}
+  #scrim{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:5}
+  body.open #scrim{display:block}
+  #info{left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:10px 12px;gap:8px}
+  #pname{font-size:18px}
+  #nav{width:100%}
+  #nav .btn{flex:1}
+  #openList{display:block}
+  #tog{right:8px;top:calc(8px + env(safe-area-inset-top,0px))}
+  .btn{height:38px;padding:0 10px;font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){#side{transition:none}}
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="3D view of the selected building part"></canvas>
+<div id="tog" class="panel">
+  <button class="btn" id="tBox" aria-pressed="false" title="Show the size the game gives this object">Game size</button>
+  <button class="btn" id="tSpin" aria-pressed="false">Turn</button>
+</div>
+<div id="scrim"></div>
+<aside id="side" class="panel">
+  <header><h1>Building kit</h1><button class="btn" id="closeList">Close</button><p>Names, footprints, heights and colour channels come from the game. The shapes are new models.</p></header>
+  <div id="list"></div>
+</aside>
+<section id="info" class="panel">
+  <div class="t"><h2 id="pname"></h2><p id="pdesc"></p><div id="chips"></div></div>
+  <div id="nav">
+    <div id="cols"></div>
+    <button class="btn" id="prev" aria-label="Previous">‹</button>
+    <button class="btn" id="openList">All parts</button>
+    <button class="btn" id="next" aria-label="Next">›</button>
+  </div>
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>const KIT = [{"key":"small.wag1","id":"rct2.scenery_small.wag1","name":"Wagon","theme":"Wild West","type":"small","c":[1],"glass":false,"door":false,"h":1.25,"units":40,"shape":"4/4"},{"key":"small.wag2","id":"rct2.scenery_small.wag2","name":"Wagon","theme":"Wild West","type":"small","c":[1],"glass":false,"door":false,"h":1.25,"units":40,"shape":"4/4"},{"key":"wall.wallwdps","id":"rct2.scenery_wall.wallwdps","name":"Wooden Post Fence","theme":"Wild West","type":"wall","c":[1],"glass":true,"door":false,"h":0.25,"units":8},{"key":"large.genstore","id":"rct2.scenery_large.genstore","name":"General Store","theme":"Wild West","type":"large","c":[],"glass":false,"door":false,"units":64,"h":2.0,"tiles":[[0,0],[0,1],[1,0],[1,1]]},{"key":"large.saloon","id":"rct2.scenery_large.saloon","name":"Saloon","theme":"Wild West","type":"large","c":[],"glass":false,"door":false,"units":88,"h":2.75,"tiles":[[0,0],[0,1],[1,0],[1,1]]},{"key":"large.wwbank","id":"rct2.scenery_large.wwbank","name":"Bank","theme":"Wild West","type":"large","c":[],"glass":false,"door":false,"units":48,"h":1.5,"tiles":[[0,0],[0,1],[1,0],[1,1]]},{"key":"small.hang1","id":"rct2.scenery_small.hang1","name":"Gallows","theme":"Wild West","type":"small","c":[],"glass":false,"door":false,"h":1.25,"units":40,"shape":"4/4"},{"key":"small.totem1","id":"rct2.scenery_small.totem1","name":"Totem Pole","theme":"Wild West","type":"small","c":[],"glass":false,"door":false,"h":2.75,"units":88,"shape":"1/4"},{"key":"small.teepee1","id":"rct2.scenery_small.teepee1","name":"Tepee","theme":"Wild West","type":"small","c":[],"glass":false,"door":false,"h":2.0,"units":64,"shape":"4/4"},{"key":"small.tct1","id":"rct2.scenery_small.tct1","name":"Castle Tower","theme":"Medieval","type":"small","c":[],"glass":false,"door":false,"h":3.375,"units":108,"shape":"4/4"},{"key":"large.stb1","id":"rct2.scenery_large.stb1","name":"Castle Tower","theme":"Medieval","type":"large","c":[],"glass":false,"door":false,"units":72,"h":2.25,"tiles":[[0,0]]},{"key":"large.stb2","id":"rct2.scenery_large.stb2","name":"Castle Tower","theme":"Medieval","type":"large","c":[],"glass":false,"door":false,"units":160,"h":5.0,"tiles":[[0,0]]},{"key":"wall.wc1","id":"rct2.scenery_wall.wc1","name":"Castle Wall","theme":"Medieval","type":"wall","c":[],"glass":false,"door":false,"h":0.75,"units":24},{"key":"wall.wc4","id":"rct2.scenery_wall.wc4","name":"Castle Wall","theme":"Medieval","type":"wall","c":[],"glass":false,"door":false,"h":2.25,"units":72},{"key":"wall.wc5","id":"rct2.scenery_wall.wc5","name":"Castle Wall","theme":"Medieval","type":"wall","c":[],"glass":false,"door":false,"h":2.25,"units":72},{"key":"wall.wc6","id":"rct2.scenery_wall.wc6","name":"Castle Wall","theme":"Medieval","type":"wall","c":[],"glass":true,"door":false,"h":2.25,"units":72},{"key":"wall.wc7","id":"rct2.scenery_wall.wc7","name":"Castle Wall","theme":"Medieval","type":"wall","c":[],"glass":false,"door":false,"h":2.25,"units":72},{"key":"wall.wc8","id":"rct2.scenery_wall.wc8","name":"Castle Wall","theme":"Medieval","type":"wall","c":[],"glass":false,"door":false,"h":1.25,"units":40},{"key":"wall.wallcz32","id":"rct2.scenery_wall.wallcz32","name":"Wall","theme":"Medieval","type":"wall","c":[],"glass":false,"door":false,"h":1.0,"units":32},{"key":"wall.wallcy32","id":"rct2.scenery_wall.wallcy32","name":"Wall","theme":"Medieval","type":"wall","c":[],"glass":false,"door":false,"h":1.0,"units":32},{"key":"small.tct2","id":"rct2.scenery_small.tct2","name":"Castle Tower","theme":"Medieval","type":"small","c":[],"glass":false,"door":false,"h":3.375,"units":108,"shape":"4/4"},{"key":"large.stg1","id":"rct2.scenery_large.stg1","name":"Castle Tower","theme":"Medieval","type":"large","c":[],"glass":false,"door":false,"units":72,"h":2.25,"tiles":[[0,0]]},{"key":"large.stg2","id":"rct2.scenery_large.stg2","name":"Castle Tower","theme":"Medieval","type":"large","c":[],"glass":false,"door":false,"units":160,"h":5.0,"tiles":[[0,0]]},{"key":"wall.wc2","id":"rct2.scenery_wall.wc2","name":"Castle Wall","theme":"Medieval","type":"wall","c":[1],"glass":false,"door":false,"h":0.75,"units":24},{"key":"wall.wc9","id":"rct2.scenery_wall.wc9","name":"Castle Wall","theme":"Medieval","type":"wall","c":[1],"glass":false,"door":false,"h":2.25,"units":72},{"key":"wall.wc10","id":"rct2.scenery_wall.wc10","name":"Castle Wall","theme":"Medieval","type":"wall","c":[1],"glass":false,"door":false,"h":2.25,"units":72},{"key":"wall.wc11","id":"rct2.scenery_wall.wc11","name":"Castle Wall","theme":"Medieval","type":"wall","c":[1],"glass":true,"door":false,"h":2.25,"units":72},{"key":"wall.wc12","id":"rct2.scenery_wall.wc12","name":"Castle Wall","theme":"Medieval","type":"wall","c":[1],"glass":false,"door":false,"h":2.25,"units":72},{"key":"wall.wc13","id":"rct2.scenery_wall.wc13","name":"Castle Wall","theme":"Medieval","type":"wall","c":[1],"glass":false,"door":false,"h":1.25,"units":40},{"key":"wall.wallcw32","id":"rct2.scenery_wall.wallcw32","name":"Wall","theme":"Medieval","type":"wall","c":[1],"glass":false,"door":false,"h":1.0,"units":32},{"key":"wall.wallcx32","id":"rct2.scenery_wall.wallcx32","name":"Wall","theme":"Medieval","type":"wall","c":[1],"glass":false,"door":false,"h":1.0,"units":32},{"key":"small.tcn","id":"rct2.scenery_small.tcn","name":"Cannon","theme":"Medieval","type":"small","c":[],"glass":false,"door":false,"h":0.5,"units":16,"shape":"1/4"},{"key":"small.ttg","id":"rct2.scenery_small.ttg","name":"Target","theme":"Medieval","type":"small","c":[],"glass":false,"door":false,"h":0.75,"units":24,"shape":"1/4"},{"key":"large.sct","id":"rct2.scenery_large.sct","name":"Tent","theme":"Medieval","type":"large","c":[1,2],"glass":false,"door":false,"units":32,"h":1.0,"tiles":[[0,0]]},{"key":"large.soh1","id":"rct2.scenery_large.soh1","name":"House","theme":"Medieval","type":"large","c":[1],"glass":false,"door":false,"units":64,"h":2.0,"tiles":[[0,0]]},{"key":"large.soh2","id":"rct2.scenery_large.soh2","name":"House","theme":"Medieval","type":"large","c":[1],"glass":false,"door":false,"units":48,"h":1.5,"tiles":[[0,0]]},{"key":"large.soh3","id":"rct2.scenery_large.soh3","name":"House","theme":"Medieval","type":"large","c":[1],"glass":false,"door":false,"units":80,"h":2.5,"tiles":[[0,0]]},{"key":"wall.wpw3","id":"rct2.scenery_wall.wpw3","name":"Wooden Fence","theme":"Medieval","type":"wall","c":[],"glass":false,"door":false,"h":0.75,"units":24},{"key":"wall.wallcfpc","id":"rct2.scenery_wall.wallcfpc","name":"Portcullis Door","theme":"Medieval","type":"wall","c":[1,2,3],"glass":false,"door":true,"h":1.0,"units":32},{"key":"wall.wallcbpc","id":"rct2.scenery_wall.wallcbpc","name":"Portcullis Door","theme":"Medieval","type":"wall","c":[2,3],"glass":false,"door":true,"h":1.0,"units":32},{"key":"wall.wbr1a","id":"rct2.scenery_wall.wbr1a","name":"Brick Wall","theme":"Walls and roofs","type":"wall","c":[],"glass":false,"door":false,"h":0.75,"units":24},{"key":"wall.wbr2a","id":"rct2.scenery_wall.wbr2a","name":"Stone Wall","theme":"Walls and roofs","type":"wall","c":[],"glass":false,"door":false,"h":0.5,"units":16},{"key":"wall.wallbb34","id":"rct2.scenery_wall.wallbb34","name":"Stone Wall","theme":"Walls and roofs","type":"wall","c":[1],"glass":false,"door":false,"h":1.0,"units":32},{"key":"wall.walltn32","id":"rct2.scenery_wall.walltn32","name":"Poles","theme":"Walls and roofs","type":"wall","c":[1],"glass":true,"door":false,"h":1.0,"units":32},{"key":"small.tntroof1","id":"rct2.scenery_small.tntroof1","name":"Canvas Roof","theme":"Walls and roofs","type":"small","c":[1,2],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"wall.wallbb32","id":"rct2.scenery_wall.wallbb32","name":"Wall","theme":"Walls and roofs","type":"wall","c":[],"glass":false,"door":false,"h":1.0,"units":32},{"key":"wall.wallbb16","id":"rct2.scenery_wall.wallbb16","name":"Wall","theme":"Walls and roofs","type":"wall","c":[],"glass":false,"door":false,"h":0.5,"units":16},{"key":"wall.wallbb8","id":"rct2.scenery_wall.wallbb8","name":"Wall","theme":"Walls and roofs","type":"wall","c":[],"glass":false,"door":false,"h":0.25,"units":8},{"key":"wall.wallbb33","id":"rct2.scenery_wall.wallbb33","name":"Wall","theme":"Walls and roofs","type":"wall","c":[1],"glass":false,"door":false,"h":1.0,"units":32},{"key":"small.xxbbbr01_fix","id":"toontowner.scenery_small.xxbbbr01_fix","name":"Base Block","theme":"Walls and roofs","type":"small","c":[],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"small.roof5","id":"rct2.scenery_small.roof5","name":"Roof","theme":"Walls and roofs","type":"small","c":[],"glass":false,"door":false,"h":0.5,"units":16,"shape":"4/4"},{"key":"small.roof7","id":"rct2.scenery_small.roof7","name":"Roof","theme":"Walls and roofs","type":"small","c":[],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"wall.wallrs32","id":"rct2.scenery_wall.wallrs32","name":"Wall","theme":"Walls and roofs","type":"wall","c":[],"glass":false,"door":false,"h":1.0,"units":32},{"key":"wall.wallrs16","id":"rct2.scenery_wall.wallrs16","name":"Wall","theme":"Walls and roofs","type":"wall","c":[],"glass":false,"door":false,"h":0.5,"units":16},{"key":"wall.wallrs8","id":"rct2.scenery_wall.wallrs8","name":"Wall","theme":"Walls and roofs","type":"wall","c":[],"glass":false,"door":false,"h":0.25,"units":8},{"key":"wall.wallbr32","id":"rct2.scenery_wall.wallbr32","name":"Wall","theme":"Walls and roofs","type":"wall","c":[1],"glass":false,"door":false,"h":1.0,"units":32},{"key":"wall.wallbr16","id":"rct2.scenery_wall.wallbr16","name":"Wall","theme":"Walls and roofs","type":"wall","c":[1],"glass":false,"door":false,"h":0.5,"units":16},{"key":"wall.wallbr8","id":"rct2.scenery_wall.wallbr8","name":"Wall","theme":"Walls and roofs","type":"wall","c":[1],"glass":false,"door":false,"h":0.25,"units":8},{"key":"wall.wallbrdr","id":"rct2.scenery_wall.wallbrdr","name":"Doorway","theme":"Walls and roofs","type":"wall","c":[1,2,3],"glass":false,"door":true,"h":1.0,"units":32},{"key":"wall.wallbrwn","id":"rct2.scenery_wall.wallbrwn","name":"Window","theme":"Walls and roofs","type":"wall","c":[1,2,3],"glass":false,"door":false,"h":1.0,"units":32},{"key":"small.brbase","id":"rct2.scenery_small.brbase","name":"Base Block","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"small.roof1","id":"rct2.scenery_small.roof1","name":"Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.5,"units":16,"shape":"4/4"},{"key":"small.ttrftl02","id":"toontowner.scenery_small.ttrftl02","name":"Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.5,"units":16,"shape":"4/4"},{"key":"small.ttrftl03","id":"toontowner.scenery_small.ttrftl03","name":"Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.5,"units":16,"shape":"4/4"},{"key":"small.ttrftl04","id":"toontowner.scenery_small.ttrftl04","name":"Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.5,"units":16,"shape":"4/4"},{"key":"small.roof3","id":"rct2.scenery_small.roof3","name":"Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"small.ttrftl07","id":"toontowner.scenery_small.ttrftl07","name":"Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"small.ttrftl08","id":"toontowner.scenery_small.ttrftl08","name":"Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"small.roof2","id":"rct2.scenery_small.roof2","name":"Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.5,"units":16,"shape":"4/4"},{"key":"small.roof4","id":"rct2.scenery_small.roof4","name":"Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"wall.wallcb32","id":"rct2.scenery_wall.wallcb32","name":"Wall","theme":"Walls and roofs","type":"wall","c":[],"glass":false,"door":false,"h":1.0,"units":32},{"key":"wall.wallcb16","id":"rct2.scenery_wall.wallcb16","name":"Wall","theme":"Walls and roofs","type":"wall","c":[],"glass":false,"door":false,"h":0.5,"units":16},{"key":"wall.wallcb8","id":"rct2.scenery_wall.wallcb8","name":"Wall","theme":"Walls and roofs","type":"wall","c":[],"glass":false,"door":false,"h":0.25,"units":8},{"key":"wall.wallcbdr","id":"rct2.scenery_wall.wallcbdr","name":"Doorway","theme":"Walls and roofs","type":"wall","c":[2,3],"glass":false,"door":true,"h":1.0,"units":32},{"key":"wall.wallcbwn","id":"rct2.scenery_wall.wallcbwn","name":"Window","theme":"Walls and roofs","type":"wall","c":[2,3],"glass":false,"door":false,"h":1.0,"units":32},{"key":"small.brbase2","id":"rct2.scenery_small.brbase2","name":"Base Block","theme":"Walls and roofs","type":"small","c":[],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"small.cwbcrv33","id":"rct2.scenery_small.cwbcrv33","name":"Curved Block","theme":"Walls and roofs","type":"small","c":[],"glass":false,"door":false,"h":0.25,"units":8,"shape":"3/4+D"},{"key":"small.cwbcrv32","id":"rct2.scenery_small.cwbcrv32","name":"Curved Wall","theme":"Walls and roofs","type":"small","c":[],"glass":false,"door":false,"h":1.0,"units":32,"shape":"4/4+D"},{"key":"small.brcrrf1","id":"rct2.scenery_small.brcrrf1","name":"Curved Roof","theme":"Walls and roofs","type":"small","c":[],"glass":false,"door":false,"h":0.25,"units":8,"shape":"3/4+D"},{"key":"small.roof6","id":"rct2.scenery_small.roof6","name":"Roof","theme":"Walls and roofs","type":"small","c":[],"glass":false,"door":false,"h":0.5,"units":16,"shape":"4/4"},{"key":"small.roof8","id":"rct2.scenery_small.roof8","name":"Roof","theme":"Walls and roofs","type":"small","c":[],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"wall.wallcf32","id":"rct2.scenery_wall.wallcf32","name":"Wall","theme":"Walls and roofs","type":"wall","c":[1],"glass":false,"door":false,"h":1.0,"units":32},{"key":"wall.wallcf16","id":"rct2.scenery_wall.wallcf16","name":"Wall","theme":"Walls and roofs","type":"wall","c":[1],"glass":false,"door":false,"h":0.5,"units":16},{"key":"wall.wallcf8","id":"rct2.scenery_wall.wallcf8","name":"Wall","theme":"Walls and roofs","type":"wall","c":[1],"glass":false,"door":false,"h":0.25,"units":8},{"key":"wall.wallcfdr","id":"rct2.scenery_wall.wallcfdr","name":"Doorway","theme":"Walls and roofs","type":"wall","c":[1,2,3],"glass":false,"door":true,"h":1.0,"units":32},{"key":"wall.wallcfwn","id":"rct2.scenery_wall.wallcfwn","name":"Window","theme":"Walls and roofs","type":"wall","c":[1,2,3],"glass":false,"door":false,"h":1.0,"units":32},{"key":"wall.wallcfar","id":"rct2.scenery_wall.wallcfar","name":"Wall Arch","theme":"Walls and roofs","type":"wall","c":[1],"glass":true,"door":false,"h":1.0,"units":32},{"key":"small.brbase3","id":"rct2.scenery_small.brbase3","name":"Base Block","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"small.cwfcrv33","id":"rct2.scenery_small.cwfcrv33","name":"Curved Block","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"3/4+D"},{"key":"small.cwfcrv32","id":"rct2.scenery_small.cwfcrv32","name":"Curved Wall","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":1.0,"units":32,"shape":"4/4+D"},{"key":"small.brcrrf2","id":"rct2.scenery_small.brcrrf2","name":"Curved Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"3/4+D"},{"key":"small.roof9","id":"rct2.scenery_small.roof9","name":"Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.5,"units":16,"shape":"4/4"},{"key":"small.roof11","id":"rct2.scenery_small.roof11","name":"Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"small.roof10","id":"rct2.scenery_small.roof10","name":"Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.5,"units":16,"shape":"4/4"},{"key":"small.roof12","id":"rct2.scenery_small.roof12","name":"Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"small.corroof2","id":"rct2.scenery_small.corroof2","name":"Corrugated Steel Base","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"wall.wallco16","id":"rct2.scenery_wall.wallco16","name":"Corrugated Steel Wall","theme":"Walls and roofs","type":"wall","c":[1],"glass":false,"door":false,"h":0.5,"units":16},{"key":"small.corroof","id":"rct2.scenery_small.corroof","name":"Corrugated Steel Roof","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.5,"units":16,"shape":"4/4"},{"key":"wall.walllt32","id":"rct2.scenery_wall.walllt32","name":"Steel Latticework","theme":"Walls and roofs","type":"wall","c":[1],"glass":true,"door":false,"h":1.0,"units":32},{"key":"wall.wallsk16","id":"rct2.scenery_wall.wallsk16","name":"Wall","theme":"Walls and roofs","type":"wall","c":[1],"glass":false,"door":false,"h":0.5,"units":16},{"key":"wall.wallsk32","id":"rct2.scenery_wall.wallsk32","name":"Wall","theme":"Walls and roofs","type":"wall","c":[1,2],"glass":true,"door":false,"h":1.0,"units":32},{"key":"small.sktdw2","id":"rct2.scenery_small.sktdw2","name":"Wall","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.5,"units":16,"shape":"4/4+D"},{"key":"small.sktdw","id":"rct2.scenery_small.sktdw","name":"Wall","theme":"Walls and roofs","type":"small","c":[1,2],"glass":false,"door":false,"h":1.0,"units":32,"shape":"4/4+D"},{"key":"small.sktbase","id":"rct2.scenery_small.sktbase","name":"Block","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"small.sktbaset","id":"rct2.scenery_small.sktbaset","name":"Block","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"3/4+D"},{"key":"wall.support_structure_full","id":"official.scenery_wall.support_structure_full","name":"Support Structure","theme":"Walls and roofs","type":"wall","c":[1],"glass":true,"door":false,"h":1.0,"units":32},{"key":"wall.support_structure_half","id":"official.scenery_wall.support_structure_half","name":"Support Structure","theme":"Walls and roofs","type":"wall","c":[1],"glass":true,"door":false,"h":0.5,"units":16},{"key":"small.suppw2","id":"rct2.scenery_small.suppw2","name":"Support Structure","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":1.0,"units":32,"shape":"4/4"},{"key":"small.support_structure_half","id":"official.scenery_small.support_structure_half","name":"Support Structure","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.5,"units":16,"shape":"4/4"},{"key":"small.suppw1","id":"rct2.scenery_small.suppw1","name":"Support Structure","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":3.0,"units":96,"shape":"4/4"},{"key":"small.suppw3","id":"rct2.scenery_small.suppw3","name":"Support Structure","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"4/4"},{"key":"small.suppleg1","id":"rct2.scenery_small.suppleg1","name":"Pole","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":1.75,"units":56,"shape":"1/4"},{"key":"small.suppleg2","id":"rct2.scenery_small.suppleg2","name":"Pole","theme":"Walls and roofs","type":"small","c":[1],"glass":false,"door":false,"h":0.25,"units":8,"shape":"2/4"},{"key":"small.sumrf","id":"rct2.scenery_small.sumrf","name":"Roof","theme":"Walls and roofs","type":"small","c":[],"glass":false,"door":false,"h":1.0,"units":32,"shape":"4/4"},{"key":"wall.wallrh32","id":"rct2.scenery_wall.wallrh32","name":"Wall","theme":"Walls and roofs","type":"wall","c":[1],"glass":true,"door":false,"h":1.0,"units":32}];</script>
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+if (!window.THREE) { $('pname').textContent = 'The 3D library could not load. Check your connection and reload.'; return; }
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+/* ───────── textures: light patterns that a material colour tints; 128 px is one tile ───────── */
+const rnd = (() => { let a = 12345; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; })();
+function mkTex(draw) {
+  const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d');
+  g.fillStyle = '#fff'; g.fillRect(0, 0, 128, 128); draw(g);
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+}
+const shade = (g, x, y, w, h, a) => { g.fillStyle = `rgba(40,20,30,${a})`; g.fillRect(x, y, w, h); };
+const TEX = {
+  brick: mkTex(g => { for (let r = 0; r < 8; r++) for (let c = -1; c < 4; c++) { const x = c * 32 + (r % 2) * 16; shade(g, x, r * 16, 32, 16, rnd() * 0.16); } for (let r = 0; r < 8; r++) { shade(g, 0, r * 16, 128, 2, 0.34); for (let c = 0; c < 4; c++) shade(g, c * 32 + (r % 2) * 16, r * 16, 2, 16, 0.34); } }),
+  stone: mkTex(g => { for (let r = 0; r < 4; r++) { let x = -(r % 2) * 20; while (x < 128) { const w = 30 + Math.floor(rnd() * 3) * 9; shade(g, x, r * 32, w, 32, 0.04 + rnd() * 0.16); shade(g, x, r * 32, 2, 32, 0.3); x += w; } shade(g, 0, r * 32, 128, 2, 0.3); } }),
+  plank: mkTex(g => { for (let c = 0; c < 8; c++) { shade(g, c * 16, 0, 16, 128, rnd() * 0.14); shade(g, c * 16, 0, 1.5, 128, 0.36); if (rnd() < 0.5) shade(g, c * 16 + 5, rnd() * 110, 5, 3, 0.18); } }),
+  clap: mkTex(g => { for (let r = 0; r < 8; r++) { shade(g, 0, r * 16, 128, 16, rnd() * 0.08); shade(g, 0, r * 16 + 13, 128, 3, 0.3); } }),
+  shingle: mkTex(g => { for (let r = 0; r < 8; r++) { for (let c = -1; c < 8; c++) { const x = c * 16 + (r % 2) * 8; shade(g, x, r * 16, 16, 16, rnd() * 0.18); shade(g, x, r * 16, 1.5, 16, 0.3); } shade(g, 0, r * 16 + 13, 128, 3, 0.34); } }),
+  corr: mkTex(g => { for (let c = 0; c < 16; c++) { shade(g, c * 8, 0, 3, 128, 0.3); shade(g, c * 8 + 3, 0, 2, 128, 0.12); } }),
+  plaster: mkTex(g => { for (let i = 0; i < 260; i++) shade(g, rnd() * 128, rnd() * 128, 2 + rnd() * 4, 2 + rnd() * 3, 0.05); }),
+  canvas: mkTex(g => { for (let i = 0; i < 16; i++) shade(g, 0, i * 8, 128, 1, 0.07); }),
+};
+const C = { timber: '#b98a5a', dark: '#5b3a29', stoneG: '#b9b5ad', stoneB: '#a98a66', brick: '#b5553c', slate: '#5f6b7a', cream: '#f1e6cf', steel: '#8d99a6', canvas: '#efe6d2', iron: '#3a3640', red: '#b5453c', glass: '#bfe3ee', rope: '#c9a86a', gold: '#e3b23c', blue: '#4f7fb8', green: '#5a8f5a' };
+const matCache = {};
+function getMat(tex, hex, glass) {
+  const k = tex + '|' + hex + '|' + glass;
+  return matCache[k] || (matCache[k] = new THREE.MeshLambertMaterial({ map: TEX[tex] || null, color: hex, side: THREE.DoubleSide, transparent: !!glass, opacity: glass ? 0.5 : 1, depthWrite: !glass }));
+}
+function signTex(text, bg, fg) {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 64; const g = c.getContext('2d');
+  g.fillStyle = bg; g.fillRect(0, 0, 256, 64); g.strokeStyle = fg; g.lineWidth = 4; g.strokeRect(5, 5, 246, 54);
+  g.fillStyle = fg; g.font = '800 34px Georgia, "Times New Roman", serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  let w = g.measureText(text).width; if (w > 226) g.font = `800 ${Math.floor(34 * 226 / w)}px Georgia, serif`; g.fillText(text, 128, 34);
+  return new THREE.CanvasTexture(c);
+}
+
+/* ───────── builder: every model is flat faces grouped by material ───────── */
+class Bld {
+  constructor(pal) { this.f = {}; this.stack = [new THREE.Matrix4()]; this.pal = pal || {}; this.def = {}; this.extra = []; }
+  d(c1, c2, c3) { this.def = { c1, c2, c3 }; return this; }
+  get M() { return this.stack[this.stack.length - 1]; }
+  tf(m, fn) { this.stack.push(this.M.clone().multiply(m)); fn(); this.stack.pop(); }
+  at(x, y, z, ry, fn) { this.tf(new THREE.Matrix4().makeRotationY((ry || 0) * Math.PI / 180).setPosition(x, y, z), fn); }
+  rot(axis, deg, fn) { const m = new THREE.Matrix4(); (axis === 'x' ? m.makeRotationX : axis === 'z' ? m.makeRotationZ : m.makeRotationY).call(m, deg * Math.PI / 180); this.tf(m, fn); }
+  face(mat, pts) { const M = this.M; (this.f[mat] = this.f[mat] || []).push(pts.map(p => new THREE.Vector3(p[0], p[1], p[2]).applyMatrix4(M))); }
+  box(mat, x0, x1, y0, y1, z0, z1) {
+    this.face(mat, [[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]]); this.face(mat, [[x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0]]);
+    this.face(mat, [[x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1]]); this.face(mat, [[x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0]]);
+    this.face(mat, [[x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0]]); this.face(mat, [[x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1]]);
+  }
+  cb(mat, cx, y0, cz, w, h, d) { this.box(mat, cx - w / 2, cx + w / 2, y0, y0 + h, cz - d / 2, cz + d / 2); }   // centred box
+  prism(mat, pts, z0, z1) {            // polygon in x,y pushed along z
+    this.face(mat, pts.map(p => [p[0], p[1], z1])); this.face(mat, pts.map(p => [p[0], p[1], z0]).reverse());
+    pts.forEach((a, i) => { const b = pts[(i + 1) % pts.length]; this.face(mat, [[a[0],a[1],z1],[a[0],a[1],z0],[b[0],b[1],z0],[b[0],b[1],z1]]); });
+  }
+  prismY(mat, pts, y0, y1) {           // polygon in x,z pushed along y
+    this.face(mat, pts.map(p => [p[0], y1, p[1]])); this.face(mat, pts.map(p => [p[0], y0, p[1]]).reverse());
+    pts.forEach((a, i) => { const b = pts[(i + 1) % pts.length]; this.face(mat, [[a[0],y1,a[1]],[a[0],y0,a[1]],[b[0],y0,b[1]],[b[0],y1,b[1]]]); });
+  }
+  cyl(mat, cx, y0, cz, rb, rt, h, seg, alt) {   // cone or drum; alt = second material for alternate facets
+    seg = seg || 10; const top = [], bot = [];
+    for (let i = 0; i < seg; i++) { const a = i / seg * Math.PI * 2; bot.push([cx + Math.cos(a) * rb, y0, cz + Math.sin(a) * rb]); top.push([cx + Math.cos(a) * rt, y0 + h, cz + Math.sin(a) * rt]); }
+    for (let i = 0; i < seg; i++) { const j = (i + 1) % seg, m = alt && i % 2 ? alt : mat; if (rt < 1e-4) this.face(m, [bot[i], bot[j], top[i]]); else this.face(m, [bot[i], bot[j], top[j], top[i]]); }
+    if (rt > 1e-4) this.face(mat, top.slice().reverse()); if (rb > 1e-4) this.face(mat, bot);
+  }
+  sign(text, cx, cy, z, w, h, bg, fg, ry) {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshLambertMaterial({ map: signTex(text, bg || '#f1e6cf', fg || '#5b3a29') }));
+    const p = new THREE.Vector3(cx, cy, z).applyMatrix4(this.M); m.position.copy(p); m.quaternion.setFromRotationMatrix(this.M); if (ry) m.rotateY(ry); this.extra.push(m);
+  }
+  build() {
+    const g = new THREE.Group(), n = new THREE.Vector3(), u = new THREE.Vector3(), v = new THREE.Vector3(), e1 = new THREE.Vector3(), e2 = new THREE.Vector3(), Y = new THREE.Vector3(0, 1, 0);
+    for (const key in this.f) {
+      const [tex, colRaw, opt] = key.split(':'), col = /^c[123]$/.test(colRaw) ? (this.pal[colRaw] || this.def[colRaw] || '#cccccc') : colRaw;
+      const pos = [], uv = [];
+      for (const pts of this.f[key]) {
+        e1.subVectors(pts[1], pts[0]); e2.subVectors(pts[2], pts[0]); n.crossVectors(e1, e2).normalize();
+        if (Math.abs(n.y) > 0.99) u.set(1, 0, 0); else u.crossVectors(Y, n).normalize(); v.crossVectors(n, u); if (v.y < 0) v.negate();
+        for (let i = 1; i < pts.length - 1; i++) for (const p of [pts[0], pts[i], pts[i + 1]]) { pos.push(p.x, p.y, p.z); uv.push(p.dot(u), p.dot(v)); }
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); geo.computeVertexNormals();
+      const mesh = new THREE.Mesh(geo, getMat(tex, col, opt === 'glass')); mesh.castShadow = opt !== 'glass'; mesh.receiveShadow = true; g.add(mesh);
+    }
+    this.extra.forEach(m => g.add(m));
+    return g;
+  }
+}
+
+/* ───────── shared parts ───────── */
+const WT = 0.08, Z0 = -0.5, DARK = ':' + C.iron, GLASS = ':' + C.glass + ':glass';
+// a wall on the tile's back edge with openings cut out: {x0,x1,y0,y1,arch}
+function wallOps(B, m, h, ops, t) {
+  t = t || WT; const z0 = Z0, z1 = Z0 + t; let x = -0.5;
+  for (const o of ops.slice().sort((a, b) => a.x0 - b.x0)) {
+    if (o.x0 > x) B.box(m, x, o.x0, 0, h, z0, z1);
+    if (o.y0 > 0) B.box(m, o.x0, o.x1, 0, o.y0, z0, z1);
+    if (o.arch) { const r = (o.x1 - o.x0) / 2, cx = (o.x0 + o.x1) / 2, cy = o.y1 - r, N = 8;
+      for (let k = 0; k < N; k++) { const a0 = Math.PI - k * Math.PI / N, a1 = Math.PI - (k + 1) * Math.PI / N, p0 = [cx + r * Math.cos(a0), cy + r * Math.sin(a0)], p1 = [cx + r * Math.cos(a1), cy + r * Math.sin(a1)];
+        B.prism(m, [p0, p1, [p1[0], o.y1], [p0[0], o.y1]], z0, z1); } }
+    if (h > o.y1) B.box(m, o.x0, o.x1, o.y1, h, z0, z1);
+    x = o.x1;
+  }
+  if (x < 0.5) B.box(m, x, 0.5, 0, h, z0, z1);
+}
+function merlons(B, m, y0, y1, t, n) { n = n || 4; for (let i = 0; i < n; i++) { const x0 = -0.5 + i / n; B.box(m, x0, x0 + 0.58 / n, y0, y1, Z0, Z0 + t); } }
+function windowFill(B, o, frame, t) { const z = Z0 + (t || WT) / 2; B.box(GLASS, o.x0, o.x1, o.y0, o.y1, z - 0.008, z + 0.008);
+  B.box(frame, (o.x0 + o.x1) / 2 - 0.012, (o.x0 + o.x1) / 2 + 0.012, o.y0, o.y1, z - 0.02, z + 0.02); B.box(frame, o.x0, o.x1, (o.y0 + o.y1) / 2 - 0.012, (o.y0 + o.y1) / 2 + 0.012, z - 0.02, z + 0.02); }
+const wheel = (B, x, y, z, r, w) => B.tf(new THREE.Matrix4().makeRotationX(Math.PI / 2).setPosition(x, y, z), () => { B.cyl(':' + C.dark, 0, -w / 2, 0, r, r, w, 10); B.cyl(':' + C.iron, 0, -w / 2 - 0.006, 0, r * 0.28, r * 0.28, w + 0.012, 8); });
+// roofs on one tile: low edge at the front (+z) unless noted
+const R = { A: [-.5,0,.5], B: [.5,0,.5], E: [-.5,0,-.5], F: [.5,0,-.5] };
+function roof(B, shape, h, top, wall) {
+  const { A, B: b, E, F } = R, D = [-.5,h,-.5], Cc = [.5,h,-.5], Dl = [-.5,h,.5];
+  B.face(wall, [A, E, F, b]);
+  if (shape === 'slope') { B.face(top, [A, b, Cc, D]); B.face(wall, [F, E, D, Cc]); B.face(wall, [b, F, Cc]); B.face(wall, [E, A, D]); }
+  else if (shape === 'out') { B.face(top, [A, b, D]); B.face(top, [b, F, D]); B.face(wall, [E, A, D]); B.face(wall, [F, E, D]); }
+  else if (shape === 'in') { B.face(top, [b, Cc, D]); B.face(top, [b, D, Dl]); B.face(wall, [b, F, Cc]); B.face(wall, [A, b, Dl]); B.face(wall, [F, E, D, Cc]); B.face(wall, [E, A, Dl, D]); }
+  else if (shape === 'ridge') { const r0 = [-.5,h,0], r1 = [.5,h,0]; B.face(top, [A, b, r1, r0]); B.face(top, [F, E, r0, r1]); B.face(wall, [b, F, r1]); B.face(wall, [E, A, r0]); }
+  else if (shape === 'pyr') { const p = [0,h,0]; B.face(top, [A, b, p]); B.face(top, [b, F, p]); B.face(top, [F, E, p]); B.face(top, [E, A, p]); }
+}
+function truss(B, m, x0, x1, y0, y1, z, r) {      // a flat steel frame with a cross brace
+  r = r || 0.018; B.box(m, x0, x0 + 2*r, y0, y1, z - r, z + r); B.box(m, x1 - 2*r, x1, y0, y1, z - r, z + r); B.box(m, x0, x1, y1 - 2*r, y1, z - r, z + r); B.box(m, x0, x1, y0, y0 + 2*r, z - r, z + r);
+  const dx = x1 - x0, dy = y1 - y0, L = Math.hypot(dx, dy), nx = -dy / L * r, ny = dx / L * r;
+  const a = x0 + 2*r, b = x1 - 2*r, c = y0 + 2*r, e = y1 - 2*r;
+  B.prism(m, [[a + nx, c + ny], [a - nx, c - ny], [b - nx, e - ny], [b + nx, e + ny]], z - r * 0.7, z + r * 0.7);
+  B.prism(m, [[b + nx, c - ny], [b - nx, c + ny], [a - nx, e + ny], [a + nx, e - ny]], z - r * 0.7, z + r * 0.7);
+}
+const arc = (cx, cz, r, a0, a1, n) => Array.from({ length: n + 1 }, (_, i) => { const a = (a0 + (a1 - a0) * i / n) * Math.PI / 180; return [cx + r * Math.cos(a), cz + r * Math.sin(a)]; });
+
+/* ───────── families of plain walls, bases and roofs ───────── */
+const FAM = {
+  bb: { m: 'plank:' + C.timber, label: 'timber' }, rs: { m: 'stone:#a9a39a', label: 'rough stone' },
+  br: { m: 'brick:c1', def: C.brick, label: 'brick' }, cb: { m: 'stone:' + C.stoneB, label: 'brown stone' }, cf: { m: 'stone:c1', def: C.stoneG, label: 'stone' },
+};
+const MODELS = {};
+const def = (key, desc, fn) => { MODELS[key] = { desc, fn }; };
+for (const f of ['bb', 'rs', 'br', 'cb', 'cf']) {
+  const F = FAM[f];
+  for (const [s, h, d] of [['32', 1, 'full height'], ['16', 0.5, 'half height'], ['8', 0.25, 'low']])
+    def(`wall.wall${f}${s}`, `${F.label}, ${d}`, B => { B.d(F.def); wallOps(B, F.m, h, []); });
+  def(`wall.wall${f}dr`, `${F.label} with a door`, B => { B.d(F.def, C.dark, C.cream); const o = { x0: -0.17, x1: 0.17, y0: 0, y1: 0.72 }; wallOps(B, F.m, 1, [o]);
+    B.box('plank:c2', o.x0, o.x1, 0, o.y1, Z0 + 0.03, Z0 + 0.05); B.box(':c3', o.x0 - 0.03, o.x0, 0, o.y1 + 0.03, Z0 - 0.01, Z0 + WT + 0.01); B.box(':c3', o.x1, o.x1 + 0.03, 0, o.y1 + 0.03, Z0 - 0.01, Z0 + WT + 0.01); B.box(':c3', o.x0, o.x1, o.y1, o.y1 + 0.03, Z0 - 0.01, Z0 + WT + 0.01); B.cb(':' + C.gold, 0.11, 0.34, Z0 + WT - 0.02, 0.025, 0.025, 0.03); });
+  def(`wall.wall${f}wn`, `${F.label} with a window`, B => { B.d(F.def, C.cream, C.dark); const o = { x0: -0.2, x1: 0.2, y0: 0.32, y1: 0.76 }; wallOps(B, F.m, 1, [o]); windowFill(B, o, ':c2');
+    B.box(':c3', o.x0 - 0.04, o.x1 + 0.04, o.y0 - 0.035, o.y0, Z0 - 0.02, Z0 + WT + 0.02); B.box(':c3', o.x0 - 0.02, o.x1 + 0.02, o.y1, o.y1 + 0.03, Z0 - 0.01, Z0 + WT + 0.01); });
+}
+def('wall.wallbb33', 'painted timber, full height', B => { B.d('#c9a06a'); wallOps(B, 'plank:c1', 1, []); });
+def('wall.wallbb34', 'dressed stone, full height', B => { B.d(C.stoneG); wallOps(B, 'stone:c1', 1, []); B.box('stone:c1', -0.5, 0.5, 0.94, 1, Z0 - 0.015, Z0 + WT + 0.015); });
+def('wall.wallcfar', 'stone archway', B => { B.d(C.stoneG); wallOps(B, 'stone:c1', 1, [{ x0: -0.36, x1: 0.36, y0: 0, y1: 0.86, arch: true }]); });
+def('wall.wbr1a', 'low brick garden wall', B => { wallOps(B, 'brick:' + C.brick, 0.68, []); B.box(':' + C.stoneG, -0.5, 0.5, 0.68, 0.75, Z0 - 0.02, Z0 + WT + 0.02); });
+def('wall.wbr2a', 'dry stone wall', B => { wallOps(B, 'stone:#a9a39a', 0.44, [], 0.12); for (let i = 0; i < 5; i++) B.cb('stone:#9a948a', -0.4 + i * 0.2, 0.44, Z0 + 0.06, 0.16, 0.06, 0.13); });
+def('wall.walltn32', 'tent poles and rope', B => { B.d(C.cream); for (const x of [-0.46, 0.46]) { B.cyl(':c1', x, 0, Z0 + 0.04, 0.025, 0.02, 0.97, 6); B.cyl(':' + C.gold, x, 0.97, Z0 + 0.04, 0.03, 0, 0.03, 6); }
+  B.box(':' + C.rope, -0.46, 0.46, 0.86, 0.875, Z0 + 0.033, Z0 + 0.047); });
+def('wall.walllt32', 'steel lattice', B => { B.d(C.steel); for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) truss(B, ':c1', -0.5 + i * 0.5, i * 0.5, j * 0.5, 0.5 + j * 0.5, Z0 + 0.04, 0.014); });
+def('wall.wallco16', 'corrugated steel, half height', B => { B.d('#8fa3ad'); wallOps(B, 'corr:c1', 0.5, [], 0.04); B.box(':' + C.iron, -0.5, 0.5, 0.47, 0.5, Z0 - 0.01, Z0 + 0.05); });
+def('wall.wallsk16', 'tower spandrel panel', B => { B.d('#c8ccd2'); wallOps(B, ':c1', 0.5, [], 0.06); B.box(':' + C.iron, -0.5, 0.5, 0.46, 0.5, Z0 - 0.005, Z0 + 0.065); });
+def('wall.wallsk32', 'glass curtain wall', B => { B.d('#c8ccd2', '#9fd0e6'); B.box(':c2:glass', -0.5, 0.5, 0, 1, Z0 + 0.025, Z0 + 0.04); for (let i = 0; i <= 4; i++) B.cb(':c1', -0.5 + i * 0.25, 0, Z0 + 0.03, 0.025, 1, 0.06); for (const y of [0, 0.5, 0.97]) B.box(':c1', -0.5, 0.5, y, y + 0.03, Z0, Z0 + 0.06); });
+def('wall.wallrh32', 'glazed screen', B => { B.d(C.dark); B.box(GLASS, -0.5, 0.5, 0.05, 0.97, Z0 + 0.03, Z0 + 0.04); for (let i = 0; i <= 3; i++) B.cb(':c1', -0.5 + i / 3, 0, Z0 + 0.035, 0.035, 1, 0.06); for (const y of [0, 0.34, 0.66, 0.965]) B.box(':c1', -0.5, 0.5, y, y + 0.035, Z0 + 0.005, Z0 + 0.065); });
+def('wall.support_structure_full', 'steel support frame, full height', B => { B.d(C.steel); truss(B, ':c1', -0.5, 0.5, 0, 1, Z0 + 0.04, 0.022); });
+def('wall.support_structure_half', 'steel support frame, half height', B => { B.d(C.steel); truss(B, ':c1', -0.5, 0.5, 0, 0.5, Z0 + 0.04, 0.022); });
+def('wall.wallwdps', 'post and rail fence', B => { B.d(C.timber); for (const x of [-0.44, 0, 0.44]) B.cb('plank:c1', x, 0, Z0 + 0.04, 0.05, 0.25, 0.05); for (const y of [0.09, 0.19]) B.box('plank:c1', -0.5, 0.5, y, y + 0.03, Z0 + 0.03, Z0 + 0.05); });
+def('wall.wpw3', 'pointed wooden palisade', B => { for (let i = 0; i < 8; i++) { const x = -0.5 + (i + 0.5) / 8; B.prism('plank:' + C.timber, [[x - 0.055, 0], [x + 0.055, 0], [x + 0.055, 0.64], [x, 0.75], [x - 0.055, 0.64]], Z0, Z0 + 0.05); } B.box(':' + C.dark, -0.5, 0.5, 0.38, 0.42, Z0 + 0.05, Z0 + 0.07); });
+// castle walls: brown set, and a recolourable set
+const castle = (m, d) => [
+  ['1', 'low battlement', B => { B.d(d); wallOps(B, m, 0.5, [], 0.16); merlons(B, m, 0.5, 0.75, 0.16, 4); }],
+  ['4', 'tall battlement wall', B => { B.d(d); wallOps(B, m, 1.9, [], 0.16); B.box(m, -0.5, 0.5, 1.82, 1.9, Z0 - 0.03, Z0 + 0.19); merlons(B, m, 1.9, 2.25, 0.16, 4); }],
+  ['5', 'tall wall with arrow slits', B => { B.d(d); wallOps(B, m, 1.9, [], 0.16); B.box(m, -0.5, 0.5, 1.82, 1.9, Z0 - 0.03, Z0 + 0.19); merlons(B, m, 1.9, 2.25, 0.16, 4);
+    for (const x of [-0.25, 0.25]) for (const y of [0.5, 1.2]) { B.box(DARK, x - 0.018, x + 0.018, y, y + 0.3, Z0 - 0.004, Z0 + 0.164); B.box(DARK, x - 0.06, x + 0.06, y + 0.13, y + 0.165, Z0 - 0.004, Z0 + 0.164); } }],
+  ['6', 'gateway', B => { B.d(d); wallOps(B, m, 1.9, [{ x0: -0.34, x1: 0.34, y0: 0, y1: 1.3, arch: true }], 0.16); B.box(m, -0.5, 0.5, 1.82, 1.9, Z0 - 0.03, Z0 + 0.19); merlons(B, m, 1.9, 2.25, 0.16, 4); }],
+  ['7', 'tall wall with window and buttress', B => { B.d(d); const o = { x0: -0.1, x1: 0.1, y0: 1.0, y1: 1.45, arch: true }; wallOps(B, m, 1.9, [o], 0.16); B.box(GLASS, o.x0, o.x1, o.y0, o.y1, Z0 + 0.07, Z0 + 0.09);
+    B.box(m, -0.5, 0.5, 1.82, 1.9, Z0 - 0.03, Z0 + 0.19); merlons(B, m, 1.9, 2.25, 0.16, 4);
+    for (const x of [-0.42, 0.42]) { B.face(m, [[x - 0.07, 0, Z0 + 0.36], [x + 0.07, 0, Z0 + 0.36], [x + 0.07, 1.3, Z0 + 0.16], [x - 0.07, 1.3, Z0 + 0.16]]); B.face(m, [[x - 0.07, 0, Z0 + 0.16], [x - 0.07, 0, Z0 + 0.36], [x - 0.07, 1.3, Z0 + 0.16]]); B.face(m, [[x + 0.07, 0, Z0 + 0.36], [x + 0.07, 0, Z0 + 0.16], [x + 0.07, 1.3, Z0 + 0.16]]); } }],
+  ['8', 'medium battlement wall', B => { B.d(d); wallOps(B, m, 0.95, [], 0.16); merlons(B, m, 0.95, 1.25, 0.16, 4); }],
+];
+castle('stone:' + C.stoneB).forEach(([n, d, fn], i) => def('wall.wc' + ['1', '4', '5', '6', '7', '8'][i], 'brown stone ' + d, fn));
+castle('stone:c1', C.stoneG).forEach(([n, d, fn], i) => def('wall.wc' + ['2', '9', '10', '11', '12', '13'][i], 'stone ' + d, fn));
+const portcullis = (m, d1) => B => { B.d(d1, C.iron, C.dark); const o = { x0: -0.3, x1: 0.3, y0: 0, y1: 0.86, arch: true }; wallOps(B, m, 1, [o], 0.12);
+  for (let i = 0; i < 5; i++) { const x = -0.24 + i * 0.12; B.box(':c2', x - 0.012, x + 0.012, 0.16, 0.84 - Math.abs(x) * 0.5, Z0 + 0.05, Z0 + 0.07); B.cyl(':c2', x, 0.09, Z0 + 0.06, 0.001, 0.014, 0.07, 4); }
+  for (const y of [0.3, 0.48, 0.66]) B.box(':c2', -0.28, 0.28, y, y + 0.022, Z0 + 0.05, Z0 + 0.07); B.box('plank:c3', -0.34, 0.34, 0.88, 0.95, Z0 - 0.02, Z0 + 0.14); };
+def('wall.wallcfpc', 'stone portcullis gate', portcullis('stone:c1', C.stoneG));
+def('wall.wallcbpc', 'brown stone portcullis gate', portcullis('stone:' + C.stoneB));
+const tudorWall = (plaster, win) => B => { B.d('#efe3c8'); const o = { x0: -0.14, x1: 0.14, y0: 0.4, y1: 0.72 }; wallOps(B, 'plaster:' + plaster, 1, win ? [o] : [], 0.06); if (win) windowFill(B, o, ':' + C.dark, 0.06);
+  const b = ':' + C.dark, z0 = Z0 - 0.012, z1 = Z0 + 0.072;
+  for (const x of [-0.5, -0.2, 0.16, 0.46]) B.box(b, x, x + 0.04, 0, 1, z0, z1); for (const y of [0, 0.34, 0.74, 0.95]) B.box(b, -0.5, 0.5, y, y + 0.045, z0, z1);
+  B.prism(b, [[-0.46, 0.04], [-0.42, 0.04], [-0.2, 0.34], [-0.24, 0.34]], z0, z1); B.prism(b, [[0.46, 0.04], [0.2, 0.34], [0.16, 0.34], [0.42, 0.04]], z0, z1); };
+def('wall.wallcz32', 'half-timbered wall', tudorWall('#efe3c8')); def('wall.wallcy32', 'half-timbered wall with window', tudorWall('#efe3c8', true));
+def('wall.wallcw32', 'half-timbered wall, tinted plaster', tudorWall('c1')); def('wall.wallcx32', 'half-timbered wall with window, tinted', tudorWall('c1', true));
+
+/* ───────── blocks and roofs ───────── */
+const slab = (m, d) => B => { B.d(d); B.box(m, -0.5, 0.5, 0, 0.25, -0.5, 0.5); };
+def('small.xxbbbr01_fix', 'timber base block', slab('plank:' + C.timber)); def('small.brbase', 'brick base block', slab('brick:c1', C.brick));
+def('small.brbase2', 'brown stone base block', slab('stone:' + C.stoneB)); def('small.brbase3', 'stone base block', slab('stone:c1', C.stoneG));
+def('small.corroof2', 'corrugated steel base', slab('corr:c1', '#8fa3ad')); def('small.sktbase', 'tower floor block', slab(':c1', '#c8ccd2'));
+def('small.sktbaset', 'tower floor block, triangle', B => { B.d('#c8ccd2'); B.prismY(':c1', [[-0.5, -0.5], [0.5, -0.5], [-0.5, 0.5]], 0, 0.25); });
+const rf = (shape, h, top, wall, d) => B => { B.d(d); roof(B, shape, h, top, wall); };
+[['roof5', 'slope', 0.5, 'timber shingle roof, slope'], ['roof7', 'slope', 0.25, 'timber shingle roof, shallow slope']].forEach(([k, s, h, d]) => def('small.' + k, d, rf(s, h, 'shingle:#8a6a4a', 'plank:' + C.timber)));
+[['roof1', 'slope', 0.5, 'slope'], ['ttrftl02', 'out', 0.5, 'outer corner'], ['ttrftl03', 'in', 0.5, 'inner corner'], ['ttrftl04', 'ridge', 0.5, 'ridge'], ['roof2', 'pyr', 0.5, 'peak'],
+ ['roof3', 'slope', 0.25, 'shallow slope'], ['ttrftl07', 'out', 0.25, 'shallow outer corner'], ['ttrftl08', 'in', 0.25, 'shallow inner corner'], ['roof4', 'pyr', 0.25, 'shallow peak']]
+  .forEach(([k, s, h, d]) => def('small.' + k, 'tiled roof, ' + d, rf(s, h, 'shingle:c1', 'brick:' + C.brick, '#c0563b')));
+[['roof6', 'slope', 0.5, 'slope'], ['roof8', 'slope', 0.25, 'shallow slope']].forEach(([k, s, h, d]) => def('small.' + k, 'slate roof, ' + d, rf(s, h, 'shingle:' + C.slate, 'stone:' + C.stoneB)));
+[['roof9', 'slope', 0.5, 'slope'], ['roof11', 'slope', 0.25, 'shallow slope'], ['roof10', 'ridge', 0.5, 'ridge'], ['roof12', 'ridge', 0.25, 'shallow ridge']]
+  .forEach(([k, s, h, d]) => def('small.' + k, 'slate roof, ' + d, rf(s, h, 'shingle:c1', 'stone:' + C.stoneG, C.slate)));
+def('small.corroof', 'corrugated steel vault', B => { B.d('#8fa3ad'); const p = arc(0, 0, 0.5, 0, 180, 10).map(q => [q[0], q[1]]);
+  for (let i = 0; i < 10; i++) B.face('corr:c1', [[-0.5, p[i][1], p[i][0]], [0.5, p[i][1], p[i][0]], [0.5, p[i + 1][1], p[i + 1][0]], [-0.5, p[i + 1][1], p[i + 1][0]]]);
+  for (const x of [-0.5, 0.5]) B.face('corr:c1', p.map(q => [x, q[1], q[0]])); });
+def('small.tntroof1', 'striped canvas canopy', B => { B.d(C.red, C.cream); B.cyl('canvas:c1', 0, 0.06, 0, 0.56, 0, 0.19, 12, 'canvas:c2'); B.cyl('canvas:c2', 0, 0, 0, 0.56, 0.56, 0.06, 12, 'canvas:c1'); });
+def('small.sumrf', 'pagoda roof', B => { const m = 'shingle:#3f7d6e', t = ':' + C.red;
+  const ring = (s0, y0, s1, y1) => { const a = [[-s0,y0,s0],[s0,y0,s0],[s0,y0,-s0],[-s0,y0,-s0]], b = [[-s1,y1,s1],[s1,y1,s1],[s1,y1,-s1],[-s1,y1,-s1]]; for (let i = 0; i < 4; i++) B.face(m, [a[i], a[(i + 1) % 4], b[(i + 1) % 4], b[i]]); };
+  B.box(t, -0.5, 0.5, 0, 0.05, -0.5, 0.5); ring(0.56, 0.1, 0.5, 0.05); ring(0.56, 0.1, 0.3, 0.3); ring(0.3, 0.3, 0.16, 0.6); ring(0.16, 0.6, 0.0, 0.86);
+  B.cyl(':' + C.gold, 0, 0.84, 0, 0.035, 0.035, 0.06, 6); B.cyl(':' + C.gold, 0, 0.9, 0, 0.05, 0, 0.1, 6); });
+// curved pieces sweep a quarter circle about the tile's back-left corner
+const curveSlab = (m, d) => B => { B.d(d); B.prismY(m, [[-0.5, -0.5]].concat(arc(-0.5, -0.5, 1, 0, 90, 10)), 0, 0.25); };
+const curveWall = (m, d) => B => { B.d(d); const o = arc(-0.5, -0.5, 1, 0, 90, 10), i = arc(-0.5, -0.5, 0.9, 0, 90, 10); for (let k = 0; k < 10; k++) B.prismY(m, [o[k], o[k + 1], i[k + 1], i[k]], 0, 1); };
+const curveRoof = (top, wall, d) => B => { B.d(d); const o = arc(-0.5, -0.5, 1, 0, 90, 10), ap = [-0.5, 0.25, -0.5];
+  for (let k = 0; k < 10; k++) B.face(top, [[o[k][0], 0, o[k][1]], [o[k + 1][0], 0, o[k + 1][1]], ap]); B.face(wall, [[-0.5, 0, -0.5], [0.5, 0, -0.5], ap]); B.face(wall, [[-0.5, 0, 0.5], [-0.5, 0, -0.5], ap]); };
+def('small.cwbcrv33', 'brown stone curved block', curveSlab('stone:' + C.stoneB)); def('small.cwfcrv33', 'stone curved block', curveSlab('stone:c1', C.stoneG));
+def('small.cwbcrv32', 'brown stone curved wall', curveWall('stone:' + C.stoneB)); def('small.cwfcrv32', 'stone curved wall', curveWall('stone:c1', C.stoneG));
+def('small.brcrrf1', 'slate curved roof', curveRoof('shingle:' + C.slate, 'stone:' + C.stoneB)); def('small.brcrrf2', 'slate curved roof', curveRoof('shingle:c1', 'stone:' + C.stoneG, C.slate));
+const diagGlass = h => B => { B.d('#c8ccd2', '#9fd0e6'); B.at(0, 0, 0, 45, () => { const L = 0.707; B.box(':c2:glass', -L, L, 0, h, -0.008, 0.008); for (let i = 0; i <= 4; i++) B.cb(':c1', -L + i * L / 2, 0, 0, 0.025, h, 0.05); for (const y of [0, h - 0.03]) B.box(':c1', -L, L, y, y + 0.03, -0.025, 0.025); }); };
+def('small.sktdw', 'diagonal glass wall', diagGlass(1)); def('small.sktdw2', 'diagonal glass wall, half height', diagGlass(0.5));
+const frameCube = h => B => { B.d(C.steel); for (const r of [0, 90, 180, 270]) B.at(0, 0, 0, r, () => truss(B, ':c1', -0.48, 0.48, 0, h, -0.46, 0.022)); };
+def('small.suppw2', 'steel support tower, 1 tile', frameCube(1)); def('small.support_structure_half', 'steel support tower, half tile', frameCube(0.5));
+def('small.suppw1', 'steel support tower, 3 tiles', B => { B.d(C.steel); for (let k = 0; k < 3; k++) B.at(0, k, 0, 0, () => { for (const r of [0, 90, 180, 270]) B.at(0, 0, 0, r, () => truss(B, ':c1', -0.48, 0.48, 0, 1, -0.46, 0.022)); }); });
+def('small.suppw3', 'steel deck', B => { B.d(C.steel); B.box(':c1', -0.5, 0.5, 0.19, 0.25, -0.5, 0.5); for (const z of [-0.46, 0, 0.46]) B.box(':' + C.iron, -0.5, 0.5, 0.05, 0.19, z - 0.025, z + 0.025); for (const x of [-0.46, 0.46]) B.box(':' + C.iron, x - 0.025, x + 0.025, 0.05, 0.19, -0.5, 0.5); });
+def('small.suppleg1', 'steel pole', B => { B.d(C.steel); B.cyl(':c1', 0, 0, 0, 0.05, 0.04, 1.7, 8); B.cyl(':c1', 0, 0, 0, 0.09, 0.07, 0.05, 8); B.cyl(':c1', 0, 1.7, 0, 0.06, 0.06, 0.05, 8); });
+def('small.suppleg2', 'pole footing', B => { B.d(C.steel); B.cb(':c1', 0, 0, 0, 0.3, 0.1, 0.3); B.cyl(':c1', 0, 0.1, 0, 0.08, 0.06, 0.15, 8); });
+
+/* ───────── medieval ───────── */
+const roundTower = m => B => { B.cyl(m, 0, 0, 0, 0.47, 0.43, 2.9, 14); B.cyl(m, 0, 2.9, 0, 0.43, 0.5, 0.12, 14); B.cyl(m, 0, 3.02, 0, 0.5, 0.5, 0.06, 14);
+  for (let i = 0; i < 8; i++) B.at(0, 0, 0, i * 45, () => B.box(m, -0.09, 0.09, 3.08, 3.375, 0.38, 0.5));
+  for (const [r, y] of [[20, 1.0], [140, 1.7], [260, 2.3], [80, 2.4]]) B.at(0, 0, 0, r, () => B.box(DARK, -0.02, 0.02, y, y + 0.3, 0.42, 0.468));
+  B.at(0, 0, 0, -90, () => { B.box('plank:' + C.dark, -0.1, 0.1, 0, 0.4, 0.44, 0.475); }); };
+def('small.tct1', 'round tower, brown stone', roundTower('stone:' + C.stoneB)); def('small.tct2', 'round tower, grey stone', roundTower('stone:' + C.stoneG));
+const squareTower = (m, tall) => B => { const top = tall ? 3.7 : 1.92, s = 0.46;
+  B.box(m, -s, s, 0, top, -s, s); B.box(m, -0.5, 0.5, top, top + 0.1, -0.5, 0.5);
+  for (const r of [0, 90, 180, 270]) B.at(0, 0, 0, r, () => { for (const x of [-0.4, 0, 0.4]) B.box(m, x - 0.1, x + 0.1, top + 0.1, top + (tall ? 0.36 : 0.33), 0.38, 0.5);
+    for (let y = 0.6; y < top - 0.5; y += 1.1) B.box(DARK, -0.02, 0.02, y, y + 0.32, s - 0.01, s + 0.006); });
+  if (tall) { roof4(B, 'shingle:' + C.slate, 0.4, top + 0.1, 0.02, 4.75); B.cyl(':' + C.dark, 0, 4.75, 0, 0.012, 0.012, 0.25, 5); B.prism(':' + C.red, [[0.012, 4.86], [0.2, 4.92], [0.012, 4.99]], -0.004, 0.004); } };
+function roof4(B, m, s0, y0, s1, y1) { const a = [[-s0,y0,s0],[s0,y0,s0],[s0,y0,-s0],[-s0,y0,-s0]], b = [[-s1,y1,s1],[s1,y1,s1],[s1,y1,-s1],[-s1,y1,-s1]]; for (let i = 0; i < 4; i++) B.face(m, [a[i], a[(i + 1) % 4], b[(i + 1) % 4], b[i]]); }
+def('large.stb1', 'square tower, brown stone', squareTower('stone:' + C.stoneB)); def('large.stb2', 'tall spired tower, brown stone', squareTower('stone:' + C.stoneB, true));
+def('large.stg1', 'square tower, grey stone', squareTower('stone:' + C.stoneG)); def('large.stg2', 'tall spired tower, grey stone', squareTower('stone:' + C.stoneG, true));
+def('small.tcn', 'cannon', B => { B.cb('plank:' + C.dark, 0, 0.1, 0, 0.16, 0.08, 0.3); for (const x of [-0.11, 0.11]) B.tf(new THREE.Matrix4().makeRotationZ(Math.PI / 2).setPosition(x, 0.13, 0.03), () => B.cyl('plank:' + C.timber, 0, -0.02, 0, 0.13, 0.13, 0.04, 10));
+  B.tf(new THREE.Matrix4().makeRotationX(Math.PI / 2 - 0.22).setPosition(0, 0.2, -0.16), () => { B.cyl(DARK, 0, 0, 0, 0.07, 0.05, 0.4, 8); B.cyl(DARK, 0, 0.38, 0, 0.065, 0.065, 0.03, 8); }); });
+def('small.ttg', 'archery target', B => { const z = 0.02; for (const [x, zz] of [[-0.16, 0.12], [0.16, 0.12], [0, -0.2]]) B.face(':' + C.dark, [[x - 0.015, 0, zz], [x + 0.015, 0, zz], [0.012, 0.52, -0.02], [-0.012, 0.52, -0.02]]);
+  B.tf(new THREE.Matrix4().makeRotationX(Math.PI / 2 - 0.16).setPosition(0, 0.46, 0), () => { [[0.24, C.canvas], [0.19, C.iron], [0.14, C.blue], [0.09, C.red], [0.04, C.gold]].forEach(([r, c], i) => B.cyl(':' + c, 0, i * 0.006, 0, r, r, 0.05, 14)); }); });
+def('large.sct', 'striped pavilion tent', B => { B.d(C.red, C.cream); B.cyl('canvas:c1', 0, 0, 0, 0.44, 0.44, 0.42, 12, 'canvas:c2'); B.cyl('canvas:c2', 0, 0.42, 0, 0.5, 0.5, 0.05, 12, 'canvas:c1'); B.cyl('canvas:c1', 0, 0.47, 0, 0.48, 0, 0.36, 12, 'canvas:c2');
+  B.cyl(':' + C.dark, 0, 0.8, 0, 0.012, 0.012, 0.19, 5); B.prism(':c1', [[0.012, 0.9], [0.16, 0.94], [0.012, 0.985]], -0.004, 0.004); B.box(DARK, -0.09, 0.09, 0, 0.3, 0.43, 0.445); });
+const tudorHouse = (floors, roofH) => B => { B.d('#b5553c'); const pl = 'plaster:#efe3c8', bm = ':' + C.dark, s = 0.42; let y = 0;
+  for (let fl = 0; fl < floors; fl++) { const e = s + fl * 0.045, h = 0.75;
+    B.box(fl === 0 && floors > 1 ? 'stone:' + C.stoneG : pl, -e, e, y, y + h, -e, e);
+    B.box(bm, -e - 0.012, e + 0.012, y + h - 0.05, y + h, -e - 0.012, e + 0.012); if (fl > 0) B.box(bm, -e - 0.012, e + 0.012, y, y + 0.05, -e - 0.012, e + 0.012);
+    for (const r of [0, 90, 180, 270]) B.at(0, 0, 0, r, () => { const z = e;
+      for (const x of [-e, e - 0.045]) B.box(bm, x, x + 0.045, y, y + h, z - 0.01, z + 0.012);
+      if (fl > 0 || floors === 1) { B.box(bm, -0.022, 0.022, y, y + h, z, z + 0.012); B.prism(bm, [[-e + 0.04, y + 0.06], [-e + 0.085, y + 0.06], [-0.02, y + h - 0.06], [-0.065, y + h - 0.06]], z, z + 0.012); B.prism(bm, [[e - 0.04, y + 0.06], [0.065, y + h - 0.06], [0.02, y + h - 0.06], [e - 0.085, y + 0.06]], z, z + 0.012); }
+      if (r % 180 === 0 && (fl > 0 || floors === 1)) { const o = { x0: fl ? -0.3 : 0.12, x1: fl ? -0.1 : 0.3, y0: y + 0.28, y1: y + 0.56 }; B.box(GLASS, o.x0, o.x1, o.y0, o.y1, z + 0.004, z + 0.014); B.box(bm, o.x0 - 0.02, o.x1 + 0.02, o.y0 - 0.025, o.y0, z, z + 0.02); B.box(bm, (o.x0 + o.x1) / 2 - 0.008, (o.x0 + o.x1) / 2 + 0.008, o.y0, o.y1, z, z + 0.018); } });
+    y += h; }
+  B.box('plank:' + C.dark, -0.1, 0.1, 0, 0.5, s, s + 0.02); B.box(bm, -0.13, 0.13, 0.5, 0.54, s, s + 0.025);
+  const e = s + (floors - 1) * 0.045 + 0.035, top = y + roofH;
+  B.face('shingle:c1', [[-e, y, e + 0.02], [e, y, e + 0.02], [e, top, 0], [-e, top, 0]]); B.face('shingle:c1', [[e, y, -e - 0.02], [-e, y, -e - 0.02], [-e, top, 0], [e, top, 0]]);
+  for (const x of [-e + 0.03, e - 0.03]) B.face(pl, [[x, y, e - 0.03], [x, y, -e + 0.03], [x, top - 0.04, 0]]);
+  B.box('brick:' + C.brick, 0.2, 0.34, y + roofH * 0.25, top - 0.02, -0.26, -0.12); B.box(':' + C.stoneG, 0.18, 0.36, top - 0.02, top, -0.28, -0.1); };
+def('large.soh2', 'half-timbered cottage', tudorHouse(1, 0.73)); def('large.soh1', 'half-timbered house, two floors', tudorHouse(2, 0.48)); def('large.soh3', 'half-timbered house, tall roof', tudorHouse(2, 0.98));
+
+/* ───────── wild west ───────── */
+const wagon = covered => B => { B.d(covered ? C.canvas : '#4f7fb8'); const wood = 'plank:' + (covered ? C.timber : 'c1');
+  B.box(wood, -0.38, 0.38, 0.3, 0.36, -0.17, 0.17); B.box(wood, -0.38, 0.38, 0.36, 0.52, -0.17, -0.15); B.box(wood, -0.38, 0.38, 0.36, 0.52, 0.15, 0.17); B.box(wood, -0.38, -0.36, 0.36, 0.52, -0.17, 0.17); B.box(wood, 0.36, 0.38, 0.36, 0.52, -0.17, 0.17);
+  for (const z of [-0.2, 0.2]) { wheel(B, -0.24, 0.2, z, 0.2, 0.035); wheel(B, 0.26, 0.16, z, 0.16, 0.035); }
+  B.box(':' + C.dark, -0.3, 0.32, 0.24, 0.3, -0.03, 0.03); B.box(':' + C.dark, 0.38, 0.5, 0.26, 0.29, -0.015, 0.015); B.box(wood, 0.3, 0.42, 0.52, 0.56, -0.15, 0.15);
+  if (covered) { const p = arc(0, 0, 0.19, 0, 180, 8); for (let i = 0; i < 8; i++) B.face('canvas:c1', [[-0.38, 0.52 + p[i][1] * 1.9, p[i][0] * 0.9], [0.3, 0.52 + p[i][1] * 1.9, p[i][0] * 0.9], [0.3, 0.52 + p[i + 1][1] * 1.9, p[i + 1][0] * 0.9], [-0.38, 0.52 + p[i + 1][1] * 1.9, p[i + 1][0] * 0.9]]);
+    B.face('canvas:c1', p.map(q => [-0.38, 0.52 + q[1] * 1.9, q[0] * 0.9])); }
+  else { for (const [x, z] of [[-0.2, -0.06], [-0.02, 0.05], [0.16, -0.05]]) { B.cyl('plank:' + C.timber, x, 0.36, z, 0.075, 0.075, 0.24, 8); B.cyl(DARK, x, 0.44, z, 0.079, 0.079, 0.02, 8); } B.cb('plank:' + C.timber, 0.2, 0.36, 0.08, 0.14, 0.12, 0.12);
+    B.cb('plank:' + C.timber, -0.12, 0.6, 0, 0.3, 0.2, 0.24); B.cb('plank:#c9a06a', -0.1, 0.8, 0.01, 0.22, 0.18, 0.2); B.cyl(':' + C.dark, 0.33, 0.52, 0.13, 0.012, 0.012, 0.6, 5); B.cb(':' + C.gold, 0.33, 1.12, 0.13, 0.06, 0.1, 0.06); } };
+def('small.wag1', 'covered wagon', wagon(true)); def('small.wag2', 'supply wagon', wagon(false));
+def('small.hang1', 'gallows frame', B => { const w = 'plank:' + C.timber, d = 'plank:' + C.dark;
+  B.box(w, -0.4, 0.3, 0.4, 0.46, -0.3, 0.3); for (const [x, z] of [[-0.37, -0.27], [-0.37, 0.27], [0.27, -0.27], [0.27, 0.27]]) B.cb(d, x, 0, z, 0.05, 0.4, 0.05);
+  for (let i = 0; i < 4; i++) B.box(w, 0.3 + i * 0.045, 0.345 + i * 0.045, 0.3 - i * 0.1, 0.36 - i * 0.1, -0.12, 0.12);
+  B.cb(d, -0.3, 0.46, 0, 0.06, 0.76, 0.06); B.box(d, -0.33, 0.12, 1.19, 1.25, -0.03, 0.03); B.prism(d, [[-0.27, 0.95], [-0.27, 0.88], [-0.05, 1.19], [-0.12, 1.19]], -0.02, 0.02); });
+def('small.totem1', 'totem pole', B => { const cols = [C.red, '#3f7d6e', C.gold, C.blue, C.red, '#3f7d6e']; let y = 0;
+  cols.forEach((c, i) => { const h = 0.4, r = 0.12 - i * 0.004; B.cyl('plank:' + c, 0, y, 0, r, r, h, 8); B.cb(':' + C.cream, -0.045, y + 0.24, r - 0.01, 0.035, 0.05, 0.03); B.cb(':' + C.cream, 0.045, y + 0.24, r - 0.01, 0.035, 0.05, 0.03); B.cb(DARK, 0, y + 0.1, r - 0.01, 0.09, 0.03, 0.03);
+    if (i === 3) B.box('plank:' + C.gold, -0.25, 0.25, y + 0.14, y + 0.28, -0.015, 0.015); y += h; });
+  B.cyl('plank:' + C.dark, 0, y, 0, 0.1, 0, 0.3, 6); B.prism('plank:' + C.gold, [[0, y + 0.1], [0.14, y + 0.2], [0, y + 0.24]], 0.02, 0.05); });
+def('small.teepee1', 'tepee', B => { const s = 14; B.cyl('canvas:#b5694a', 0, 0, 0, 0.47, 0.4, 0.26, s); B.cyl('canvas:' + C.canvas, 0, 0.26, 0, 0.4, 0.13, 1.0, s); B.cyl('canvas:#b5694a', 0, 1.26, 0, 0.13, 0.04, 0.36, s);
+  B.face(DARK, [[-0.1, 0, 0.475], [0.1, 0, 0.475], [0, 0.56, 0.34]]); for (let i = 0; i < 5; i++) B.at(0, 0, 0, i * 72 + 10, () => B.face(':' + C.dark, [[-0.01, 1.55, 0.03], [0.01, 1.55, 0.03], [0.012, 1.99, -0.11], [-0.012, 1.99, -0.11]])); });
+// 2 by 2 buildings: the lot runs from -0.5 to 1.5; the street side is +z
+const boards = (B, m, x0, x1, y0, y1, z) => B.box(m, x0, x1, y0, y1, z - 0.012, z + 0.012);
+function shopWindow(B, x, y, z, w, h) { B.box(GLASS, x - w / 2, x + w / 2, y, y + h, z, z + 0.012); B.box(':' + C.cream, x - w / 2 - 0.025, x + w / 2 + 0.025, y - 0.025, y, z, z + 0.03); B.box(':' + C.cream, x - w / 2 - 0.025, x + w / 2 + 0.025, y + h, y + h + 0.025, z, z + 0.03);
+  B.box(':' + C.cream, x - 0.01, x + 0.01, y, y + h, z, z + 0.022); B.box(':' + C.cream, x - w / 2 - 0.025, x - w / 2, y, y + h, z, z + 0.03); B.box(':' + C.cream, x + w / 2, x + w / 2 + 0.025, y, y + h, z, z + 0.03); }
+function porch(B, y, zf, posts, roofM) { B.box('plank:' + C.timber, -0.46, 1.46, 0, 0.08, zf, 1.48); for (let i = 0; i < posts; i++) { const x = -0.4 + i * 1.8 / (posts - 1); B.cb(':' + C.cream, x, 0.08, 1.4, 0.05, y - 0.08, 0.05); }
+  B.face(roofM, [[-0.48, y, 1.5], [1.48, y, 1.5], [1.48, y + 0.16, zf], [-0.48, y + 0.16, zf]]); B.box(':' + C.cream, -0.48, 1.48, y - 0.04, y, 1.46, 1.5); }
+def('large.genstore', 'general store', B => { const wall = 'clap:#c9a06a', zf = 1.0;
+  B.box(wall, -0.42, 1.42, 0, 1.25, -0.42, zf); B.face('shingle:#7a5a44', [[-0.46, 1.25, -0.46], [-0.46, 1.25, zf], [0.5, 1.62, zf], [0.5, 1.62, -0.46]]); B.face('shingle:#7a5a44', [[1.46, 1.25, zf], [1.46, 1.25, -0.46], [0.5, 1.62, -0.46], [0.5, 1.62, zf]]); B.face(wall, [[-0.42, 1.25, -0.42], [1.42, 1.25, -0.42], [0.5, 1.6, -0.42]]);
+  B.prism(wall, [[-0.46, 0], [1.46, 0], [1.46, 1.7], [1.1, 1.7], [1.1, 1.96], [-0.1, 1.96], [-0.1, 1.7], [-0.46, 1.7]], zf, zf + 0.06); B.box(':' + C.cream, -0.14, 1.14, 1.96, 2.0, zf - 0.02, zf + 0.08);
+  B.sign('GENERAL STORE', 0.5, 1.6, zf + 0.065, 1.1, 0.26, '#f1e6cf', '#5b3a29');
+  porch(B, 0.98, zf + 0.06, 4, 'shingle:#7a5a44'); B.box('plank:' + C.dark, 0.38, 0.62, 0.08, 0.72, zf + 0.06, zf + 0.08); shopWindow(B, -0.05, 0.36, zf + 0.06, 0.42, 0.42); shopWindow(B, 1.05, 0.36, zf + 0.06, 0.42, 0.42);
+  for (const [x, z] of [[-0.3, 1.3], [-0.14, 1.34]]) { B.cyl('plank:' + C.timber, x, 0.08, z, 0.07, 0.07, 0.2, 8); B.cyl(DARK, x, 0.15, z, 0.074, 0.074, 0.02, 8); } B.cb('plank:' + C.timber, 1.25, 0.08, 1.3, 0.2, 0.16, 0.16); B.cb('plank:#c9a06a', 1.27, 0.24, 1.3, 0.13, 0.11, 0.12); });
+def('large.saloon', 'saloon', B => { const wall = 'clap:#b5694a', zf = 1.0, trim = ':' + C.cream;
+  B.box(wall, -0.42, 1.42, 0, 2.05, -0.42, zf); B.box('shingle:#5b3a29', -0.46, 1.46, 2.05, 2.11, -0.46, zf);
+  const top = arc(0.5, 2.3, 0.62, 0, 180, 8).map(p => [p[0], Math.min(2.72, p[1])]);
+  B.prism(wall, [[-0.46, 0], [1.46, 0], [1.46, 2.3]].concat(top.slice(1, -1)).concat([[-0.46, 2.3]]), zf, zf + 0.06); B.box(trim, -0.48, 1.48, 2.28, 2.32, zf - 0.01, zf + 0.08);
+  B.sign('SALOON', 0.5, 2.5, zf + 0.065, 0.78, 0.26, '#3a3640', '#e3b23c');
+  // balcony
+  B.box('plank:' + C.timber, -0.46, 1.46, 1.02, 1.08, zf, 1.48); for (let i = 0; i < 4; i++) { const x = -0.4 + i * 0.6; B.cb(trim, x, 0.08, 1.4, 0.055, 0.94, 0.055); B.cb(trim, x, 1.08, 1.44, 0.04, 0.3, 0.04); }
+  B.box(trim, -0.46, 1.46, 1.34, 1.38, 1.42, 1.46); for (let i = 0; i < 19; i++) B.cb(trim, -0.4 + i * 0.1, 1.08, 1.44, 0.015, 0.27, 0.015);
+  B.box('plank:' + C.timber, -0.46, 1.46, 0, 0.08, zf, 1.48);
+  // swing doors, windows
+  B.box(DARK, 0.3, 0.7, 0.08, 0.8, zf + 0.06, zf + 0.065); for (const x of [0.4, 0.6]) B.box('plank:' + C.cream, x - 0.095, x + 0.095, 0.3, 0.62, zf + 0.07, zf + 0.085);
+  shopWindow(B, -0.08, 0.36, zf + 0.06, 0.36, 0.42); shopWindow(B, 1.08, 0.36, zf + 0.06, 0.36, 0.42);
+  for (const x of [-0.1, 0.5, 1.1]) { shopWindow(B, x, 1.34, zf + 0.06, 0.22, 0.44); for (const dx of [-0.17, 0.17]) B.box('plank:#3f7d6e', x + dx - 0.045, x + dx + 0.045, 1.34, 1.78, zf + 0.06, zf + 0.075); } });
+def('large.wwbank', 'bank', B => { const wall = 'brick:#a8553f', st = ':' + C.cream, zf = 1.08;
+  B.box(wall, -0.42, 1.42, 0, 1.12, -0.42, zf); B.box(st, -0.47, 1.47, 1.12, 1.2, -0.47, zf + 0.05); B.box(wall, -0.42, 1.42, 1.2, 1.3, -0.42, zf); B.box(st, -0.45, 1.45, 1.3, 1.34, -0.45, zf + 0.03);
+  B.box('stone:' + C.stoneG, -0.46, 1.46, 0, 0.1, zf, 1.48); B.box('stone:' + C.stoneG, -0.3, 1.3, 0.1, 0.16, zf, 1.4);
+  for (let i = 0; i < 4; i++) { const x = -0.2 + i * 0.467; B.cyl(st, x, 0.16, 1.32, 0.055, 0.045, 0.86, 8); B.cb(st, x, 1.02, 1.32, 0.13, 0.04, 0.13); B.cb(st, x, 0.16, 1.32, 0.13, 0.03, 0.13); }
+  B.box(st, -0.3, 1.3, 1.06, 1.2, zf, 1.4); B.prism(st, [[-0.32, 1.2], [1.32, 1.2], [0.5, 1.49]], zf + 0.2, 1.4);
+  B.box(':#6b6f76', -0.4, 1.4, 1.34, 1.345, -0.4, zf - 0.02);
+  B.sign('BANK', 0.5, 1.13, 1.405, 0.5, 0.12, '#f1e6cf', '#3a3640');
+  B.box('plank:' + C.dark, 0.36, 0.64, 0.16, 0.86, zf, zf + 0.02); B.box(':' + C.gold, 0.58, 0.6, 0.48, 0.52, zf + 0.02, zf + 0.035);
+  for (const x of [-0.08, 1.08]) { shopWindow(B, x, 0.42, zf, 0.3, 0.44); for (let k = -1; k <= 1; k++) B.box(DARK, x + k * 0.09 - 0.008, x + k * 0.09 + 0.008, 0.42, 0.86, zf + 0.014, zf + 0.03); } });
+
+
+/* ───────── scene ───────── */
+const canvas = $('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 400);
+const cam = { yaw: 0.9, el: 0.55, yawT: 0.9, elT: 0.55, zoom: 3, zoomT: 3, target: new THREE.Vector3(), targetT: new THREE.Vector3() };
+function viewRect() {
+  const w = window.innerWidth, h = window.innerHeight, info = $('info').getBoundingClientRect();
+  return w <= 820 ? { x: 0, y: 56, w, h: Math.max(120, info.top - 56) } : { x: 334, y: 0, w: w - 334, h: Math.max(120, info.top) };
+}
+function placeCamera() {
+  const w = window.innerWidth, h = window.innerHeight, asp = w / h, r = viewRect();
+  const ox = ((r.x + r.w / 2) / w - 0.5) * 2 * cam.zoom * asp, oy = (0.5 - (r.y + r.h / 2) / h) * 2 * cam.zoom;
+  camera.left = -cam.zoom * asp - ox; camera.right = cam.zoom * asp - ox; camera.top = cam.zoom - oy; camera.bottom = -cam.zoom - oy; camera.updateProjectionMatrix();
+  const ce = Math.cos(cam.el), se = Math.sin(cam.el);
+  camera.position.set(cam.target.x + Math.cos(cam.yaw) * ce * 90, cam.target.y + se * 90, cam.target.z + Math.sin(cam.yaw) * ce * 90); camera.lookAt(cam.target);
+}
+function resize() { renderer.setSize(window.innerWidth, window.innerHeight, false); if (bounds) fit(); placeCamera(); }
+window.addEventListener('resize', resize);
+scene.add(new THREE.HemisphereLight(0xfff4dc, 0x9fb58a, 0.66));
+const sun = new THREE.DirectionalLight(0xffe2b0, 0.58); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.02; scene.add(sun, sun.target);
+const gtex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); g.fillStyle = '#9fd07c'; g.fillRect(0, 0, 64, 64); g.fillStyle = '#8cc56a'; g.fillRect(0, 0, 32, 32); g.fillRect(32, 32, 32, 32); const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(120, 120); return t; })();
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), new THREE.MeshLambertMaterial({ map: gtex })); ground.rotation.x = -Math.PI / 2; ground.position.set(0.5, -0.002, 0.5); ground.receiveShadow = true; scene.add(ground);
+
+/* ───────── items ───────── */
+const BY = {}; KIT.forEach(it => BY[it.key] = it);
+const pal = { c1: null, c2: null, c3: null };
+function make(key, p) { const B = new Bld(p === undefined ? pal : p); MODELS[key].fn(B, BY[key]); return B.build(); }
+// the space the game gives the object: [x0,x1,z0,z1,height]
+function gameBox(it) {
+  if (it.type === 'wall') return [-0.5, 0.5, -0.5, -0.5, it.h];
+  if (it.type === 'large') { const xs = it.tiles.map(t => t[0]), zs = it.tiles.map(t => t[1]); return [Math.min(...xs) - 0.5, Math.max(...xs) + 0.5, Math.min(...zs) - 0.5, Math.max(...zs) + 0.5, it.h]; }
+  if (it.shape === '1/4') return [-0.25, 0.25, -0.25, 0.25, it.h];
+  if (it.shape === '2/4') return [-0.5, 0.5, -0.25, 0.25, it.h];
+  return [-0.5, 0.5, -0.5, 0.5, it.h];
+}
+function boxLines(b) {
+  const [x0, x1, z0, z1, h] = b, pts = [], V = (x, y, z) => pts.push(new THREE.Vector3(x, y, z));
+  for (const y of [0.004, h]) { V(x0,y,z0);V(x1,y,z0);V(x1,y,z0);V(x1,y,z1);V(x1,y,z1);V(x0,y,z1);V(x0,y,z1);V(x0,y,z0); }
+  for (const [x, z] of [[x0,z0],[x1,z0],[x1,z1],[x0,z1]]) { V(x,0,z); V(x,h,z); }
+  return new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xd6456b }));
+}
+const FOOT = { '4/4': 'whole tile', '1/4': 'quarter tile', '2/4': 'half tile', '3/4+D': 'three quarters of a tile', '4/4+D': 'whole tile, diagonal' };
+function put(g, key, x, z, rot, y, p) { const m = make(key, p || {}); m.position.set(x, y || 0, z); m.rotation.y = -(rot || 0) * Math.PI / 180; g.add(m); return m; }
+
+/* ───────── showcase: the kit pieces put together on the grid ───────── */
+function showcase() {
+  const g = new THREE.Group(), N = 0, E = 90, S = 180, W = 270;
+  const dirt = new THREE.Mesh(new THREE.PlaneGeometry(12, 2.4), new THREE.MeshLambertMaterial({ color: 0xd9b98a })); dirt.rotation.x = -Math.PI / 2; dirt.position.set(4, 0.004, 2.9); dirt.receiveShadow = true; g.add(dirt);
+  // wild west street
+  put(g, 'large.saloon', 0, 0); put(g, 'large.genstore', 3, 0); put(g, 'large.wwbank', 6, 0);
+  put(g, 'small.wag1', 1.2, 3, 12); put(g, 'small.wag2', 5.6, 2.7, 190); put(g, 'small.totem1', 8.6, 1.2, 180); put(g, 'small.teepee1', 9.6, 3.2, 200); put(g, 'small.teepee1', 10.4, 1.6, 150); put(g, 'small.hang1', -2, 2.6, 180);
+  for (let x = -1; x <= 8; x++) put(g, 'wall.wallwdps', x, 4, S);
+  // a brick house from walls, bases and roof pieces
+  const hx = -5, hz = 0, brick = { c1: '#b5553c' };
+  for (const [dx, dz] of [[0, 0], [1, 0], [0, 1], [1, 1]]) put(g, 'small.brbase', hx + dx, hz + dz, 0, 0, brick);
+  const w = (k, dx, dz, r) => put(g, k, hx + dx, hz + dz, r, 0.25, brick);
+  w('wall.wallbr32', 0, 0, N); w('wall.wallbrwn', 1, 0, N); w('wall.wallbrdr', 0, 1, S); w('wall.wallbrwn', 1, 1, S); w('wall.wallbrwn', 0, 0, W); w('wall.wallbr32', 0, 1, W); w('wall.wallbr32', 1, 0, E); w('wall.wallbrwn', 1, 1, E);
+  for (const dx of [0, 1]) { put(g, 'small.roof1', hx + dx, hz, S, 1.25, { c1: '#8f4a3a' }); put(g, 'small.roof1', hx + dx, hz + 1, N, 1.25, { c1: '#8f4a3a' }); }
+  // a market stall: canvas canopy on poles
+  for (const r of [N, E, S, W]) put(g, 'wall.walltn32', -4.5, 4, r); put(g, 'small.tntroof1', -4.5, 4, 0, 1); put(g, 'small.xxbbbr01_fix', -4.5, 4, 0, 0);
+  // castle
+  const cx = 0, cz = 7;
+  for (const [dx, dz] of [[0, 0], [4, 0], [0, 4], [4, 4]]) put(g, 'large.stg2', cx + dx, cz + dz);
+  for (let i = 1; i <= 3; i++) { put(g, i === 2 ? 'wall.wc10' : 'wall.wc9', cx + i, cz, N); put(g, i === 2 ? 'wall.wc11' : 'wall.wc12', cx + i, cz + 4, S); put(g, 'wall.wc10', cx, cz + i, W); put(g, 'wall.wc9', cx + 4, cz + i, E); }
+  put(g, 'small.tct2', cx + 2, cz + 1.6); put(g, 'large.sct', cx + 1.1, cz + 3); put(g, 'small.tcn', cx + 3, cz + 3.2, 180); put(g, 'small.ttg', cx + 3.2, cz + 2, 250);
+  put(g, 'large.soh1', 6.4, 8, 180); put(g, 'large.soh3', 7.7, 8, 180); put(g, 'large.soh2', 7, 10.2, 270); put(g, 'large.sct', 9.3, 9.4, 0, 0, { c1: '#4f7fb8', c2: '#f1e6cf' });
+  for (let x = 6; x <= 9; x++) put(g, 'wall.wpw3', x, 11, S);
+  // a steel and glass corner
+  put(g, 'small.sktbase', -4, 9); put(g, 'small.sktbase', -3, 9); for (const dx of [0, 1]) { put(g, 'wall.wallsk32', -4 + dx, 9, N, 0.25); put(g, 'wall.wallsk32', -4 + dx, 9, S, 0.25); } put(g, 'wall.wallsk32', -4, 9, W, 0.25); put(g, 'wall.wallsk32', -3, 9, E, 0.25);
+  put(g, 'small.corroof', -4, 9, 90, 1.25); put(g, 'small.corroof', -3, 9, 90, 1.25); put(g, 'small.suppw1', -5.6, 9); put(g, 'small.suppw3', -5.6, 9, 0, 3);
+  return g;
+}
+
+/* ───────── views ───────── */
+let world = null, bounds = null, current = null, boxes = [];
+const VIEWS = [{ id: 'showcase', name: 'Kit in use', desc: 'A western street, a brick house, a castle and a stall, all assembled from the parts below.' }];
+const THEMES = ['Walls and roofs', 'Medieval', 'Wild West'], KIND = { large: 'Buildings and towers', wall: 'Walls and fences', small: 'Blocks, roofs and props' };
+function sheet(theme) {      // every part of a theme on one table
+  const g = new THREE.Group(), items = KIT.filter(it => it.theme === theme); let x = 0, z = 0, rowD = 0;
+  for (const it of items) { const b = gameBox(it), w = Math.max(1, b[1] - b[0]) + 0.9; if (x + w > 15) { x = 0; z += rowD + 1.3; rowD = 0; } const m = make(it.key); m.position.set(x - b[0], 0, z - b[2]); g.add(m); x += w; rowD = Math.max(rowD, Math.max(1, b[3] - b[2])); }
+  return g;
+}
+function show(id) {
+  current = id; if (world) { scene.remove(world); world.traverse(o => o.geometry && o.geometry.dispose()); }
+  world = new THREE.Group(); scene.add(world); boxes = [];
+  const it = BY[id]; let cols = [];
+  if (id === 'showcase') { world.add(showcase()); $('pname').textContent = VIEWS[0].name; $('pdesc').textContent = VIEWS[0].desc; $('chips').innerHTML = `<span><b>${KIT.length}</b> game objects modelled</span><span>Three themes</span>`; }
+  else if (id.startsWith('all:')) { const th = id.slice(4); world.add(sheet(th)); cols = [1, 2, 3]; $('pname').textContent = 'Every ' + th + ' part'; $('pdesc').textContent = 'All parts of this theme laid out together.'; $('chips').innerHTML = `<span><b>${KIT.filter(k => k.theme === th).length}</b> parts</span>`; }
+  else {
+    const m = make(id); world.add(m); const b = gameBox(it), l = boxLines(b); l.visible = $('tBox').getAttribute('aria-pressed') === 'true'; world.add(l); boxes.push(l); cols = it.c;
+    $('pname').textContent = it.name; $('pdesc').textContent = MODELS[id].desc.replace(/^./, c => c.toUpperCase());
+    const chips = [`<span>${it.type === 'wall' ? 'Wall piece, sits on a tile edge' : it.type === 'large' ? `Building, ${it.tiles.length} ${it.tiles.length === 1 ? 'tile' : 'tiles'}` : 'Scenery, ' + (FOOT[it.shape] || it.shape)}</span>`,
+      `<span>Height <b>${+it.h.toFixed(2)}</b> ${it.h === 1 ? 'tile' : 'tiles'} (${it.units} units)</span>`, `<span>${it.c.length ? 'Recolour: ' + it.c.length + (it.c.length === 1 ? ' part' : ' parts') : 'Fixed colours'}</span>`, `<span>${it.id}</span>`];
+    $('chips').innerHTML = chips.join('');
+  }
+  $('cols').innerHTML = cols.map(n => `<label>${n}<input type="color" data-c="c${n}" value="${pal['c' + n] || '#b5553c'}" aria-label="Colour ${n}"></label>`).join('');
+  bounds = new THREE.Box3().setFromObject(world); bounds.min.y = 0; fit();
+  const ctr = bounds.getCenter(new THREE.Vector3()); sun.position.set(ctr.x + 7, bounds.max.y + 14, ctr.z + 9); sun.target.position.copy(ctr);
+  const ext = Math.max(bounds.max.x - bounds.min.x, bounds.max.z - bounds.min.z, bounds.max.y) + 3; Object.assign(sun.shadow.camera, { left: -ext, right: ext, top: ext, bottom: -ext, near: 1, far: 80 }); sun.shadow.camera.updateProjectionMatrix();
+  document.querySelectorAll('#list button').forEach(b => b.setAttribute('aria-current', b.dataset.id === id));
+}
+function fit() {
+  const r = viewRect(), ctr = bounds.getCenter(new THREE.Vector3()), sx = bounds.max.x - bounds.min.x, sz = bounds.max.z - bounds.min.z, sy = bounds.max.y, asp = window.innerWidth / window.innerHeight;
+  const wide = Math.hypot(sx, sz) + 1.2, tall = sy + Math.hypot(sx, sz) * 0.6 + 1.2;
+  cam.zoomT = clamp(Math.max(tall / 2 / (r.h / window.innerHeight), wide / 2 / (r.w / window.innerWidth) / asp), 1, 40); cam.targetT.copy(ctr);
+  if (!cam._init) { cam.zoom = cam.zoomT; cam.target.copy(ctr); cam._init = true; }
+}
+$('cols').addEventListener('input', e => { const c = e.target.dataset.c; if (!c) return; pal[c] = e.target.value; const keep = [cam.zoomT, cam.targetT.clone()]; show(current); cam.zoomT = keep[0]; cam.targetT.copy(keep[1]); const i = $('cols').querySelector(`[data-c="${c}"]`); if (i) i.value = pal[c]; });
+
+/* ───────── list ───────── */
+const order = ['showcase'];
+(function buildList() {
+  let html = `<button data-id="showcase" class="all">Kit in use<small>Everything assembled into a little park</small></button>`;
+  for (const th of THEMES) {
+    html += `<h2>${th}</h2><button class="all" data-id="all:${th}">See every ${th} part</button>`; order.push('all:' + th);
+    for (const k of ['large', 'wall', 'small']) { const items = KIT.filter(it => it.theme === th && it.type === k); if (!items.length) continue;
+      html += `<h3><span>${KIND[k]}</span><span>${items.length}</span></h3>`;
+      for (const it of items) { order.push(it.key); html += `<button data-id="${it.key}">${it.name}<small>${MODELS[it.key].desc}</small></button>`; } }
+  }
+  $('list').innerHTML = html;
+})();
+$('list').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; show(b.dataset.id); document.body.classList.remove('open'); });
+const step = d => show(order[(order.indexOf(current) + d + order.length) % order.length]);
+$('prev').addEventListener('click', () => step(-1)); $('next').addEventListener('click', () => step(1));
+$('openList').addEventListener('click', () => { document.body.classList.add('open'); const b = document.querySelector('#list button[aria-current="true"]'); if (b) b.scrollIntoView({ block: 'center' }); });
+$('closeList').addEventListener('click', () => document.body.classList.remove('open')); $('scrim').addEventListener('click', () => document.body.classList.remove('open'));
+$('tBox').addEventListener('click', () => { const b = $('tBox'), on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); boxes.forEach(l => l.visible = on); });
+let spin = false; $('tSpin').addEventListener('click', () => { spin = !spin; $('tSpin').setAttribute('aria-pressed', spin); });
+window.addEventListener('keydown', e => { if (e.target.tagName === 'INPUT') return; if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { step(1); e.preventDefault(); } if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { step(-1); e.preventDefault(); } });
+
+/* ───────── orbit ───────── */
+const ptrs = new Map(); let pinch = 0;
+canvas.addEventListener('pointerdown', e => { try { canvas.setPointerCapture(e.pointerId); } catch (_) {} ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = Math.hypot(a.x - b.x, a.y - b.y); } });
+canvas.addEventListener('pointermove', e => { const p = ptrs.get(e.pointerId); if (!p) return; const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+  if (ptrs.size === 2) { const [a, b] = [...ptrs.values()], d = Math.hypot(a.x - b.x, a.y - b.y); if (pinch) cam.zoomT = clamp(cam.zoomT * pinch / Math.max(1, d), 0.6, 50); pinch = d; return; }
+  cam.yawT += dx * 0.008; cam.elT = clamp(cam.elT + dy * 0.006, 0.05, 1.5); });
+const up = e => { ptrs.delete(e.pointerId); pinch = 0; }; canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up);
+canvas.addEventListener('wheel', e => { e.preventDefault(); cam.zoomT = clamp(cam.zoomT * (e.deltaY > 0 ? 1.1 : 0.9), 0.6, 50); }, { passive: false });
+
+/* ───────── checks used while building this page ───────── */
+window.__test = {
+  check: () => { const bad = []; let n = 0;
+    for (const it of KIT) { n++; const g = make(it.key, {}), bb = new THREE.Box3().setFromObject(g), b = gameBox(it), tol = 0.085, wallDepth = it.type === 'wall' ? 0.4 : 0;
+      const over = [b[0] - bb.min.x, bb.max.x - b[1], b[2] - bb.min.z, bb.max.z - (b[3] + wallDepth)].map(v => +v.toFixed(3));
+      if (Math.max(...over) > tol) bad.push(it.key + ' spills over its footprint by ' + Math.max(...over));
+      if (bb.max.y > it.h + 0.03) bad.push(it.key + ' is taller than the game says: ' + bb.max.y.toFixed(2) + ' vs ' + it.h);
+      if (bb.max.y < it.h * 0.6) bad.push(it.key + ' is much shorter than the game says: ' + bb.max.y.toFixed(2) + ' vs ' + it.h);
+      if (bb.min.y < -0.01) bad.push(it.key + ' goes below the ground'); }
+    return { n, bad }; },
+  show,
+};
+
+show('showcase'); resize();
+let prev = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - prev) / 1000), k = Math.min(1, dt * 9); prev = now;
+  if (spin) cam.yawT += dt * 0.5;
+  cam.yaw += (cam.yawT - cam.yaw) * k; cam.el += (cam.elT - cam.el) * k; cam.zoom += (cam.zoomT - cam.zoom) * k; cam.target.lerp(cam.targetT, k);
+  placeCamera(); renderer.render(scene, camera); requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

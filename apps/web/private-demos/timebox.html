@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Timebox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E8EDF2; --sheet:#F7F9FB; --ink:#1D2842; --soft:#5B6782; --rule:#C9D2DE;
+  --pen:#D2382C; --hi:#F4D63A; --empty:#EEF2F6; --drop:#2F5BD3;
+  --shadow:0 1px 0 #C9D2DE, 0 6px 14px -8px rgba(29,40,66,.35);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#172033; --sheet:#1F2A40; --ink:#E6ECF5; --soft:#9AA8C2; --rule:#33415C;
+    --pen:#FF6B5B; --hi:#E7C52A; --empty:#1B2539; --drop:#7FA2FF;
+    --shadow:0 1px 0 #2B3852, 0 8px 18px -10px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#172033; --sheet:#1F2A40; --ink:#E6ECF5; --soft:#9AA8C2; --rule:#33415C;
+  --pen:#FF6B5B; --hi:#E7C52A; --empty:#1B2539; --drop:#7FA2FF;
+  --shadow:0 1px 0 #2B3852, 0 8px 18px -10px rgba(0,0,0,.6);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;min-height:100%;background:var(--paper);color:var(--ink);
+  font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-variant-numeric:tabular-nums;
+  background-image:
+    linear-gradient(var(--rule) 1px,transparent 1px),
+    linear-gradient(90deg,var(--rule) 1px,transparent 1px);
+  background-size:24px 24px;background-position:-1px -1px;
+  background-attachment:fixed;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--drop);outline-offset:2px}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+
+/* header */
+header{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 20px;margin-bottom:18px}
+.date h1{margin:0;font-size:clamp(2rem,7vw,3.4rem);font-weight:800;letter-spacing:-.03em;line-height:.95}
+.date p{margin:6px 0 0;color:var(--soft);font-size:.95rem}
+.nav{display:flex;gap:6px;margin-left:auto;align-items:center}
+.btn{border:1.5px solid var(--ink);background:var(--sheet);border-radius:10px;padding:8px 12px;font-weight:600;line-height:1}
+.btn:hover{background:var(--empty)}
+.btn.primary{background:var(--ink);color:var(--sheet)}
+.btn.primary:hover{opacity:.9}
+.btn:disabled{opacity:.45;cursor:default}
+.icon{width:38px;height:38px;padding:0;display:grid;place-items:center}
+
+/* progress */
+.progress{display:flex;align-items:center;gap:12px;margin:0 0 16px}
+.bar{flex:1;height:10px;border:1.5px solid var(--ink);border-radius:6px;overflow:hidden;background:var(--sheet)}
+.bar i{display:block;height:100%;background:var(--pen);width:0;transition:width .4s ease}
+.progress span{font-weight:600;min-width:6.5ch;text-align:right}
+
+/* planner panel */
+.planner{background:var(--sheet);border:1.5px solid var(--ink);border-radius:14px;padding:14px;margin-bottom:22px;box-shadow:var(--shadow)}
+.planner summary{font-weight:800;font-size:1.15rem;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+.planner summary::-webkit-details-marker{display:none}
+.planner summary::after{content:"+";margin-left:auto;font-size:1.4rem;line-height:1}
+.planner[open] summary::after{content:"–"}
+.planner .hint{color:var(--soft);margin:6px 0 10px;font-size:.92rem;max-width:62ch}
+.planner textarea{
+  width:100%;min-height:150px;resize:vertical;border:1.5px solid var(--rule);border-radius:10px;
+  background:var(--empty);padding:10px 12px;font-family:Kalam,"Comic Sans MS",cursive;font-size:1.1rem;line-height:1.6;
+}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.row label{display:flex;gap:6px;align-items:center;font-size:.92rem;color:var(--soft)}
+.row .grow{flex:1}
+.status{margin-top:10px;font-size:.95rem;min-height:1.2em}
+.status.err{color:var(--pen)}
+.hours{display:flex;gap:6px;align-items:center;font-size:.92rem;color:var(--soft)}
+.hours select{border:1.5px solid var(--rule);background:var(--empty);border-radius:8px;padding:5px 6px}
+
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+@media (max-width:420px){.grid{grid-template-columns:repeat(2,1fr);gap:10px}}
+.box{
+  position:relative;min-height:128px;background:var(--sheet);border:1.5px solid var(--ink);border-radius:12px;
+  padding:10px 10px 12px;display:flex;flex-direction:column;box-shadow:var(--shadow);
+  user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;cursor:pointer;
+  transition:transform .15s ease, background .2s ease;
+}
+.box.empty{background:var(--empty);border-style:dashed;border-color:var(--soft);box-shadow:none}
+.box.past:not(.done){opacity:.72}
+.box.now{outline:4px solid var(--hi);outline-offset:0}
+.box .time{display:flex;align-items:center;gap:6px;font-weight:800;font-size:1.05rem;letter-spacing:-.01em}
+.box .time small{font-weight:400;color:var(--soft);font-size:.8rem}
+.box .task{flex:1;margin-top:6px;font-family:Kalam,"Comic Sans MS",cursive;font-size:1.15rem;line-height:1.25;word-break:break-word;transition:color .3s}
+.box.empty .task{color:var(--soft);font-family:inherit;font-size:.9rem}
+.box.done .task{color:var(--soft);text-decoration:line-through;text-decoration-color:var(--pen);text-decoration-thickness:2px}
+.tools{position:absolute;top:6px;right:6px;display:flex;gap:2px;z-index:3}
+.tools button{width:30px;height:30px;border:0;background:transparent;border-radius:8px;display:grid;place-items:center;color:var(--soft)}
+.tools button:hover{background:var(--empty);color:var(--ink)}
+.grip{cursor:grab;touch-action:none}
+.box.empty .grip{display:none}
+.tick{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:hidden;border-radius:inherit}
+.tick path{fill:none;stroke:var(--pen);stroke-width:7;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:1 1;stroke-dashoffset:1;opacity:0;transition:stroke-dashoffset .45s cubic-bezier(.6,.05,.3,1),opacity 0s .45s}
+.box.done .tick path{stroke-dashoffset:0;opacity:1;transition:stroke-dashoffset .45s cubic-bezier(.6,.05,.3,1),opacity 0s}
+.box input.edit{width:100%;margin-top:6px;border:1.5px solid var(--drop);border-radius:8px;padding:6px 8px;background:var(--empty);font-family:Kalam,cursive;font-size:1.1rem}
+.box.slot{background:transparent;border:2px dashed var(--drop);box-shadow:none}
+.box.slot .task{color:var(--drop);font-family:inherit;font-size:.95rem;font-weight:600;display:grid;place-items:center}
+.box.slot .tools{visibility:hidden}
+.ghost{position:fixed;z-index:50;pointer-events:none;transform:rotate(-2deg) scale(1.04);box-shadow:0 18px 30px -12px rgba(0,0,0,.45)}
+dialog.sheet{border:1.5px solid var(--ink);border-radius:16px;background:var(--sheet);color:var(--ink);
+  width:min(560px,calc(100% - 24px));max-height:min(80vh,720px);padding:0;box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
+dialog.sheet::backdrop{background:rgba(20,28,45,.45)}
+.sheet .in{padding:18px;display:flex;flex-direction:column;gap:12px;max-height:inherit}
+.sheet h2{margin:0;font-size:1.4rem;font-weight:800;letter-spacing:-.02em}
+.sheet p{margin:0;color:var(--soft);line-height:1.45}
+.sheet .list{overflow:auto;border:1.5px solid var(--rule);border-radius:10px;background:var(--empty);min-height:60px}
+.sheet .list h3{margin:0;padding:10px 12px 4px;font-size:.95rem}
+.sheet .list label{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border-top:1px solid var(--rule);cursor:pointer}
+.sheet .list label small{display:block;color:var(--soft);font-size:.8rem}
+.sheet .list input{margin-top:4px;width:18px;height:18px;accent-color:var(--pen)}
+.sheet code{background:var(--empty);padding:1px 5px;border-radius:5px;font-size:.88em}
+.sheet ol{margin:0;padding-left:20px;color:var(--soft);line-height:1.5}
+.foot{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;color:var(--soft);font-size:.88rem;align-items:center}
+.foot .grow{flex:1}
+@media (prefers-reduced-motion:reduce){.tick path,.bar i,.box{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="date">
+      <h1 id="dayTitle">Today</h1>
+      <p id="daySub"></p>
+    </div>
+    <div class="nav">
+      <button class="btn icon" id="prev" aria-label="Previous day">‹</button>
+      <button class="btn" id="today">Today</button>
+      <button class="btn icon" id="next" aria-label="Next day">›</button>
+    </div>
+  </header>
+
+  <div class="progress" aria-live="polite">
+    <div class="bar"><i id="barFill"></i></div>
+    <span id="progText">0 / 0</span>
+  </div>
+
+  <details class="planner" id="planner">
+    <summary>Plan the day</summary>
+    <p class="hint">Write everything you want to finish today, one task per line. Add a length or a fixed time if it matters, like “Gym 1.5h” or “Call mom at 18:00”.</p>
+    <textarea id="dump" placeholder="Finish slide deck 2h&#10;Reply to emails&#10;Gym 1h&#10;Groceries&#10;Call mom at 18:00"></textarea>
+    <div class="row">
+      <label><input type="checkbox" id="keepFilled" checked> Keep tasks already in boxes</label>
+      <span class="grow"></span>
+      <button class="btn" id="gImport">Import from Google Tasks</button>
+      <button class="btn" id="fillOrder">Fill in order</button>
+      <button class="btn primary" id="aiBtn" hidden>Distribute with Claude</button>
+      <button class="btn" id="stopBtn" hidden>Stop</button>
+    </div>
+    <div class="status" id="status"></div>
+  </details>
+
+  <main class="grid" id="grid" aria-label="Hour boxes"></main>
+
+  <div class="foot">
+    <div class="hours">
+      Day runs from
+      <select id="startH" aria-label="Start hour"></select>
+      to
+      <select id="endH" aria-label="End hour"></select>
+    </div>
+    <span class="grow"></span>
+    <button class="btn" id="clearDay">Clear day</button>
+  </div>
+</div>
+
+<dialog class="sheet" id="gSheet" aria-labelledby="gTitle">
+  <div class="in">
+    <h2 id="gTitle">Import from Google Tasks</h2>
+    <p id="gMsg">Connecting to Google…</p>
+    <div class="list" id="gList" hidden></div>
+    <div class="row" style="margin-top:0">
+      <span class="grow"></span>
+      <button class="btn" id="gClose">Cancel</button>
+      <button class="btn primary" id="gAdd" hidden>Add to plan</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+/* Google Tasks setup (only needed when this file runs on your own site):
+   1. console.cloud.google.com → create project → enable "Google Tasks API"
+   2. APIs & Services → Credentials → OAuth client ID → Web application
+   3. Add your site's origin (e.g. https://timebox.yoursite.com) to Authorized JavaScript origins
+   4. Paste the client ID below. */
+const GOOGLE_CLIENT_ID = "";
+</script>
+<script>
+(() => {
+  /* ---------- state ---------- */
+  const LS_KEY = "timebox:v1";
+  const pad = n => String(n).padStart(2, "0");
+  const keyOf = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const todayKey = () => keyOf(new Date());
+
+  let store = { settings:{start:7,end:22}, days:{} };
+  try { const raw = localStorage.getItem(LS_KEY); if (raw) store = Object.assign(store, JSON.parse(raw)); } catch(e){}
+  let current = new Date(); current.setHours(0,0,0,0);
+  let editingHour = null;
+  let db = null;
+
+  const day = (k = keyOf(current)) => (store.days[k] ||= { slots:{}, dump:"" });
+  const hours = () => { const out=[]; for (let h=store.settings.start; h<store.settings.end; h++) out.push(h); return out; };
+
+  /* ---------- persistence: localStorage always, db when available ---------- */
+  const pending = new Map(); let saveTimer = null; let writing = Promise.resolve();
+  function save(k = keyOf(current)) {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch(e){}
+    if (!db) return;
+    pending.set(k, true); pending.set("settings", true);
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(flush, 700);
+  }
+  function flush() {
+    const keys = [...pending.keys()]; pending.clear();
+    writing = writing.then(async () => {
+      for (const k of keys) {
+        try {
+          const ref = db.collection("data/users/me").doc(k === "settings" ? "settings" : "day-" + k);
+          await ref.set(k === "settings" ? { ...store.settings } : { ...store.days[k] });
+        } catch(e) { /* offline or refused: local copy still holds */ }
+      }
+    });
+  }
+  async function pullDay(k) {
+    if (!db) return;
+    try {
+      const snap = await db.collection("data/users/me").doc("day-" + k).get();
+      if (snap.exists) {
+        const d = snap.data();
+        store.days[k] = { slots: JSON.parse(JSON.stringify(d.slots || {})), dump: d.dump || "" };
+        try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch(e){}
+        if (k === keyOf(current) && editingHour === null && !drag) render();
+      }
+    } catch(e){}
+  }
+
+  /* ---------- DOM ---------- */
+  const $ = id => document.getElementById(id);
+  const grid = $("grid"), dump = $("dump"), status = $("status");
+
+  function fmtHour(h){ const ap = h < 12 ? "am" : "pm"; const hh = h % 12 || 12; return [pad(h)+":00", hh+ap]; }
+
+  const TICK = `<svg class="tick" aria-hidden="true"><path pathLength="1"/></svg>`;
+  // Draw the tick in the box's real pixel size so it sits inside the box and keeps an even stroke
+  function sizeTicks(){
+    grid.querySelectorAll(".box:not(.ghost)").forEach(box => {
+      const svg = box.querySelector(".tick"); if (!svg) return;
+      const w = box.clientWidth, h = box.clientHeight; if (!w || !h) return;
+      svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+      const x = f => (w * f).toFixed(1), y = f => (h * f).toFixed(1);
+      svg.querySelector("path").setAttribute("d", `M${x(.2)} ${y(.55)} L${x(.42)} ${y(.82)} L${x(.84)} ${y(.3)}`);
+    });
+  }
+  window.addEventListener("resize", () => sizeTicks());
+  const I_EDIT = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>`;
+  const I_GRIP = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.8"/><circle cx="15" cy="6" r="1.8"/><circle cx="9" cy="12" r="1.8"/><circle cx="15" cy="12" r="1.8"/><circle cx="9" cy="18" r="1.8"/><circle cx="15" cy="18" r="1.8"/></svg>`;
+
+  // Fill one box from a slot. `mode` "slot" shows the drop placeholder while dragging.
+  function paint(el, h, s, mode) {
+    const k = keyOf(current), tk = todayKey(), isToday = k === tk, nowH = new Date().getHours();
+    const has = mode !== "slot" && s && s.text;
+    const [t24, t12] = fmtHour(h);
+    el.className = "box" + (mode === "slot" ? " slot" : has ? "" : " empty") + (has && s.done ? " done" : "")
+      + (isToday && h === nowH ? " now" : "")
+      + ((k < tk) || (isToday && h < nowH) ? " past" : "");
+    el.dataset.hour = h;
+    el.dataset.cid = mode === "slot" ? "slot" : (s && s._cid != null ? s._cid : (has ? "h" + h : ""));
+    el.tabIndex = 0;
+    el.setAttribute("role", "button");
+    el.setAttribute("aria-label", `${t24} ${has ? s.text + (s.done ? ", done" : "") : "empty"}`);
+    el.innerHTML = `
+      <div class="time">${t24} <small>${t12}</small></div>
+      <div class="tools">
+        ${has ? `<button class="edit-btn" aria-label="Edit task">${I_EDIT}</button>` : ""}
+        <button class="grip" aria-label="Drag to move">${I_GRIP}</button>
+      </div>
+      ${mode === "slot" ? `<div class="task">Drop here</div>`
+        : editingHour === h
+        ? `<input class="edit" maxlength="120" value="${has ? escapeAttr(s.text) : ""}" placeholder="What goes here?">`
+        : `<div class="task">${has ? escapeHtml(s.text) : "Tap to add a task"}</div>`}
+      ${TICK}`;
+  }
+
+  function render() {
+    const d = day(), k = keyOf(current), isToday = k === todayKey();
+    const now = new Date(), nowH = now.getHours();
+    const tk = todayKey();
+    const past = k < tk || (isToday);
+
+    const opts = { weekday:"long", month:"long", day:"numeric" };
+    $("dayTitle").textContent = isToday ? "Today" : current.toLocaleDateString(undefined, { weekday:"long" });
+    $("daySub").textContent = current.toLocaleDateString(undefined, opts);
+    if (document.activeElement !== dump) dump.value = d.dump || "";
+
+    grid.innerHTML = "";
+    let total = 0, done = 0;
+    for (const h of hours()) {
+      const s = d.slots[h];
+      if (s && s.text) { total++; if (s.done) done++; }
+      const el = document.createElement("div");
+      paint(el, h, s);
+      grid.appendChild(el);
+    }
+    $("barFill").style.width = total ? (done/total*100) + "%" : "0";
+    $("progText").textContent = `${done} / ${total} done`;
+
+    sizeTicks();
+    if (editingHour !== null) {
+      const inp = grid.querySelector("input.edit");
+      if (inp) { inp.focus(); inp.select(); }
+    }
+  }
+  const escapeHtml = s => s.replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+  const escapeAttr = escapeHtml;
+
+  /* ---------- box interactions ---------- */
+  grid.addEventListener("click", e => {
+    const box = e.target.closest(".box"); if (!box) return;
+    const h = +box.dataset.hour;
+    if (e.target.closest(".grip") || e.target.closest("input.edit")) return;
+    if (e.target.closest(".edit-btn")) { startEdit(h); return; }
+    if (editingHour !== null) return;
+    const s = day().slots[h];
+    if (!s || !s.text) { startEdit(h); return; }
+    s.done = !s.done;
+    box.classList.toggle("done", s.done);
+    save(); updateProgress();
+  });
+  grid.addEventListener("keydown", e => {
+    const inp = e.target.closest("input.edit");
+    if (inp) {
+      if (e.key === "Enter") commitEdit(inp.value);
+      else if (e.key === "Escape") { editingHour = null; render(); }
+      return;
+    }
+    const box = e.target.closest(".box");
+    if (box && e.target === box && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); box.click(); }
+    if (box && e.target === box && (e.key === "e" || e.key === "E")) startEdit(+box.dataset.hour);
+  });
+  grid.addEventListener("focusout", e => {
+    if (e.target.matches("input.edit")) setTimeout(() => { if (editingHour !== null) commitEdit(e.target.value); }, 0);
+  });
+  function startEdit(h){ editingHour = h; render(); }
+  function commitEdit(val){
+    const h = editingHour; if (h === null) return;
+    editingHour = null;
+    const d = day(); const text = val.trim();
+    if (text) d.slots[h] = { text, done: d.slots[h]?.text === text ? !!d.slots[h].done : false };
+    else delete d.slots[h];
+    save(); render();
+    const box = grid.querySelector(`.box[data-hour="${h}"]`); box && box.focus();
+  }
+  function updateProgress(){
+    const d = day(); let total=0, done=0;
+    for (const h of hours()) { const s=d.slots[h]; if (s&&s.text){ total++; if(s.done) done++; } }
+    $("barFill").style.width = total ? (done/total*100)+"%" : "0";
+    $("progText").textContent = `${done} / ${total} done`;
+  }
+
+  /* ---------- drag and drop with live shifting (mouse + touch) ---------- */
+  let drag = null;
+
+  // Move the task at `from` to `to` inside `slots`, pushing the tasks at `to`
+  // toward the vacated hour. The push stops at the first empty box.
+  function shiftSlots(slots, from, to) {
+    const task = slots[from];
+    if (!task || from === to) return;
+    const step = from > to ? 1 : -1;
+    delete slots[from];
+    const chain = [];
+    for (let h = to; h !== from; h += step) {
+      if (!slots[h] || !slots[h].text) break;
+      chain.push(h);
+    }
+    for (let i = chain.length - 1; i >= 0; i--) {
+      slots[chain[i] + step] = slots[chain[i]];
+      delete slots[chain[i]];
+    }
+    slots[to] = task;
+  }
+
+  // Show what the day looks like if the card lands on `target`, animating tasks that move.
+  function preview(target) {
+    if (target === drag.target) return;
+    drag.target = target;
+    const slots = {};
+    for (const h in drag.base) slots[h] = drag.base[h];
+    const dest = target == null ? drag.from : target;
+    shiftSlots(slots, drag.from, dest);
+    drag.preview = slots;
+
+    const boxes = [...grid.querySelectorAll(".box")];
+    const rects = {}, shownAt = {};
+    boxes.forEach(el => {
+      rects[el.dataset.hour] = el.getBoundingClientRect();
+      if (el.dataset.cid) shownAt[el.dataset.cid] = +el.dataset.hour;
+    });
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    boxes.forEach(el => {
+      const h = +el.dataset.hour;
+      const s = slots[h];
+      const cid = h === dest ? "slot" : (s && s.text ? s._cid : "");
+      if (el.dataset.cid === cid) return;
+      el.getAnimations().forEach(a => a.cancel());
+      paint(el, h, h === dest ? null : s, h === dest ? "slot" : undefined);
+      sizeTicks();
+      const p = shownAt[cid];
+      if (!reduce && cid && cid !== "slot" && p != null && p !== h) {
+        const r0 = rects[p], r1 = rects[h];
+        el.animate([
+          { transform: `translate(${r0.left - r1.left}px, ${r0.top - r1.top}px)` },
+          { transform: "none" }
+        ], { duration: 220, easing: "cubic-bezier(.25,.8,.3,1)" });
+      }
+    });
+  }
+
+  grid.addEventListener("pointerdown", e => {
+    const grip = e.target.closest(".grip"); if (!grip || editingHour !== null) return;
+    const box = grip.closest(".box");
+    const from = +box.dataset.hour;
+    if (!day().slots[from]?.text) return;
+    e.preventDefault();
+    const r = box.getBoundingClientRect();
+    const ghost = box.cloneNode(true);
+    ghost.classList.add("ghost"); ghost.classList.remove("now");
+    Object.assign(ghost.style, { width:r.width+"px", height:r.height+"px", left:r.left+"px", top:r.top+"px" });
+    document.body.appendChild(ghost);
+
+    // work on tagged copies so the saved day is untouched until the drop
+    const base = {};
+    for (const [h, v] of Object.entries(day().slots)) if (v && v.text) base[h] = { ...v, _cid: "h" + h };
+    drag = { from, ghost, base, preview: null, target: undefined, dx:e.clientX-r.left, dy:e.clientY-r.top, id:e.pointerId };
+    grid.setPointerCapture(e.pointerId);   // stays valid while boxes repaint
+    preview(from);
+  });
+
+  window.addEventListener("pointermove", e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    drag.ghost.style.left = (e.clientX - drag.dx) + "px";
+    drag.ghost.style.top = (e.clientY - drag.dy) + "px";
+    const hit = document.elementFromPoint(e.clientX, e.clientY);
+    const box = hit?.closest(".box:not(.ghost)");
+    if (box) preview(+box.dataset.hour);
+    else {
+      const g = grid.getBoundingClientRect();
+      const outside = e.clientX < g.left || e.clientX > g.right || e.clientY < g.top - 20 || e.clientY > g.bottom + 20;
+      if (outside) preview(drag.from);   // off the grid: put everything back
+    }
+    const edge = 70;
+    if (e.clientY < edge) window.scrollBy(0, -12);
+    else if (e.clientY > innerHeight - edge) window.scrollBy(0, 12);
+  });
+
+  const endDrag = e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const { ghost, preview: slots, target, from } = drag;
+    const commit = e.type === "pointerup" && target != null && target !== from;
+    const land = grid.querySelector(`.box[data-hour="${target}"]`);
+    const gr = ghost.getBoundingClientRect();
+    ghost.remove();
+    drag = null;
+    if (commit) {
+      const d = day(); d.slots = {};
+      for (const [h, v] of Object.entries(slots)) { const { _cid, ...clean } = v; d.slots[h] = clean; }
+      save();
+    }
+    render();
+    // settle the card into its box
+    const settled = grid.querySelector(`.box[data-hour="${commit ? target : from}"]`);
+    if (settled && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const r = settled.getBoundingClientRect();
+      settled.animate([
+        { transform: `translate(${gr.left - r.left}px, ${gr.top - r.top}px) rotate(-2deg)` },
+        { transform: "none" }
+      ], { duration: 180, easing: "ease-out" });
+    }
+  };
+  window.addEventListener("pointerup", endDrag);
+  window.addEventListener("pointercancel", endDrag);
+
+  /* ---------- planning ---------- */
+  dump.addEventListener("input", () => { day().dump = dump.value; save(); });
+
+  function availableHours(keepFilled) {
+    const k = keyOf(current), isToday = k === todayKey(), nowH = new Date().getHours();
+    const d = day();
+    return hours().filter(h => {
+      if (isToday && h < nowH) return false;
+      const s = d.slots[h];
+      if (!s || !s.text) return true;
+      if (s.done) return false;
+      return !keepFilled;
+    });
+  }
+  function taskLines(){ return dump.value.split("\n").map(s => s.replace(/^[-*•\d.)\s]+/, "").trim()).filter(Boolean); }
+  function setStatus(msg, err){ status.textContent = msg; status.classList.toggle("err", !!err); }
+
+  $("fillOrder").onclick = () => {
+    const tasks = taskLines();
+    if (!tasks.length) { setStatus("Write at least one task above first.", true); return; }
+    const keep = $("keepFilled").checked;
+    const free = availableHours(keep);
+    if (!free.length) { setStatus("No free boxes left today. Widen the day or clear some boxes.", true); return; }
+    const d = day(); let i = 0;
+    if (!keep) free.forEach(h => delete d.slots[h]);
+    for (const h of free) { if (i >= tasks.length) break; d.slots[h] = { text: tasks[i++], done:false }; }
+    save(); render();
+    setStatus(i < tasks.length ? `Placed ${i} tasks. ${tasks.length - i} didn't fit.` : `Placed ${i} tasks in order.`);
+  };
+
+  let sample = null, ctl = null;
+  $("stopBtn").onclick = () => ctl?.abort();
+  $("aiBtn").onclick = async () => {
+    const tasks = taskLines();
+    if (!tasks.length) { setStatus("Write at least one task above first.", true); return; }
+    const keep = $("keepFilled").checked;
+    const free = availableHours(keep);
+    if (!free.length) { setStatus("No free boxes left today. Widen the day or clear some boxes.", true); return; }
+    const d = day();
+    const fixed = hours().filter(h => d.slots[h]?.text && !free.includes(h)).map(h => `${pad(h)}:00 ${d.slots[h].text}${d.slots[h].done ? " (done)" : ""}`);
+    const isToday = keyOf(current) === todayKey(); const now = new Date();
+
+    const prompt = `You are planning someone's day into one-hour time boxes.
+
+Date: ${current.toDateString()}${isToday ? `. Current time: ${pad(now.getHours())}:${pad(now.getMinutes())}` : ""}.
+Free boxes you may fill (24h start hour): ${free.join(", ")}.
+${fixed.length ? `Boxes already taken (do not use): ${fixed.join("; ")}.` : ""}
+
+Tasks to finish:
+${tasks.map(t => "- " + t).join("\n")}
+
+Rules:
+- Each box holds exactly one entry. A task needing more than an hour spans consecutive boxes; repeat its name with " (cont.)" on later boxes.
+- Respect any fixed time a task mentions if that hour is free.
+- Put deep, demanding work earlier in the day and lighter errands later. Group two quick related tasks into one box as "A + B" when each is well under an hour.
+- After 3 or more heavy boxes in a row, you may add a "Break" box if there are spare boxes.
+- Keep task wording short (under 40 characters). Leave boxes empty if there is nothing to put in them.
+- If not everything fits, keep the most important tasks and list the rest in "unplaced".
+
+Return only JSON, no prose, in this shape:
+{"plan":[{"hour":9,"task":"Finish slide deck"}],"unplaced":["..."],"note":"one short sentence about the plan"}`;
+
+    ctl = new AbortController();
+    $("aiBtn").disabled = true; $("stopBtn").hidden = false; $("fillOrder").disabled = true;
+    setStatus("Planning your day…");
+    try {
+      const res = await sample.json(prompt, { signal: ctl.signal, modelTier: "default" });
+      const plan = Array.isArray(res?.plan) ? res.plan : [];
+      const freeSet = new Set(free);
+      if (!keep) free.forEach(h => delete d.slots[h]);
+      let placed = 0;
+      for (const p of plan) {
+        const h = parseInt(p?.hour, 10), text = String(p?.task || "").trim().slice(0, 120);
+        if (!freeSet.has(h) || !text) continue;
+        d.slots[h] = { text, done:false }; freeSet.delete(h); placed++;
+      }
+      save(); render();
+      const left = Array.isArray(res?.unplaced) && res.unplaced.length ? ` Didn't fit: ${res.unplaced.join(", ")}.` : "";
+      setStatus(placed ? `${res?.note ? res.note + " " : ""}Filled ${placed} boxes.${left}` : "Claude didn't return a usable plan. Try again or use Fill in order.", !placed);
+    } catch (e) {
+      const msg = {
+        cancelled: "Stopped.",
+        not_granted: "Claude planning needs your permission. Use Fill in order instead.",
+        rate_limited: "Too many requests right now. Wait a minute and try again.",
+      }[e?.code] || "Planning failed. Try again, or use Fill in order.";
+      setStatus(msg, e?.code !== "cancelled");
+      if (e?.code === "not_granted") $("aiBtn").hidden = true;
+    } finally {
+      $("aiBtn").disabled = false; $("stopBtn").hidden = true; $("fillOrder").disabled = false;
+    }
+  };
+
+  /* ---------- Google Tasks import ---------- */
+  const gSheet = $("gSheet"), gMsg = $("gMsg"), gList = $("gList"), gAdd = $("gAdd");
+  let gToken = null, gisReady = null;
+  $("gClose").onclick = () => gSheet.close();
+
+  function loadGIS() {
+    if (gisReady) return gisReady;
+    gisReady = new Promise((res, rej) => {
+      if (window.google?.accounts?.oauth2) return res();
+      const sc = document.createElement("script");
+      sc.src = "https://accounts.google.com/gsi/client"; sc.async = true;
+      sc.onload = () => window.google?.accounts?.oauth2 ? res() : rej(new Error("blocked"));
+      sc.onerror = () => rej(new Error("blocked"));
+      setTimeout(() => rej(new Error("timeout")), 8000);
+      document.head.appendChild(sc);
+    });
+    gisReady.catch(() => { gisReady = null; });
+    return gisReady;
+  }
+  function showUnavailable(reason) {
+    gList.hidden = true; gAdd.hidden = true;
+    gMsg.innerHTML = reason === "noid"
+      ? `Google sign-in isn't set up yet. To turn it on, host this page on your own site and add your OAuth client ID:<ol style="margin-top:8px"><li>In Google Cloud Console, enable the <b>Google Tasks API</b>.</li><li>Create an <b>OAuth client ID</b> (Web application) and add your site's address as an authorized origin.</li><li>Paste the ID into <code>GOOGLE_CLIENT_ID</code> at the top of the page's script.</li></ol>`
+      : `Google sign-in can't load here. Pages published in Claude can't connect to outside sites, so this import works once the page runs on your own site. Until then, copy your tasks into the “Plan the day” list by hand.`;
+  }
+  const gFetch = async url => {
+    const r = await fetch(url, { headers: { Authorization: "Bearer " + gToken } });
+    if (r.status === 401) { gToken = null; throw new Error("auth"); }
+    if (!r.ok) throw new Error("http " + r.status);
+    return r.json();
+  };
+  async function loadGoogleTasks() {
+    gMsg.textContent = "Loading your tasks…";
+    const lists = (await gFetch("https://tasks.googleapis.com/tasks/v1/users/@me/lists?maxResults=100")).items || [];
+    const k = keyOf(current);
+    const groups = [];
+    for (const l of lists) {
+      const items = (await gFetch(`https://tasks.googleapis.com/tasks/v1/lists/${encodeURIComponent(l.id)}/tasks?showCompleted=false&showHidden=false&maxResults=100`)).items || [];
+      const open = items.filter(t => t.title && t.title.trim());
+      if (open.length) groups.push({ title: l.title, items: open });
+    }
+    if (!groups.length) { gMsg.textContent = "No open tasks found in your Google Tasks lists."; gList.hidden = true; gAdd.hidden = true; return; }
+    const existing = new Set(taskLines().map(t => t.toLowerCase()));
+    gList.innerHTML = "";
+    for (const g of groups) {
+      const h = document.createElement("h3"); h.textContent = g.title; gList.appendChild(h);
+      for (const t of g.items) {
+        const due = t.due ? t.due.slice(0, 10) : "";
+        const lab = document.createElement("label");
+        const cb = document.createElement("input"); cb.type = "checkbox"; cb.value = t.title.trim();
+        cb.checked = !existing.has(cb.value.toLowerCase()) && (!!due && due <= k);   // due on or before this day
+        const span = document.createElement("span"); span.textContent = t.title.trim();
+        const sm = document.createElement("small");
+        sm.textContent = !due ? "No due date" : due < k ? "Overdue, was due " + due : due === k ? "Due this day" : "Due " + due;
+        span.appendChild(sm); lab.append(cb, span); gList.appendChild(lab);
+      }
+    }
+    gMsg.textContent = "Tasks due on or before this day are selected. Pick what you want to plan.";
+    gList.hidden = false; gAdd.hidden = false;
+  }
+  gAdd.onclick = () => {
+    const picked = [...gList.querySelectorAll("input:checked")].map(c => c.value);
+    if (!picked.length) { gMsg.textContent = "Select at least one task."; return; }
+    const cur = dump.value.replace(/\s+$/, "");
+    dump.value = (cur ? cur + "\n" : "") + picked.join("\n");
+    day().dump = dump.value; save();
+    gSheet.close();
+    setStatus(`Added ${picked.length} task${picked.length > 1 ? "s" : ""} from Google Tasks. Now distribute them.`);
+  };
+  $("gImport").onclick = async () => {
+    gList.hidden = true; gAdd.hidden = true; gMsg.textContent = "Connecting to Google…";
+    gSheet.showModal();
+    if (!GOOGLE_CLIENT_ID) return showUnavailable("noid");
+    try { await loadGIS(); } catch (e) { return showUnavailable("blocked"); }
+    const run = async () => {
+      try { await loadGoogleTasks(); }
+      catch (e) { gMsg.textContent = e.message === "auth" ? "Google sign-in expired. Tap Import again." : "Couldn't load tasks from Google. Try again."; }
+    };
+    if (gToken) return run();
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: "https://www.googleapis.com/auth/tasks.readonly",
+      callback: r => { if (r.error) { gMsg.textContent = "Google sign-in was cancelled."; return; } gToken = r.access_token; run(); },
+    });
+    gMsg.textContent = "Sign in with Google in the pop-up…";
+    client.requestAccessToken();
+  };
+
+  /* ---------- nav + settings ---------- */
+  const shift = n => { current.setDate(current.getDate()+n); editingHour=null; setStatus(""); render(); pullDay(keyOf(current)); };
+  $("prev").onclick = () => shift(-1);
+  $("next").onclick = () => shift(1);
+  $("today").onclick = () => { current = new Date(); current.setHours(0,0,0,0); editingHour=null; render(); pullDay(keyOf(current)); };
+  $("clearDay").onclick = () => {
+    if (!confirm("Clear every box for this day?")) return;
+    day().slots = {}; save(); render();
+  };
+
+  function fillHourSelects(){
+    const s = $("startH"), e = $("endH");
+    s.innerHTML = e.innerHTML = "";
+    for (let h=0; h<24; h++) s.add(new Option(pad(h)+":00", h));
+    for (let h=1; h<=24; h++) e.add(new Option(pad(h % 24)+":00" + (h===24?" (midnight)":""), h));
+    s.value = store.settings.start; e.value = store.settings.end;
+  }
+  $("startH").onchange = e => { const v=+e.target.value; store.settings.start=v; if (store.settings.end<=v) { store.settings.end=Math.min(24,v+1); $("endH").value=store.settings.end; } save(); render(); };
+  $("endH").onchange = e => { const v=+e.target.value; store.settings.end=v; if (store.settings.start>=v) { store.settings.start=Math.max(0,v-1); $("startH").value=store.settings.start; } save(); render(); };
+
+  // refresh the "now" highlight each minute
+  setInterval(() => { if (editingHour === null && !drag) render(); }, 60000);
+
+  // open the planner when the day has no tasks yet
+  if (!Object.keys(day().slots).length) $("planner").open = true;
+
+  fillHourSelects();
+  render();
+
+  /* ---------- capabilities ---------- */
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("sample").then(s => { if (s) { sample = s; $("aiBtn").hidden = false; } }).catch(()=>{});
+    window.claude.use("db").then(async d => {
+      if (!d) return;
+      db = d;
+      try {
+        const snap = await db.collection("data/users/me").doc("settings").get();
+        if (snap.exists) { const v = snap.data(); if (Number.isInteger(v.start) && Number.isInteger(v.end)) { store.settings = { start:v.start, end:v.end }; fillHourSelects(); } }
+      } catch(e){}
+      await pullDay(keyOf(current));
+      if (editingHour === null) render();
+    }).catch(()=>{});
+  }
+})();
+</script>
+</body>
+</html>
