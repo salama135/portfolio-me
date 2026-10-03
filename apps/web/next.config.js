@@ -21,7 +21,8 @@ const serverConfig = {
   outputFileTracingIncludes: {
     '/demos/private/[slug]/raw': ['./private-demos/**/*.html', './content/private-demos.json'],
     '/demos/private/[slug]': ['./private-demos/**/*.html', './content/private-demos.json'],
-    '/demos/private': ['./content/private-demos.json'],
+    '/demos/private': ['./private-demos/**/*.html', './content/private-demos.json'],
+    '/demos': ['./private-demos/**/*.html', './content/private-demos.json'],
   },
   redirects() {
     return [
