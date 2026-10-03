@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Acrylic kit — 3D builder</title>
+<style>
+  :root{
+    --table:#D7DCDE; --panel:#F3F5F6; --panel-2:#E7ECEE;
+    --ink:#171C1F; --muted:#5F6B70; --rule:#BCC5C8;
+    --accent:#C2185B; --focus:#1272C8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden}
+  body{
+    background:var(--table); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2{margin:0;font-weight:600;letter-spacing:-0.01em}
+  button,input,select{font:inherit;color:inherit}
+  .num{font-variant-numeric:tabular-nums}
+
+  .app{display:grid;grid-template-rows:auto 1fr;height:100%}
+  header{padding-top:calc(13px + env(safe-area-inset-top, 0px))}
+  .rail{padding-bottom:calc(40px + env(safe-area-inset-bottom, 0px))}
+  .keys{bottom:calc(14px + env(safe-area-inset-bottom, 0px))}
+  .hud{top:calc(14px + env(safe-area-inset-top, 0px))}
+  header{
+    padding:14px 20px; border-bottom:1px solid var(--rule);
+    display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;background:var(--panel);
+  }
+  header h1{font-size:18px}
+  header p{margin:0;color:var(--muted);font-size:13px}
+
+  .body{display:grid;grid-template-columns:300px 1fr;min-height:0}
+  @media (max-width:860px){
+    .body{grid-template-columns:1fr;grid-template-rows:minmax(240px,44vh) 1fr}
+    .rail{border-right:none;border-top:1px solid var(--rule);order:2;overflow-y:auto}
+    .stage{order:1}
+  }
+
+  .rail{
+    border-right:1px solid var(--rule); background:var(--panel);
+    padding:16px 18px 40px; overflow-y:auto; min-height:0;
+  }
+  section{margin-bottom:22px}
+  section h2{font-size:13px;margin-bottom:8px}
+  label{display:block;margin-bottom:9px}
+  label span{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}
+  input[type=number],select{
+    width:100%;padding:6px 8px;border:1px solid var(--rule);border-radius:3px;
+    background:#fff;font-variant-numeric:tabular-nums;
+  }
+  input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+  .hint{color:var(--muted);font-size:12px;margin:0 0 10px}
+  #bentnote{color:var(--accent);font-size:12px;margin:-4px 0 10px}
+  table.bom .sub{font-size:11px;color:var(--muted);margin-left:16px}
+
+  .stage{position:relative;min-height:0;background:#DDE3E6}
+  #view{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
+
+  .keys{
+    position:absolute;left:14px;bottom:14px;background:rgba(255,255,255,.86);
+    border:1px solid var(--rule);border-radius:4px;padding:9px 12px;
+    font-size:12px;color:var(--muted);backdrop-filter:blur(4px);max-width:min(380px,calc(100% - 28px));
+  }
+  .keys b{color:var(--ink);font-weight:600}
+  .keys div+div{margin-top:2px}
+
+  .hud{
+    position:absolute;right:14px;top:14px;background:rgba(255,255,255,.9);
+    border:1px solid var(--rule);border-radius:4px;padding:10px 14px;
+    display:flex;gap:18px;font-size:12px;color:var(--muted);
+  }
+  .hud b{display:block;font-size:19px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.2}
+
+  #flash{
+    position:absolute;left:50%;top:14px;transform:translate(-50%,-14px);
+    background:var(--ink);color:#fff;padding:7px 14px;border-radius:4px;font-size:13px;
+    opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
+  }
+  #flash.on{opacity:1;transform:translate(-50%,0)}
+  @media (prefers-reduced-motion:reduce){ #flash{transition:none} }
+
+  table.bom{width:100%;border-collapse:collapse;font-size:13px}
+  table.bom td{padding:3px 0;border-bottom:1px solid var(--panel-2)}
+  table.bom td.q{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+  table.bom td.none{color:var(--muted);padding:10px 0;border:none}
+  .sw{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px;vertical-align:-1px}
+
+  .btn{border:1px solid var(--rule);background:#fff;border-radius:3px;padding:6px 11px;cursor:pointer;font-size:13px}
+  .btn:hover{background:var(--panel-2)}
+  .btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .btn.primary:hover{background:#000}
+  .btnrow{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+  .filelabel{display:inline-block}
+  .filelabel input{display:none}
+  input[type=range]{width:100%;accent-color:var(--focus)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <h1>Acrylic kit — 3D builder</h1>
+    <p>Click a hole to bolt the next part on. The cut list writes itself.</p>
+  </header>
+
+  <div class="body">
+    <div class="rail">
+
+      <section>
+        <h2>Part to place</h2>
+        <label><span>Type</span><select id="ptype"></select></label>
+        <div id="bentnote">This one is folded 90° over a strip heater after cutting.</div>
+        <div class="row2">
+          <label><span id="laba">holes</span><input type="number" id="pa" value="9" min="1" step="1"></label>
+          <label id="bwrap"><span id="labb">rows</span><input type="number" id="pb" value="9" min="1" step="1"></label>
+        </div>
+        <label id="cwrap"><span id="labc">radius mm</span><input type="number" id="pc" value="70" min="1" step="1"></label>
+        <label><span>Colour</span><select id="pcolor"></select></label>
+        <p class="hint" id="anchorNote"></p>
+      </section>
+
+      <section>
+        <h2>Hole grid</h2>
+        <div class="row2">
+          <label><span>Pitch (mm)</span><input type="number" id="pitch" value="8" min="4" max="30" step="0.5"></label>
+          <label><span>Width (mm)</span><input type="number" id="width" value="14" min="6" max="40" step="0.5"></label>
+        </div>
+        <label><span>Thickness (mm)</span>
+          <select id="thick"><option>2</option><option selected>3</option><option>4</option><option>5</option></select>
+        </label>
+        <p class="hint" id="gridnote"></p>
+      </section>
+
+      <section>
+        <h2>Cut list</h2>
+        <table class="bom"><tbody id="bom"></tbody></table>
+        <div class="btnrow">
+          <button class="btn primary" id="copy">Copy cut list</button>
+          <button class="btn" id="save">Save model</button>
+          <label class="filelabel btn">Open<input type="file" id="loadfile" accept="application/json"></label>
+        </div>
+      </section>
+
+      <section>
+        <h2>Model</h2>
+        <label><span>Turntable speed <span id="spinrate">20°/s</span></span>
+          <input type="range" id="spinspeed" min="2" max="90" step="1" value="20"></label>
+        <div class="btnrow">
+          <button class="btn" id="spin">Rotate view</button>
+          <button class="btn" id="undo">Undo</button>
+          <button class="btn" id="starter">Starter frame</button>
+          <button class="btn" id="clear">Clear</button>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="stage">
+      <canvas id="view"></canvas>
+      <div class="hud">
+        <div>parts<b id="nparts" class="num">0</b></div>
+        <div>joints<b id="njoints" class="num">0</b></div>
+        <div>screws<b id="nscrews" class="num">0</b></div>
+      </div>
+      <div id="flash"></div>
+      <div class="keys">
+        <div><b>Click</b> a hole to bolt the part on · <b>right-click</b> removes a part</div>
+        <div><b>Drag</b> orbits · <b>shift-drag</b> pans · <b>scroll</b> zooms</div>
+        <div><b>Space</b> starts and stops the turntable · <b>R</b>/<b>E</b> spin the part · hold shift for 90° · <b>F</b> flips to the far face</div>
+        <div><b>[</b> <b>]</b> choose which of its holes takes the screw · <b>ctrl-Z</b> undoes</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>/* Acrylic kit — part geometry and snap math.
+   Pure logic, no DOM. Shared verbatim with the browser app.
+   Convention: a part is built in its own XY plane and extruded along Z.
+   Geometry is shifted so the hole centreline sits at z = 0, which makes
+   the stacking offset between two touching parts exactly one thickness. */
+
+const CORE = (function(THREE){
+"use strict";
+
+/* ---------- shape builders (2D profiles, millimetres) ---------- */
+
+function stripShape(P, n){
+  const W = P.W, L = (n - 1) * P.pitch + W, r = W / 2;
+  const s = new THREE.Shape();
+  s.moveTo(r, 0);
+  s.lineTo(L - r, 0);
+  s.absarc(L - r, r, r, -Math.PI / 2, Math.PI / 2, false);
+  s.lineTo(r, W);
+  s.absarc(r, r, r, Math.PI / 2, Math.PI * 1.5, false);
+  return { shape: s, w: L, h: W };
+}
+
+function roundRectShape(w, h, r){
+  r = Math.min(r, w / 2, h / 2);
+  const s = new THREE.Shape();
+  s.moveTo(r, 0);
+  s.lineTo(w - r, 0);
+  s.absarc(w - r, r, r, -Math.PI / 2, 0, false);
+  s.lineTo(w, h - r);
+  s.absarc(w - r, h - r, r, 0, Math.PI / 2, false);
+  s.lineTo(r, h);
+  s.absarc(r, h - r, r, Math.PI / 2, Math.PI, false);
+  s.lineTo(0, r);
+  s.absarc(r, r, r, Math.PI, Math.PI * 1.5, false);
+  return s;
+}
+
+function circlePath(cx, cy, rad){
+  const p = new THREE.Path();
+  p.absarc(cx, cy, rad, 0, Math.PI * 2, true);
+  return p;
+}
+
+/* ---------- part library ----------
+   Each entry returns:
+     pieces : [{ shape, depth, matrix }]  matrix places the piece in part space
+     holes  : [{ p: Vector3, n: Vector3 }] position and screw axis, part space
+   Hole z is 0 in a piece's own frame; the extrusion is recentred at build time. */
+
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+const UP = () => V(0, 0, 1);
+
+function flatPiece(shape, P){
+  // extrude spans 0..t, then shift down so the hole line lands on z = 0
+  return { shape, depth: P.t, matrix: new THREE.Matrix4().makeTranslation(0, 0, -P.t / 2) };
+}
+
+const LIB = {
+
+  strip: {
+    label: 'Strip', aLabel: 'holes', bLabel: null, defA: 9, defB: 0, bent: false,
+    build(P, a){
+      const n = Math.max(2, Math.round(a));
+      const { shape, w, h } = stripShape(P, n);
+      const holes = [];
+      for (let i = 0; i < n; i++){
+        const cx = P.W / 2 + i * P.pitch, cy = P.W / 2;
+        shape.holes.push(circlePath(cx, cy, P.D / 2));
+        holes.push({ p: V(cx, cy, 0), n: UP() });
+      }
+      return { pieces: [flatPiece(shape, P)], holes, size: V(w, h, P.t) };
+    }
+  },
+
+  plate: {
+    label: 'Plate', aLabel: 'cols', bLabel: 'rows', defA: 5, defB: 9, bent: false,
+    build(P, a, b){
+      const c = Math.max(2, Math.round(a)), r = Math.max(2, Math.round(b));
+      const w = (c - 1) * P.pitch + P.W, h = (r - 1) * P.pitch + P.W;
+      const shape = roundRectShape(w, h, Math.min(P.W / 2, P.fillet + 2));
+      const holes = [];
+      for (let i = 0; i < c; i++) for (let j = 0; j < r; j++){
+        const cx = P.W / 2 + i * P.pitch, cy = P.W / 2 + j * P.pitch;
+        shape.holes.push(circlePath(cx, cy, P.D / 2));
+        holes.push({ p: V(cx, cy, 0), n: UP() });
+      }
+      return { pieces: [flatPiece(shape, P)], holes, size: V(w, h, P.t) };
+    }
+  },
+
+  angle: {
+    label: 'Flat L', aLabel: 'arm A', bLabel: 'arm B', defA: 3, defB: 3, bent: false,
+    build(P, a, b){
+      const W = P.W, fi = Math.min(P.fillet, W / 2 - 0.5);
+      const na = Math.max(2, Math.round(a)), nb = Math.max(2, Math.round(b));
+      const Ax = (na - 1) * P.pitch, By = (nb - 1) * P.pitch;
+      const s = new THREE.Shape();
+      s.moveTo(0, 0);
+      s.lineTo(Ax + W / 2, 0);
+      s.absarc(Ax + W / 2, W / 2, W / 2, -Math.PI / 2, Math.PI / 2, false);
+      s.lineTo(W + fi, W);
+      if (fi > 0) s.absarc(W + fi, W + fi, fi, -Math.PI / 2, Math.PI, true);
+      s.lineTo(W, By + W / 2);
+      s.absarc(W / 2, By + W / 2, W / 2, 0, Math.PI, false);
+      s.lineTo(0, 0);
+      const holes = [];
+      for (let i = 0; i < na; i++){
+        const cx = W / 2 + i * P.pitch, cy = W / 2;
+        s.holes.push(circlePath(cx, cy, P.D / 2));
+        holes.push({ p: V(cx, cy, 0), n: UP() });
+      }
+      for (let j = 1; j < nb; j++){
+        const cx = W / 2, cy = W / 2 + j * P.pitch;
+        s.holes.push(circlePath(cx, cy, P.D / 2));
+        holes.push({ p: V(cx, cy, 0), n: UP() });
+      }
+      return { pieces: [flatPiece(s, P)], holes, size: V(Ax + W, By + W, P.t) };
+    }
+  },
+
+  bracket: {
+    label: 'Bent bracket', aLabel: 'arm A', bLabel: 'arm B', cLabel: 'fold deg',
+    defA: 2, defB: 2, defC: 90, bent: true,
+    build(P, a, b, c){
+      // a flat strip folded 90 degrees; arm B stands up and faces -X,
+      // which is what lets the model leave a single plane
+      const na = Math.max(2, Math.round(a)), nb = Math.max(2, Math.round(b));
+      const A = LIB.strip.build(P, na);
+      const B = LIB.strip.build(P, nb);
+      const th = Math.max(15, Math.min(165, c == null ? 90 : c)) * Math.PI / 180;
+      const rotB = new THREE.Matrix4().makeRotationY(-th);
+      const movB = new THREE.Matrix4().makeTranslation((P.t / 2) * Math.tan(th / 2), 0, 0);
+      const mB = new THREE.Matrix4().multiplyMatrices(movB, rotB);
+
+      const pieces = [
+        A.pieces[0],
+        { shape: B.pieces[0].shape, depth: P.t,
+          matrix: new THREE.Matrix4().multiplyMatrices(mB, B.pieces[0].matrix) }
+      ];
+      const holes = A.holes.map(h => ({ p: h.p.clone(), n: h.n.clone() }));
+      const nm = new THREE.Matrix3().setFromMatrix4(mB);
+      for (const h of B.holes){
+        holes.push({
+          p: h.p.clone().applyMatrix4(mB),
+          n: h.n.clone().applyMatrix3(nm).normalize()
+        });
+      }
+      return { pieces, holes, size: V((na - 1) * P.pitch + P.W, P.W, (nb - 1) * P.pitch + P.W),
+               forming: { kind: 'bend', angle: Math.round(th * 180 / Math.PI) },
+               flat: { type: 'strip', a: na + nb, b: 0 } };
+    }
+  },
+
+  gusset: {
+    label: 'Gusset', aLabel: 'leg A', bLabel: 'leg B', defA: 7, defB: 5, bent: false,
+    build(P, a, b){
+      const W = P.W;
+      const na = Math.max(2, Math.round(a)), nb = Math.max(2, Math.round(b));
+      const hx = (na - 1) * P.pitch + W, hy = (nb - 1) * P.pitch + W;
+      const s = new THREE.Shape();
+      s.moveTo(0, 0); s.lineTo(hx, 0); s.lineTo(0, hy); s.lineTo(0, 0);
+      // drop holes that sit too close to the sloped edge
+      const hlen = Math.hypot(hx, hy);
+      const clear = (cx, cy) => Math.abs(hy * cx + hx * cy - hx * hy) / hlen >= W / 2;
+      const holes = [];
+      const add = (cx, cy) => {
+        if (!clear(cx, cy)) return;
+        s.holes.push(circlePath(cx, cy, P.D / 2));
+        holes.push({ p: V(cx, cy, 0), n: UP() });
+      };
+      for (let i = 0; i < na; i++) add(W / 2 + i * P.pitch, W / 2);
+      for (let j = 1; j < nb; j++) add(W / 2, W / 2 + j * P.pitch);
+      return { pieces: [flatPiece(s, P)], holes, size: V(hx, hy, P.t) };
+    }
+  },
+
+  wheel: {
+    label: 'Wheel', aLabel: 'dia mm', bLabel: 'spokes', defA: 44, defB: 5, bent: false,
+    build(P, a, b){
+      const dia = Math.max(16, a), R = dia / 2, sp = Math.max(3, Math.min(8, Math.round(b)));
+      const s = new THREE.Shape();
+      s.absarc(R, R, R, 0, Math.PI * 2, false);
+      const holes = [];
+      s.holes.push(circlePath(R, R, P.D / 2));
+      holes.push({ p: V(R, R, 0), n: UP() });
+      const bc = R * 0.52, light = R * 0.19;
+      for (let i = 0; i < sp; i++){
+        const th = (i / sp) * Math.PI * 2 - Math.PI / 2;
+        s.holes.push(circlePath(R + Math.cos(th) * bc, R + Math.sin(th) * bc, light));
+      }
+      return { pieces: [flatPiece(s, P)], holes, size: V(dia, dia, P.t) };
+    }
+  },
+
+  ring: {
+    label: 'Ring', aLabel: 'OD mm', bLabel: 'bolts', defA: 46, defB: 6, bent: false,
+    build(P, a, b){
+      const od = Math.max(20, a), R = od / 2, ir = Math.max(2, R - P.W * 0.75);
+      const nb = Math.max(3, Math.round(b));
+      const s = new THREE.Shape();
+      s.absarc(R, R, R, 0, Math.PI * 2, false);
+      s.holes.push(circlePath(R, R, ir));
+      const holes = [], bcr = (R + ir) / 2;
+      for (let i = 0; i < nb; i++){
+        const th = (i / nb) * Math.PI * 2;
+        const cx = R + Math.cos(th) * bcr, cy = R + Math.sin(th) * bcr;
+        s.holes.push(circlePath(cx, cy, P.D / 2));
+        holes.push({ p: V(cx, cy, 0), n: UP() });
+      }
+      return { pieces: [flatPiece(s, P)], holes, size: V(od, od, P.t) };
+    }
+  },
+
+  canopy: {
+    label: 'Canopy', aLabel: 'base holes', bLabel: 'height mm', defA: 9, defB: 38, bent: false,
+    build(P, a, b){
+      const W = P.W, n = Math.max(3, Math.round(a)), H = Math.max(12, b);
+      const L = (n - 1) * P.pitch + W, inset = L * 0.22;
+      const s = new THREE.Shape();
+      s.moveTo(0, H); s.lineTo(inset, 0); s.lineTo(L - inset, 0); s.lineTo(L, H); s.lineTo(0, H);
+      const holes = [];
+      for (let i = 0; i < n; i++){
+        const cx = W / 2 + i * P.pitch, cy = H - W / 2;
+        s.holes.push(circlePath(cx, cy, P.D / 2));
+        holes.push({ p: V(cx, cy, 0), n: UP() });
+      }
+      return { pieces: [flatPiece(s, P)], holes, size: V(L, H, P.t) };
+    }
+  },
+
+  arc: {
+    label: 'Curved strip', aLabel: 'holes', bLabel: 'radius mm', cLabel: null,
+    defA: 9, defB: 60, defC: 0, bent: false,
+    // cut flat, stays flat: the curve is in the plane of the sheet
+    build(P, a, b){
+      const W = P.W, n = Math.max(2, Math.round(a));
+      const R = Math.max(W, b);
+      const d = P.pitch / R;                    // radians between holes
+      const PH = Math.min(d * (n - 1), Math.PI * 1.7);
+      const step = (n > 1) ? PH / (n - 1) : 0;
+      const ro = R + W / 2, ri = R - W / 2;
+      const s = new THREE.Shape();
+      s.moveTo(ro, 0);
+      s.absarc(0, 0, ro, 0, PH, false);
+      s.absarc(R * Math.cos(PH), R * Math.sin(PH), W / 2, PH, PH + Math.PI, false);
+      s.absarc(0, 0, ri, PH, 0, true);
+      s.absarc(R, 0, W / 2, Math.PI, Math.PI * 2, false);
+      const holes = [];
+      for (let i = 0; i < n; i++){
+        const th = i * step, cx = R * Math.cos(th), cy = R * Math.sin(th);
+        s.holes.push(circlePath(cx, cy, P.D / 2));
+        holes.push({ p: V(cx, cy, 0), n: UP() });
+      }
+      return { pieces: [flatPiece(s, P)], holes, size: V(2 * ro, 2 * ro, P.t), forming: null };
+    }
+  },
+
+  shell: {
+    label: 'Curved panel', aLabel: 'cols', bLabel: 'rows', cLabel: 'radius mm',
+    defA: 5, defB: 9, defC: 70, bent: false,
+    // a plate rolled around a cylinder: single curvature, so it unrolls
+    // to exactly the flat plate you already know how to cut
+    build(P, a, b, c){
+      const cols = Math.max(2, Math.round(a)), rows = Math.max(2, Math.round(b));
+      const w = (cols - 1) * P.pitch + P.W, h = (rows - 1) * P.pitch + P.W;
+      const R = Math.max(w / (Math.PI * 1.6), Math.max(P.W, c || 70));
+      const shape = roundRectShape(w, h, Math.min(P.W / 2, P.fillet + 2));
+      // wrap x around an axis parallel to Y, keeping the mid-surface at radius R
+      const wrap = (x, y, z) => {
+        const ph = (x - w / 2) / R, rr = R + z;
+        return V(rr * Math.sin(ph), y, rr * Math.cos(ph) - R);
+      };
+      const holes = [];
+      for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++){
+        const cx = P.W / 2 + i * P.pitch, cy = P.W / 2 + j * P.pitch;
+        shape.holes.push(circlePath(cx, cy, P.D / 2));
+        const ph = (cx - w / 2) / R;
+        holes.push({ p: wrap(cx, cy, 0), n: V(Math.sin(ph), 0, Math.cos(ph)) });
+      }
+      const piece = flatPiece(shape, P);
+      piece.deform = wrap;
+      return {
+        pieces: [piece], holes, size: V(w, h, P.t),
+        forming: { kind: 'roll', radius: Math.round(R) },
+        flat: { type: 'plate', a: cols, b: rows }
+      };
+    }
+  },
+
+  gear: {
+    label: 'Gear', aLabel: 'teeth', bLabel: 'module mm', cLabel: null,
+    defA: 16, defB: 1, defC: 0, bent: false,
+    build(P, a, b){
+      const N = Math.max(6, Math.round(a)), m = Math.max(0.4, b);
+      const rp = m * N / 2, ra = rp + m, rf = Math.max(P.D, rp - 1.25 * m);
+      const ap = Math.PI * 2 / N;
+      const s = new THREE.Shape();
+      const pol = (r, t) => V(ra + r * Math.cos(t), ra + r * Math.sin(t), 0);
+      let first = true;
+      for (let i = 0; i < N; i++){
+        const c = i * ap;
+        for (const [r, o] of [[rf, -0.34], [ra, -0.16], [ra, 0.16], [rf, 0.34]]){
+          const q = pol(r, c + o * ap);
+          if (first){ s.moveTo(q.x, q.y); first = false; } else s.lineTo(q.x, q.y);
+        }
+      }
+      s.closePath();
+      s.holes.push(circlePath(ra, ra, P.D / 2));
+      const holes = [{ p: V(ra, ra, 0), n: UP() }];
+      return { pieces: [flatPiece(s, P)], holes, size: V(2 * ra, 2 * ra, P.t), forming: null };
+    }
+  },
+
+  /* ---- joints that need no fastener ---- */
+
+  crosslap: {
+    label: 'Cross-lap strip', aLabel: 'holes', bLabel: 'notch at hole', cLabel: null,
+    defA: 9, defB: 5, defC: 0, bent: false,
+    // half-depth notch: two of these slide into each other and lock square
+    build(P, a, b){
+      const W = P.W, n = Math.max(3, Math.round(a));
+      const at = Math.max(1, Math.min(n, Math.round(b))) - 1;
+      const { shape, w } = stripShape(P, n);
+      const cx = W / 2 + at * P.pitch;
+      const kerfFit = P.t + 0.15;                    // slides without forcing
+      const slot = new THREE.Path();
+      slot.moveTo(cx - kerfFit / 2, W / 2);
+      slot.lineTo(cx + kerfFit / 2, W / 2);
+      slot.lineTo(cx + kerfFit / 2, W + 1);
+      slot.lineTo(cx - kerfFit / 2, W + 1);
+      slot.lineTo(cx - kerfFit / 2, W / 2);
+      shape.holes.push(slot);
+      const holes = [];
+      for (let i = 0; i < n; i++){
+        if (i === at) continue;                      // that hole is now the notch
+        const hx = W / 2 + i * P.pitch;
+        shape.holes.push(circlePath(hx, W / 2, P.D / 2));
+        holes.push({ p: V(hx, W / 2, 0), n: UP() });
+      }
+      // the notch itself is a joint: a part seating here stands square, flush
+      holes.push({ p: V(cx, W * 0.75, 0), n: UP(), mate: V(1, 0, 0), gap: 0, kind: 'slot' });
+      return { pieces: [flatPiece(shape, P)], holes, size: V(w, W, P.t) };
+    }
+  },
+
+  tabplate: {
+    label: 'Tab plate', aLabel: 'cols', bLabel: 'rows', cLabel: null,
+    defA: 5, defB: 5, defC: 0, bent: false,
+    // tabs along the bottom edge drop into a mortise plate: a 90 degree
+    // corner that jigs itself square with no bracket and no screw
+    build(P, a, b){
+      const cols = Math.max(2, Math.round(a)), rows = Math.max(2, Math.round(b));
+      const w = (cols - 1) * P.pitch + P.W, h = (rows - 1) * P.pitch + P.W;
+      const tabW = P.pitch * 0.6, tabH = P.t;
+      const s = new THREE.Shape();
+      s.moveTo(0, 0);
+      for (let i = 0; i < cols; i++){
+        const c = P.W / 2 + i * P.pitch;
+        s.lineTo(c - tabW / 2, 0);
+        s.lineTo(c - tabW / 2, -tabH);
+        s.lineTo(c + tabW / 2, -tabH);
+        s.lineTo(c + tabW / 2, 0);
+      }
+      s.lineTo(w, 0); s.lineTo(w, h); s.lineTo(0, h); s.lineTo(0, 0);
+      const holes = [];
+      for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++){
+        const cx = P.W / 2 + i * P.pitch, cy = P.W / 2 + j * P.pitch;
+        s.holes.push(circlePath(cx, cy, P.D / 2));
+        holes.push({ p: V(cx, cy, 0), n: UP() });
+      }
+      holes.push({ p: V(w / 2, -tabH / 2, 0), n: UP(), mate: V(0, -1, 0), gap: 0, kind: 'tab' });
+      return { pieces: [flatPiece(s, P)], holes, size: V(w, h + tabH, P.t) };
+    }
+  },
+
+  mortise: {
+    label: 'Mortise plate', aLabel: 'cols', bLabel: 'rows', cLabel: null,
+    defA: 5, defB: 5, defC: 0, bent: false,
+    // the receiving half of the tab joint
+    build(P, a, b){
+      const cols = Math.max(2, Math.round(a)), rows = Math.max(2, Math.round(b));
+      const w = (cols - 1) * P.pitch + P.W, h = (rows - 1) * P.pitch + P.W;
+      const shape = roundRectShape(w, h, Math.min(P.W / 2, P.fillet + 2));
+      const tabW = P.pitch * 0.6 + 0.15, slotY = P.W / 2;
+      for (let i = 0; i < cols; i++){
+        const c = P.W / 2 + i * P.pitch;
+        const m = new THREE.Path();
+        m.moveTo(c - tabW / 2, slotY - P.t / 2 - 0.08);
+        m.lineTo(c + tabW / 2, slotY - P.t / 2 - 0.08);
+        m.lineTo(c + tabW / 2, slotY + P.t / 2 + 0.08);
+        m.lineTo(c - tabW / 2, slotY + P.t / 2 + 0.08);
+        m.lineTo(c - tabW / 2, slotY - P.t / 2 - 0.08);
+        shape.holes.push(m);
+      }
+      const holes = [];
+      for (let i = 0; i < cols; i++) for (let j = 1; j < rows; j++){
+        const cx = P.W / 2 + i * P.pitch, cy = P.W / 2 + j * P.pitch;
+        shape.holes.push(circlePath(cx, cy, P.D / 2));
+        holes.push({ p: V(cx, cy, 0), n: UP() });
+      }
+      holes.push({ p: V(w / 2, slotY, 0), n: UP(), mate: V(0, 1, 0), gap: 0, kind: 'mortise' });
+      return { pieces: [flatPiece(shape, P)], holes, size: V(w, h, P.t) };
+    }
+  },
+
+  /* ---- turning things ---- */
+
+  axle: {
+    label: 'Cruciform axle', aLabel: 'length mm', bLabel: null, cLabel: null,
+    defA: 80, defB: 0, defC: 0, bent: false,
+    // two cross-lapped strips make a + section that grips a matching hub,
+    // so it carries torque instead of spinning like a plain bolt
+    build(P, a){
+      const L = Math.max(P.pitch * 2, a), arm = P.W * 0.42;
+      const blade = (vertical) => {
+        const s = new THREE.Shape();
+        if (vertical){ s.moveTo(-P.t/2, -arm); s.lineTo(P.t/2, -arm); s.lineTo(P.t/2, arm); s.lineTo(-P.t/2, arm); }
+        else { s.moveTo(-arm, -P.t/2); s.lineTo(arm, -P.t/2); s.lineTo(arm, P.t/2); s.lineTo(-arm, P.t/2); }
+        s.closePath(); return s;
+      };
+      const mk = sh => ({ shape: sh, depth: L,
+        matrix: new THREE.Matrix4().makeTranslation(0, 0, -L / 2) });
+      const holes = [
+        { p: V(0, 0, -L/2), n: V(0,0,-1), gap: 0, kind: 'axle' },
+        { p: V(0, 0,  L/2), n: V(0,0, 1), gap: 0, kind: 'axle' }
+      ];
+      return {
+        pieces: [mk(blade(false)), mk(blade(true))], holes, size: V(2*arm, 2*arm, L),
+        forming: { kind: 'laminate', of: 2 },
+        flat: { type: 'strip', a: Math.round(L / P.pitch) + 1, b: 0 }
+      };
+    }
+  },
+
+  hub: {
+    label: 'Axle hub', aLabel: 'dia mm', bLabel: 'bolts', cLabel: null,
+    defA: 30, defB: 4, defC: 0, bent: false,
+    // + shaped bore, so it drives from the axle rather than slipping on it
+    build(P, a, b){
+      const dia = Math.max(P.W * 1.4, a), R = dia / 2, arm = P.W * 0.42 + 0.12, half = P.t / 2 + 0.12;
+      const s = new THREE.Shape();
+      s.absarc(R, R, R, 0, Math.PI * 2, false);
+      const cross = new THREE.Path();
+      const pts = [[-arm,-half],[-half,-half],[-half,-arm],[half,-arm],[half,-half],[arm,-half],
+                   [arm,half],[half,half],[half,arm],[-half,arm],[-half,half],[-arm,half]];
+      pts.forEach(([x, y], i) => i ? cross.lineTo(R + x, R + y) : cross.moveTo(R + x, R + y));
+      cross.closePath();
+      s.holes.push(cross);
+      const holes = [], nb = Math.max(2, Math.round(b)), bcr = (R + arm) / 2;
+      for (let i = 0; i < nb; i++){
+        const th = (i / nb) * Math.PI * 2;
+        const cx = R + Math.cos(th) * bcr, cy = R + Math.sin(th) * bcr;
+        s.holes.push(circlePath(cx, cy, P.D / 2));
+        holes.push({ p: V(cx, cy, 0), n: UP() });
+      }
+      holes.push({ p: V(R, R, 0), n: UP(), kind: 'bore' });
+      return { pieces: [flatPiece(s, P)], holes, size: V(dia, dia, P.t) };
+    }
+  },
+
+  rack: {
+    label: 'Gear rack', aLabel: 'teeth', bLabel: 'module mm', cLabel: null,
+    defA: 12, defB: 1, defC: 0, bent: false,
+    // turns a gear's rotation into a straight line
+    build(P, a, b){
+      const N = Math.max(3, Math.round(a)), m = Math.max(0.4, b);
+      const pitchLen = Math.PI * m, L = N * pitchLen, body = P.W;
+      const s = new THREE.Shape();
+      s.moveTo(0, 0);
+      for (let i = 0; i < N; i++){
+        const c = (i + 0.5) * pitchLen;
+        s.lineTo(c - pitchLen * 0.30, 0);
+        s.lineTo(c - pitchLen * 0.14, m);
+        s.lineTo(c + pitchLen * 0.14, m);
+        s.lineTo(c + pitchLen * 0.30, 0);
+      }
+      s.lineTo(L, 0); s.lineTo(L, -body); s.lineTo(0, -body); s.lineTo(0, 0);
+      const holes = [], nh = Math.max(2, Math.floor(L / P.pitch));
+      for (let i = 0; i < nh; i++){
+        const cx = P.pitch / 2 + i * P.pitch, cy = -body / 2;
+        if (cx > L - P.pitch / 4) break;
+        s.holes.push(circlePath(cx, cy, P.D / 2));
+        holes.push({ p: V(cx, cy, 0), n: UP() });
+      }
+      return { pieces: [flatPiece(s, P)], holes, size: V(L, body + m, P.t) };
+    }
+  },
+
+  quadrant: {
+    label: 'Angle quadrant', aLabel: 'radius mm', bLabel: 'sweep deg', cLabel: null,
+    defA: 46, defB: 90, defC: 0, bent: false,
+    // curved slot: bolt through it and the joint locks at any angle you like
+    build(P, a, b){
+      const R = Math.max(P.W * 1.5, a), sweep = Math.max(20, Math.min(300, b)) * Math.PI / 180;
+      const W = P.W, ro = R + W / 2, ri = R - W / 2;
+      const s = new THREE.Shape();
+      s.moveTo(ro, 0);
+      s.absarc(0, 0, ro, 0, sweep, false);
+      s.absarc(R * Math.cos(sweep), R * Math.sin(sweep), W / 2, sweep, sweep + Math.PI, false);
+      s.absarc(0, 0, ri, sweep, 0, true);
+      s.absarc(R, 0, W / 2, Math.PI, Math.PI * 2, false);
+      // arc slot down the centreline, stopping short of both ends
+      const sr = P.D / 2, pad = Math.asin(Math.min(1, (W * 0.55) / R));
+      const a0 = pad, a1 = Math.max(pad, sweep - pad), seg = 26;
+      const slot = new THREE.Path();
+      for (let i = 0; i <= seg; i++){
+        const t = a0 + (a1 - a0) * i / seg;
+        const x = (R + sr) * Math.cos(t), y = (R + sr) * Math.sin(t);
+        i ? slot.lineTo(x, y) : slot.moveTo(x, y);
+      }
+      for (let i = seg; i >= 0; i--){
+        const t = a0 + (a1 - a0) * i / seg;
+        slot.lineTo((R - sr) * Math.cos(t), (R - sr) * Math.sin(t));
+      }
+      slot.closePath();
+      s.holes.push(slot);
+      const holes = [];
+      const steps = Math.max(2, Math.round((a1 - a0) * R / P.pitch));
+      for (let i = 0; i <= steps; i++){
+        const t = a0 + (a1 - a0) * i / steps;
+        holes.push({ p: V(R * Math.cos(t), R * Math.sin(t), 0), n: UP(), kind: 'slide' });
+      }
+      return { pieces: [flatPiece(s, P)], holes, size: V(2 * ro, 2 * ro, P.t) };
+    }
+  }
+};
+
+/* ---------- snapping ----------
+   Place a new part so its anchor hole is coaxial with a hole on a part
+   already in the model, one thickness away so the two faces meet. */
+
+function snapTransform(P, def, anchorIdx, targetPos, targetAxis, spinRad, flip, gap){
+  const anchor = def.holes[Math.max(0, Math.min(def.holes.length - 1, anchorIdx))];
+  const axis = targetAxis.clone().normalize();
+
+  const align = new THREE.Quaternion().setFromUnitVectors(anchor.n.clone().normalize(), axis);
+  const spin = new THREE.Quaternion().setFromAxisAngle(axis, spinRad || 0);
+  const quat = spin.multiply(align);
+
+  if (flip){
+    // spin the part 180 degrees about any axis perpendicular to the screw,
+    // so it lies on the far face instead of the near one
+    const perp = Math.abs(axis.z) < 0.9 ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(1, 0, 0);
+    perp.cross(axis).normalize();
+    quat.premultiply(new THREE.Quaternion().setFromAxisAngle(perp, Math.PI));
+  }
+
+  // screw joints sit one thickness apart; interlocking joints seat flush
+  const offset = axis.clone().multiplyScalar(gap === undefined ? P.t : gap);
+  const pos = targetPos.clone().add(offset)
+    .sub(anchor.p.clone().applyQuaternion(quat));
+  return { position: pos, quaternion: quat };
+}
+
+function holeWorld(def, transform, idx){
+  if (!def.holes.length) return null;
+  const h = def.holes[Math.max(0, Math.min(def.holes.length - 1, idx | 0))];
+  const q = transform.quaternion;
+  return {
+    p: h.p.clone().applyQuaternion(q).add(transform.position),
+    n: h.n.clone().applyQuaternion(q).normalize(),
+    // where a part joining HERE must point its own normal; for a plain screw
+    // hole that is the same axis, for a slot it is square to this part
+    mate: (h.mate || h.n).clone().applyQuaternion(q).normalize(),
+    gap: h.gap,
+    kind: h.kind || 'screw'
+  };
+}
+
+/* ---------- fasteners ----------
+   Any point where two or more holes line up is one screw. */
+
+function countFasteners(instances, tol){
+  tol = tol || 0.6;
+  // A screw is a run of holes sharing one axis LINE, not one point: stacked
+  // holes sit a thickness apart along that line. Bucket by the line, then
+  // split each bucket into runs that are actually touching.
+  const lines = new Map();
+  const thick = (instances[0] && instances[0].t) || 3;
+  for (const inst of instances){
+    for (let i = 0; i < inst.def.holes.length; i++){
+      const h = holeWorld(inst.def, inst, i);
+      const d = h.n.clone().normalize();
+      // canonical direction so +n and -n share a bucket
+      if (d.x < -1e-6 || (Math.abs(d.x) < 1e-6 && (d.y < -1e-6 ||
+          (Math.abs(d.y) < 1e-6 && d.z < 0)))) d.multiplyScalar(-1);
+      const t = h.p.dot(d);
+      const c = h.p.clone().sub(d.clone().multiplyScalar(t)); // foot of the line
+      const key = [Math.round(c.x / tol), Math.round(c.y / tol), Math.round(c.z / tol),
+                   Math.round(d.x * 500), Math.round(d.y * 500), Math.round(d.z * 500)].join(',');
+      if (!lines.has(key)) lines.set(key, []);
+      lines.get(key).push({ t, id: inst.id });
+    }
+  }
+  let screws = 0, loose = 0;
+  const joints = new Set();
+  const reach = thick * 1.6;
+  lines.forEach(ts => {
+    ts.sort((a, b) => a.t - b.t);
+    let run = [ts[0]];
+    const close = () => {
+      if (run.length >= 2){
+        screws++;
+        const ids = [...new Set(run.map(r => r.id))].sort();
+        for (let i = 0; i < ids.length; i++)
+          for (let j = i + 1; j < ids.length; j++) joints.add(ids[i] + '~' + ids[j]);
+      } else loose++;
+    };
+    for (let i = 1; i < ts.length; i++){
+      if (ts[i].t - ts[i - 1].t <= reach){ run.push(ts[i]); continue; }
+      close(); run = [ts[i]];
+    }
+    close();
+  });
+  // two screws per joined pair stops the joint pivoting; that is the floor
+  return { screws, loose, joints: joints.size, minScrews: Math.min(screws, joints.size * 2) };
+}
+
+function defaults(){
+  return { pitch: 8, W: 14, screw: 3, D: 3.2, t: 3, fillet: 2 };
+}
+
+return { LIB, snapTransform, holeWorld, countFasteners, defaults, stripShape, roundRectShape };
+
+})(THREE);
+</script>
+<script>/* ===== app ===== */
+(function(){
+"use strict";
+
+const $ = id => document.getElementById(id);
+const COLORS = {
+  clear: { name:'Clear', hex:0x9FC2CE, edge:0x4E7484, css:'#9FC2CE' },
+  red:   { name:'Red',   hex:0xE2323C, edge:0x8E1219, css:'#E2323C' },
+  blue:  { name:'Blue',  hex:0x1272C8, edge:0x0A3F72, css:'#1272C8' }
+};
+
+let P = CORE.defaults();
+let model = [];          // { id, type, a, b, color, position, quaternion }
+let nextId = 1;
+let undoStack = [];
+
+/* ---------- scene ---------- */
+
+const canvas = $('view');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:false, preserveDrawingBuffer:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setClearColor(0xDDE3E6, 1);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0xDDE3E6, 380, 900);
+
+const camera = new THREE.PerspectiveCamera(42, 1, 1, 3000);
+
+scene.add(new THREE.HemisphereLight(0xFFFFFF, 0x9AA8AE, 0.85));
+const key = new THREE.DirectionalLight(0xFFFFFF, 0.75);
+key.position.set(120, 220, 160);
+scene.add(key);
+const rim = new THREE.DirectionalLight(0xCFE3FF, 0.4);
+rim.position.set(-140, 80, -120);
+scene.add(rim);
+
+const grid = new THREE.GridHelper(800, 50, 0xA9B6BC, 0xC6CFD3);
+grid.position.y = -0.1;
+scene.add(grid);
+
+const groundPlane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
+const modelRoot = new THREE.Group(); scene.add(modelRoot);
+const ghostRoot = new THREE.Group(); scene.add(ghostRoot);
+
+// marker ring drawn over whichever hole the ghost will bolt to
+const marker = new THREE.Mesh(
+  new THREE.TorusGeometry(3.6, 0.7, 8, 24),
+  new THREE.MeshBasicMaterial({ color:0xC2185B })
+);
+marker.visible = false; scene.add(marker);
+
+/* ---------- geometry cache ---------- */
+
+const geoCache = new Map();
+function defOf(type, a, b){
+  const k = [type,a,b,P.pitch,P.W,P.D,P.t,P.fillet].join('|');
+  if (!geoCache.has(k)){
+    const def = CORE.LIB[type].build(P, a, b);
+    def.geoms = def.pieces.map(pc => {
+      const g = new THREE.ExtrudeGeometry(pc.shape, { depth:pc.depth, bevelEnabled:false, curveSegments:10 });
+      g.applyMatrix4(pc.matrix);
+      return g;
+    });
+    def.edges = def.geoms.map(g => new THREE.EdgesGeometry(g, 24));
+    geoCache.set(k, def);
+  }
+  return geoCache.get(k);
+}
+
+function buildGroup(type, a, b, c, color, ghost){
+  const def = defOf(type, a, b, c);
+  const col = COLORS[color] || COLORS.clear;
+  const g = new THREE.Group();
+  def.geoms.forEach((geom, i) => {
+    const mat = new THREE.MeshPhongMaterial({
+      color: col.hex, transparent:true, opacity: ghost ? 0.32 : 0.62,
+      shininess: 95, specular: 0x555555, side: THREE.DoubleSide,
+      depthWrite: !ghost
+    });
+    g.add(new THREE.Mesh(geom, mat));
+    g.add(new THREE.LineSegments(def.edges[i], new THREE.LineBasicMaterial({
+      color: ghost ? 0xC2185B : col.edge, transparent:true, opacity: ghost ? 0.9 : 0.55
+    })));
+  });
+  g.userData.def = def;
+  return g;
+}
+
+/* ---------- model <-> scene ---------- */
+
+function rebuild(){
+  while (modelRoot.children.length) modelRoot.remove(modelRoot.children[0]);
+  for (const inst of model){
+    const g = buildGroup(inst.type, inst.a, inst.b, inst.c, inst.color, false);
+    g.position.copy(inst.position);
+    g.quaternion.copy(inst.quaternion);
+    g.userData.id = inst.id;
+    modelRoot.add(g);
+  }
+  updateStats();
+}
+
+function snapshot(){
+  undoStack.push(JSON.stringify(model.map(m => ({
+    ...m, position: m.position.toArray(), quaternion: m.quaternion.toArray()
+  }))));
+  if (undoStack.length > 60) undoStack.shift();
+}
+function undo(){
+  if (!undoStack.length) return;
+  model = JSON.parse(undoStack.pop()).map(m => ({
+    ...m,
+    position: new THREE.Vector3().fromArray(m.position),
+    quaternion: new THREE.Quaternion().fromArray(m.quaternion)
+  }));
+  rebuild();
+}
+
+function instances(){
+  return model.map(m => ({
+    id: m.id, t: P.t, def: defOf(m.type, m.a, m.b, m.c),
+    position: m.position, quaternion: m.quaternion
+  }));
+}
+
+/* ---------- ghost + snapping ---------- */
+
+const sel = { type:'strip', a:9, b:0, c:0, color:'red' };
+const ghost = { spin:0, anchor:0, flip:false, valid:false, group:null,
+                position:new THREE.Vector3(), quaternion:new THREE.Quaternion() };
+
+function refreshGhost(){
+  if (ghost.group) ghostRoot.remove(ghost.group);
+  ghost.group = buildGroup(sel.type, sel.a, sel.b, sel.c, sel.color, true);
+  ghostRoot.add(ghost.group);
+  const hs = defOf(sel.type, sel.a, sel.b, sel.c).holes;
+  ghost.anchor = Math.min(ghost.anchor, hs.length - 1);
+  const k = (hs[ghost.anchor] && hs[ghost.anchor].kind) || 'screw';
+  const what = { slot:'notch', tab:'tab', mortise:'mortise', axle:'axle end',
+                 bore:'axle bore', slide:'slot' }[k] || 'hole';
+  $('anchorNote').textContent = `joining on ${what} ${ghost.anchor + 1} of ${hs.length}`
+    + (k === 'screw' ? '' : ' — shift-R squares it up');
+}
+
+const ray = new THREE.Raycaster();
+function pickAt(nx, ny){
+  ray.setFromCamera({ x:nx, y:ny }, camera);
+  const hits = ray.intersectObjects(modelRoot.children, true);
+  for (const h of hits) if (h.object.type === 'Mesh') return h;
+  return null;
+}
+
+function updateGhost(nx, ny){
+  const def = defOf(sel.type, sel.a, sel.b, sel.c);
+  const hit = pickAt(nx, ny);
+
+  if (hit){
+    // nearest hole on the part that was hit
+    let host = hit.object; while (host.parent && host.parent !== modelRoot) host = host.parent;
+    const inst = instances().find(i => i.id === host.userData.id);
+    if (inst){
+      let best = null, bestD = Infinity;
+      for (let i = 0; i < inst.def.holes.length; i++){
+        const hw = CORE.holeWorld(inst.def, inst, i);
+        const d = hw.p.distanceTo(hit.point);
+        if (d < bestD){ bestD = d; best = hw; }
+      }
+      if (best){
+        // stack on whichever face is turned toward the camera
+        const interlock = best.kind && best.kind !== 'screw';
+        const axis = (best.mate || best.n).clone();
+        // a screw can go in from either face; an interlocking joint cannot
+        if (!interlock && axis.dot(camera.position.clone().sub(best.p)) < 0) axis.multiplyScalar(-1);
+        const tr = CORE.snapTransform(P, def, ghost.anchor, best.p, axis,
+                                      ghost.spin, ghost.flip, best.gap);
+        ghost.position.copy(tr.position);
+        ghost.quaternion.copy(tr.quaternion);
+        ghost.valid = true;
+        marker.position.copy(best.p);
+        marker.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1), axis));
+        marker.visible = true;
+        marker.material.color.setHex(interlock ? 0x1272C8 : 0xC2185B);
+        applyGhost(); return;
+      }
+    }
+  }
+
+  // nothing under the cursor: lay the part flat on the ground
+  ray.setFromCamera({ x:nx, y:ny }, camera);
+  const p = new THREE.Vector3();
+  if (ray.ray.intersectPlane(groundPlane, p)){
+    const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1), new THREE.Vector3(0,1,0));
+    q.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), ghost.spin));
+    ghost.quaternion.copy(q);
+    ghost.position.set(p.x, P.t/2, p.z);
+    ghost.valid = true;
+  } else ghost.valid = false;
+  marker.visible = false;
+  applyGhost();
+}
+
+function applyGhost(){
+  if (!ghost.group) return;
+  ghost.group.visible = ghost.valid;
+  ghost.group.position.copy(ghost.position);
+  ghost.group.quaternion.copy(ghost.quaternion);
+}
+
+function place(){
+  if (!ghost.valid) return;
+  snapshot();
+  model.push({
+    id: 'p' + (nextId++), type:sel.type, a:sel.a, b:sel.b, c:sel.c, color:sel.color,
+    position: ghost.position.clone(), quaternion: ghost.quaternion.clone()
+  });
+  rebuild();
+}
+
+function deleteAt(nx, ny){
+  const hit = pickAt(nx, ny);
+  if (!hit) return false;
+  let host = hit.object; while (host.parent && host.parent !== modelRoot) host = host.parent;
+  const i = model.findIndex(m => m.id === host.userData.id);
+  if (i < 0) return false;
+  snapshot(); model.splice(i, 1); rebuild(); return true;
+}
+
+
+/* ---------- stats + cut list ---------- */
+
+function updateStats(){
+  const fx = CORE.countFasteners(instances());
+  const counts = new Map();
+  for (const m of model){
+    const k = [m.type, m.a, m.b, m.c || 0, m.color].join('|');
+    counts.set(k, (counts.get(k) || 0) + 1);
+  }
+  $('nparts').textContent = model.length;
+  $('njoints').textContent = fx.joints;
+  $('nscrews').textContent = fx.minScrews + '–' + fx.screws;
+
+  const rows = [...counts.entries()].map(([k, q]) => {
+    const [type, a, b, c, color] = k.split('|');
+    const L = CORE.LIB[type];
+    const def = defOf(type, +a, +b, +c);
+    const dims = L.bLabel ? `${a}×${b}` : `${a}`;
+    const fp = def.flat
+      ? `cut as ${CORE.LIB[def.flat.type].label} ${def.flat.b ? def.flat.a + '×' + def.flat.b : def.flat.a}`
+      : '';
+    const form = def.forming
+      ? (def.forming.kind === 'roll' ? `roll R${def.forming.radius}`
+         : def.forming.kind === 'laminate' ? `laminate ${def.forming.of}, cross-lapped`
+         : `fold ${def.forming.angle}°`)
+      : '';
+    const sub = (fp || form) ? `<div class="sub">${[fp, form].filter(Boolean).join(' · ')}</div>` : '';
+    return `<tr><td><span class="sw" style="background:${COLORS[color].css}"></span>${L.label} ${dims}${sub}</td><td class="q">${q}</td></tr>`;
+  });
+  $('bom').innerHTML = rows.length ? rows.join('') :
+    '<tr><td colspan="2" class="none">Nothing built yet.</td></tr>';
+
+  // the sheet generator only cuts flat, so emit each part's flat pattern
+  window.__cutlist = [...counts.entries()].map(([k, q]) => {
+    const [type, a, b, c, color] = k.split('|');
+    const def = defOf(type, +a, +b, +c);
+    const fl = def.flat || { type, a, b: CORE.LIB[type].bLabel ? b : 0 };
+    return [fl.type, String(fl.a), String(fl.b || 0), String(q), color];
+  });
+}
+
+function copyCutList(){
+  const txt = JSON.stringify(window.__cutlist || []);
+  const manual = () => { try { window.prompt('Copy the cut list:', txt); } catch(e){ console.log(txt); } };
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(
+      () => flash('Cut list copied — paste it into the sheet generator.'),
+      manual
+    );
+  } else manual();
+}
+
+let flashT;
+function flash(msg){
+  const el = $('flash'); el.textContent = msg; el.classList.add('on');
+  clearTimeout(flashT); flashT = setTimeout(() => el.classList.remove('on'), 2600);
+}
+
+/* ---------- camera ---------- */
+
+const cam = { theta: 0.9, phi: 1.05, dist: 320, target: new THREE.Vector3(0, 20, 0),
+              spin: false, speed: 0.35 };   // speed in radians per second
+let lastFrame = performance.now();          // declared here: setSpin() touches it during boot
+function applyCam(){
+  cam.phi = Math.max(0.08, Math.min(Math.PI - 0.08, cam.phi));
+  cam.dist = Math.max(40, Math.min(1400, cam.dist));
+  camera.position.set(
+    cam.target.x + cam.dist * Math.sin(cam.phi) * Math.sin(cam.theta),
+    cam.target.y + cam.dist * Math.cos(cam.phi),
+    cam.target.z + cam.dist * Math.sin(cam.phi) * Math.cos(cam.theta)
+  );
+  camera.lookAt(cam.target);
+}
+
+let drag = null, moved = 0;
+function ndc(e){
+  const r = canvas.getBoundingClientRect();
+  return { x: ((e.clientX - r.left) / r.width) * 2 - 1, y: -((e.clientY - r.top) / r.height) * 2 + 1 };
+}
+
+canvas.addEventListener('pointerdown', e => {
+  canvas.setPointerCapture(e.pointerId);
+  drag = { x:e.clientX, y:e.clientY, btn:e.button, shift:e.shiftKey }; moved = 0;
+});
+canvas.addEventListener('pointermove', e => {
+  const n = ndc(e);
+  if (!drag){ updateGhost(n.x, n.y); return; }
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  moved += Math.abs(dx) + Math.abs(dy);
+  if (drag.btn === 0 && !drag.shift){
+    cam.theta -= dx * 0.006; cam.phi -= dy * 0.006;
+  } else {
+    const right = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0);
+    const up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
+    const k = cam.dist * 0.0016;
+    cam.target.addScaledVector(right, -dx * k).addScaledVector(up, dy * k);
+  }
+  drag.x = e.clientX; drag.y = e.clientY;
+  applyCam();
+});
+canvas.addEventListener('pointerup', e => {
+  const wasDrag = moved > 6, btn = drag ? drag.btn : 0;
+  drag = null;
+  const n = ndc(e);
+  if (wasDrag){ updateGhost(n.x, n.y); return; }
+  if (btn === 2 || e.ctrlKey) deleteAt(n.x, n.y);
+  else { place(); updateGhost(n.x, n.y); }
+});
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+canvas.addEventListener('wheel', e => {
+  e.preventDefault(); cam.dist *= Math.exp(e.deltaY * 0.0012); applyCam();
+}, { passive:false });
+
+addEventListener('keydown', e => {
+  const step = e.shiftKey ? Math.PI/2 : Math.PI/12;
+  const n = CORE.LIB[sel.type] ? defOf(sel.type, sel.a, sel.b, sel.c).holes.length : 1;
+  if (e.key === 'r' || e.key === 'R'){ ghost.spin += step; applyGhost(); }
+  else if (e.key === 'e' || e.key === 'E'){ ghost.spin -= step; applyGhost(); }
+  else if (e.key === 'f' || e.key === 'F'){ ghost.flip = !ghost.flip; }
+  else if (e.key === ']'){ ghost.anchor = (ghost.anchor + 1) % n; refreshGhost(); }
+  else if (e.key === '['){ ghost.anchor = (ghost.anchor - 1 + n) % n; refreshGhost(); }
+  else if (e.key === ' '){
+    if (/^(INPUT|SELECT|TEXTAREA)$/.test((e.target.tagName || ''))) return;
+    e.preventDefault(); setSpin(!cam.spin);
+  }
+  else if (e.key === 'z' && (e.ctrlKey || e.metaKey)){ e.preventDefault(); undo(); }
+  else return;
+});
+
+/* ---------- palette wiring ---------- */
+
+function buildPalette(){
+  $('ptype').innerHTML = Object.keys(CORE.LIB)
+    .map(k => `<option value="${k}">${CORE.LIB[k].label}${CORE.LIB[k].bent ? ' (heat-bent)' : ''}</option>`).join('');
+  $('pcolor').innerHTML = Object.keys(COLORS)
+    .map(k => `<option value="${k}"${k===sel.color?' selected':''}>${COLORS[k].name}</option>`).join('');
+  $('ptype').value = sel.type;
+  syncParamLabels();
+}
+function syncParamLabels(){
+  const L = CORE.LIB[sel.type];
+  $('laba').textContent = L.aLabel;
+  $('pa').value = sel.a;
+  const hasB = !!L.bLabel;
+  $('bwrap').style.display = hasB ? '' : 'none';
+  if (hasB){ $('labb').textContent = L.bLabel; $('pb').value = sel.b; }
+  const hasC = !!L.cLabel;
+  $('cwrap').style.display = hasC ? '' : 'none';
+  if (hasC){ $('labc').textContent = L.cLabel; $('pc').value = sel.c || L.defC; }
+  const fm = L.build(P, sel.a, sel.b, sel.c).forming;
+  const note = $('bentnote');
+  note.style.display = fm ? '' : 'none';
+  if (fm) note.textContent = fm.kind === 'roll'
+    ? `Cut flat, then drape over a ${fm.radius} mm former at about 150 °C.`
+    : `Cut flat, then fold ${fm.angle}° on a strip heater.`;
+}
+
+$('ptype').addEventListener('change', e => {
+  sel.type = e.target.value;
+  const L = CORE.LIB[sel.type];
+  sel.a = L.defA; sel.b = L.defB; sel.c = L.defC || 0;
+  ghost.anchor = 0; syncParamLabels(); refreshGhost();
+});
+['pa','pb','pc'].forEach(id => $(id).addEventListener('input', () => {
+  const L = CORE.LIB[sel.type];
+  sel.a = parseFloat($('pa').value) || L.defA;
+  sel.b = parseFloat($('pb').value) || L.defB;
+  sel.c = parseFloat($('pc').value) || L.defC || 0;
+  refreshGhost();
+}));
+$('pcolor').addEventListener('change', e => { sel.color = e.target.value; refreshGhost(); });
+
+['pitch','width','thick'].forEach(id => $(id).addEventListener('input', () => {
+  P = Object.assign(CORE.defaults(), {
+    pitch: parseFloat($('pitch').value) || 8,
+    W: parseFloat($('width').value) || 14,
+    t: parseFloat($('thick').value) || 3
+  });
+  geoCache.clear();
+  const m = (P.W - P.screw) / 2, need = 2 * P.t;
+  const note = $('gridnote');
+  note.textContent = m >= need
+    ? `${m.toFixed(1)} mm of material beside each hole — safe at ${P.t} mm.`
+    : `Only ${m.toFixed(1)} mm beside each hole; you want ${need.toFixed(0)} mm at this thickness.`;
+  note.style.color = m >= need ? 'var(--muted)' : '#B3261E';
+  rebuild(); refreshGhost();
+}));
+
+function setSpin(on){
+  cam.spin = on;
+  $('spin').textContent = on ? 'Stop rotating' : 'Rotate view';
+  $('spin').classList.toggle('primary', on);
+  lastFrame = performance.now();      // no jump from time spent paused
+}
+$('spin').addEventListener('click', () => setSpin(!cam.spin));
+$('spinspeed').addEventListener('input', e => {
+  cam.speed = (parseFloat(e.target.value) || 0) * Math.PI / 180;
+  $('spinrate').textContent = `${Math.round(parseFloat(e.target.value) || 0)}°/s`;
+});
+$('undo').addEventListener('click', undo);
+$('clear').addEventListener('click', () => { snapshot(); model = []; rebuild(); });
+$('copy').addEventListener('click', copyCutList);
+const downloadsReady = (typeof claude !== 'undefined' && claude && typeof claude.use === 'function')
+  ? claude.use('downloads').catch(() => null)
+  : Promise.resolve(null);
+
+$('save').addEventListener('click', async () => {
+  const data = { P, model: model.map(m => ({ ...m, position:m.position.toArray(), quaternion:m.quaternion.toArray() })) };
+  const text = JSON.stringify(data, null, 1);
+  const dl = await downloadsReady;
+  if (dl){
+    try { await dl.save({ filename:'model.json', data:text }); }
+    catch (e){ flash('Save cancelled.'); }
+    return;
+  }
+  const url = URL.createObjectURL(new Blob([text], { type:'application/json' }));
+  const a = document.createElement('a'); a.href = url; a.download = 'model.json'; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+});
+$('loadfile').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  f.text().then(txt => {
+    try {
+      const d = JSON.parse(txt);
+      snapshot();
+      if (d.P){ P = d.P; $('pitch').value = P.pitch; $('width').value = P.W; $('thick').value = P.t; geoCache.clear(); }
+      model = d.model.map(m => ({ ...m,
+        position:new THREE.Vector3().fromArray(m.position),
+        quaternion:new THREE.Quaternion().fromArray(m.quaternion) }));
+      nextId = model.length + 1;
+      model.forEach((m,i) => m.id = 'p' + (i+1));
+      rebuild(); flash('Model loaded.');
+    } catch(err){ flash('That file could not be read as a model.'); }
+  });
+  e.target.value = '';
+});
+
+/* ---------- starter model, built through the same snap path ---------- */
+
+function attach(spec, targetIdx, targetHole, anchorIdx, spinDeg, flip){
+  const def = defOf(spec.type, spec.a, spec.b, spec.c);
+  const tgtInst = instances()[targetIdx];
+  const hw = CORE.holeWorld(tgtInst.def, tgtInst, targetHole);
+  const tr = CORE.snapTransform(P, def, anchorIdx, hw.p, hw.mate || hw.n,
+                                (spinDeg||0) * Math.PI/180, !!flip, hw.gap);
+  model.push({ id:'p'+(nextId++), ...spec, position:tr.position, quaternion:tr.quaternion });
+}
+
+function starter(){
+  model = []; nextId = 1;
+  const base = defOf('plate', 5, 13);
+  model.push({ id:'p'+(nextId++), type:'plate', a:5, b:13, color:'blue',
+    position: new THREE.Vector3(-((5-1)*P.pitch+P.W)/2, P.t/2, -((13-1)*P.pitch+P.W)/2),
+    quaternion: new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1), new THREE.Vector3(0,1,0)) });
+  // plate holes are indexed column-major: col * rows + row
+  const ph = (col, row) => col * 13 + row;
+  // wings off the centre of the plate, swept back
+  attach({ type:'strip', a:11, b:0, color:'red' }, 0, ph(2, 6), 0, 20, false);
+  attach({ type:'strip', a:11, b:0, color:'red' }, 0, ph(2, 6), 0, 200, false);
+  // a bent bracket lifts the tail fin out of the plane
+  attach({ type:'bracket', a:2, b:3, color:'clear' }, 0, ph(2, 11), 0, 0, false);
+  const br = instances()[model.length - 1];
+  const top = br.def.holes.length - 1;
+  const hw = CORE.holeWorld(br.def, br, top);
+  const fin = defOf('gusset', 5, 5);
+  const tr = CORE.snapTransform(P, fin, 0, hw.p, hw.mate || hw.n, 0, false, hw.gap);
+  model.push({ id:'p'+(nextId++), type:'gusset', a:5, b:5, color:'red',
+    position: tr.position, quaternion: tr.quaternion });
+  rebuild();
+}
+
+/* ---------- boot ---------- */
+
+function resize(){
+  const r = canvas.parentElement.getBoundingClientRect();
+  renderer.setSize(r.width, r.height, false);
+  camera.aspect = r.width / Math.max(1, r.height);
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+
+buildPalette();
+setSpin(false);
+refreshGhost();
+starter();
+resize();
+applyCam();
+
+(function loop(){
+  requestAnimationFrame(loop);
+  const now = performance.now();
+  const dt = Math.min(0.1, (now - lastFrame) / 1000);   // clamp so a background tab cannot lurch
+  lastFrame = now;
+  if (cam.spin && !drag){ cam.theta += cam.speed * dt; applyCam(); }
+  renderer.render(scene, camera);
+})();
+
+$('starter').addEventListener('click', () => { snapshot(); starter(); });
+
+})();
+</script>
+</body>
+</html>
