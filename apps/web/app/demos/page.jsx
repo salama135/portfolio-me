@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { MobileDemoCallout } from '../../components/mobile-demo-callout.jsx';
 import { loadDemosRegistry } from '../../lib/content/load/demos-registry.js';
 import { isDemoExperienceEnabled } from '../../lib/config/feature-flags.js';
+import { loadPrivateDemos } from '../../lib/private-demos/registry.js';
 
 export const metadata = {
   title: 'Demos',
@@ -13,6 +14,8 @@ export default async function DemosPage() {
   const all = await loadDemosRegistry();
   const demos = all.filter(isDemoExperienceEnabled);
   const helloDemo = all.find((d) => d.slug === 'hello');
+  const privateCount = (await loadPrivateDemos()).length;
+  const showPrivate = privateCount > 0 && isDemoExperienceEnabled({ category: 'private' });
 
   return (
     <div className="page-shell-wide py-[clamp(2.5rem,6vw,4rem)]">
@@ -27,6 +30,21 @@ export default async function DemosPage() {
       </p>
 
       <MobileDemoCallout deepLink={helloDemo?.mobileAppLink} />
+
+      {showPrivate ? (
+        <Link
+          href="/demos/private"
+          className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-apple-border-mid bg-apple-gray/60 px-6 py-5 no-underline hover:bg-apple-gray focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+        >
+          <span>
+            <span className="block text-lg font-semibold text-apple-ink">🔒 Private collection</span>
+            <span className="mt-1 block text-sm text-apple-gray-secondary">
+              {privateCount} unreleased games, simulations and tools. Password required.
+            </span>
+          </span>
+          <span className="rounded-full bg-[#0071e3] px-4 py-2 text-sm font-semibold text-white">Unlock</span>
+        </Link>
+      ) : null}
 
       {demos.length === 0 ? (
         <p className="mt-14 rounded-2xl border border-dashed border-apple-border-mid bg-apple-gray/50 px-8 py-14 text-center text-apple-gray-secondary">

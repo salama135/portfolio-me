@@ -3,6 +3,12 @@
 const nextConfig = {
   reactCompiler: true,
   transpilePackages: ['three'],
+  // standalone private demo pages are read from disk by a route handler, so ship them with it
+  outputFileTracingIncludes: {
+    '/demos/private/[slug]/raw': ['./private-demos/**/*.html', './content/private-demos.json'],
+    '/demos/private/[slug]': ['./private-demos/**/*.html', './content/private-demos.json'],
+    '/demos/private': ['./content/private-demos.json'],
+  },
   redirects() {
     return [
       {

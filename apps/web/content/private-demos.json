@@ -1,0 +1,130 @@
+[
+  {
+    "slug": "tailwind-cycles",
+    "title": "Tailwind Cycles",
+    "category": "games",
+    "summary": "Run a bike repair shop: take call-outs around the valley, build each bike on a 3D stand from real parts, then prove it on a physics-driven test ride.",
+    "deviceNeeds": "WebGL-capable browser; keyboard or touch.",
+    "durationHint": "~10 min"
+  },
+  {
+    "slug": "wold",
+    "title": "Wold",
+    "category": "games",
+    "summary": "Open-world farming sandbox on real LIDAR terrain of a Cotswold valley: drive the tractor, work the fields and run the farm's books.",
+    "deviceNeeds": "WebGL-capable browser; keyboard or touch.",
+    "durationHint": "~10 min"
+  },
+  {
+    "slug": "cozy-coaster",
+    "title": "Cozy Coaster",
+    "category": "games",
+    "summary": "Cosy theme-park builder: lay coaster track piece by piece, add scenery and watch guests ride.",
+    "deviceNeeds": "WebGL-capable browser; pointer or touch.",
+    "durationHint": "~10 min"
+  },
+  {
+    "slug": "groundskeeper",
+    "title": "Groundskeeper: field test",
+    "category": "three_d",
+    "summary": "Drive a robot mower over shader-driven grass, ruts and mud, with a scan view, trimmer, jobs and photo mode.",
+    "deviceNeeds": "Desktop GPU recommended; keyboard or touch.",
+    "durationHint": "~5 min"
+  },
+  {
+    "slug": "grid-down-acres-homestead",
+    "title": "Grid Down Acres: Homestead",
+    "category": "games",
+    "summary": "Ten-day off-grid homestead sim: build solar, tanks and plots, juggle weather, power and water, and keep the HOA off your back.",
+    "deviceNeeds": "WebGL-capable browser; pointer or touch.",
+    "durationHint": "~10 min"
+  },
+  {
+    "slug": "grid-down-acres",
+    "title": "Grid Down Acres: Day One",
+    "category": "games",
+    "summary": "First-person farm chores: patch the barn, mount solar panels, plant the veg plot and pen the sheep before sunset.",
+    "deviceNeeds": "WebGL-capable browser; keyboard and mouse or touch.",
+    "durationHint": "~8 min"
+  },
+  {
+    "slug": "coaster-builder",
+    "title": "Coaster builder",
+    "category": "three_d",
+    "summary": "Snap together roller-coaster track from a full piece library, check clearances, then ride it.",
+    "deviceNeeds": "WebGL-capable browser; pointer or touch.",
+    "durationHint": "~5 min"
+  },
+  {
+    "slug": "track-parts",
+    "title": "Track parts",
+    "category": "three_d",
+    "summary": "3D catalogue of every coaster track piece with entry and exit markers, clearance boxes and a preview train.",
+    "deviceNeeds": "WebGL-capable browser.",
+    "durationHint": "~3 min"
+  },
+  {
+    "slug": "building-kit",
+    "title": "Building kit",
+    "category": "three_d",
+    "summary": "3D catalogue of park scenery pieces (walls, roofs, towers and props) built from procedural models.",
+    "deviceNeeds": "WebGL-capable browser.",
+    "durationHint": "~3 min"
+  },
+  {
+    "slug": "meadow-mow",
+    "title": "Meadow Mow: Park Keeper",
+    "category": "games",
+    "summary": "Procedurally generated park to mow with helper drones: draw patrol paths, fence off lawns and ride along in a fisheye drone cam.",
+    "deviceNeeds": "WebGL-capable browser; keyboard or touch.",
+    "durationHint": "~5 min"
+  },
+  {
+    "slug": "little-line",
+    "title": "Little Line",
+    "category": "games",
+    "summary": "Cosy isometric railway builder: connect stations, run trains, research new eras and grow villages across islands.",
+    "deviceNeeds": "Any current desktop or mobile browser.",
+    "durationHint": "~10 min"
+  },
+  {
+    "slug": "mini-dash-cup",
+    "title": "Mini Dash Cup",
+    "category": "games",
+    "summary": "Build and tune a mini 4WD racer, then cheer it through a three-round cup. Includes a course designer.",
+    "deviceNeeds": "Any current desktop or mobile browser.",
+    "durationHint": "~5 min"
+  },
+  {
+    "slug": "roller-riot",
+    "title": "Roller Riot",
+    "category": "games",
+    "summary": "Mini 4WD combat racing on an orange tabletop track: tune parts in the pit, then bash rivals off the walls and jump.",
+    "deviceNeeds": "WebGL-capable browser; keyboard or touch.",
+    "durationHint": "~5 min"
+  },
+  {
+    "slug": "slotless",
+    "title": "Slotless",
+    "category": "games",
+    "summary": "Open-track mini 4WD battle racer with side-slams, a ramp jump, wave section and an unwalled elevated stretch.",
+    "deviceNeeds": "WebGL-capable browser; keyboard or touch.",
+    "durationHint": "~5 min"
+  },
+  {
+    "slug": "timebox",
+    "title": "Timebox",
+    "category": "productivity",
+    "summary": "Hour-by-hour day planner: brain-dump tasks, fill the boxes, drag to reshuffle and tick things off. Saves in your browser.",
+    "deviceNeeds": "Any current desktop or mobile browser.",
+    "durationHint": "~2 min"
+  },
+  {
+    "slug": "acrylic-kit",
+    "title": "Acrylic kit: 3D builder",
+    "category": "three_d",
+    "summary": "Bolt laser-cut acrylic parts together hole by hole in 3D; the cut list and screw count update as you build.",
+    "deviceNeeds": "Desktop browser with a mouse recommended.",
+    "durationHint": "~5 min"
+  }
+]

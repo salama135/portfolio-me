@@ -148,6 +148,17 @@ Then set `NEXT_PUBLIC_DEMO_HELLO` in `.env.example` or `.env.local`.
 5. If needed, update feature flags and `.env.example`.
 6. Verify the route builds and the demo launches behind `Start demo`.
 
+## Private (password-protected) demos
+
+Standalone single-file HTML demos that should not be public go in the private collection instead of the flow above.
+
+1. Add an entry to `apps/web/content/private-demos.json` (`slug`, `title`, `category`, `summary`, `deviceNeeds`, `durationHint`).
+2. Save the page as `apps/web/private-demos/<slug>.html` (outside `public/`).
+3. That's it: `/demos/private/<slug>` wraps it in `DemoLauncher` and frames the gated route `/demos/private/<slug>/raw`.
+
+The password is `PRIVATE_DEMOS_PASSWORD` (server env). Gate logic: `apps/web/lib/private-demos/auth.js`.
+`NEXT_PUBLIC_DEMO_PRIVATE=0` hides the collection's entry card on `/demos`.
+
 ## Testing
 
 - Open `/demos` and confirm the new demo appears.
