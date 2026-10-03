@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { withBase } from '../../../lib/base-path.js';
 import Link from 'next/link';
 import Markdown from 'markdown-to-jsx';
 import { notFound } from 'next/navigation';
@@ -59,7 +60,7 @@ export default async function ProjectDetailPage({ params }) {
 
       {coverImage ? (
         <div className="relative mt-10 aspect-[16/9] w-full max-w-[min(100%,56rem)] overflow-hidden rounded-2xl border border-apple-border-soft bg-apple-gray">
-          <Image src={coverImage} alt={`${title} cover`} fill className="object-cover" sizes="(max-width: 900px) 100vw, 900px" priority />
+          <Image src={withBase(coverImage)} alt={`${title} cover`} fill className="object-cover" sizes="(max-width: 900px) 100vw, 900px" priority />
         </div>
       ) : null}
 
@@ -81,7 +82,7 @@ export default async function ProjectDetailPage({ params }) {
           ) : null}
           {links.demo ? (
             <li>
-              <a className="text-apple-link hover:underline" href={links.demo}>
+              <a className="text-apple-link hover:underline" href={withBase(links.demo)}>
                 Demo
               </a>
             </li>

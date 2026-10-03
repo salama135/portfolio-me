@@ -1,4 +1,5 @@
 import { Figtree } from 'next/font/google';
+import { withBase } from '../lib/base-path.js';
 import '../styles/globals.css';
 import { SiteFooter } from '../components/site-footer';
 import { SiteHeader } from '../components/site-header';
@@ -26,7 +27,7 @@ export default async function RootLayout({ children }) {
   return (
     <html className={figtree.variable} lang="en">
       <head>
-        <link rel="icon" href="/site.webmanifest" sizes="any" />
+        <link rel="icon" href={withBase('/site.webmanifest')} sizes="any" />
       </head>
       <body className="min-h-screen overflow-x-clip antialiased">
         <a

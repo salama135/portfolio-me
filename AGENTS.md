@@ -165,3 +165,13 @@ The password is `PRIVATE_DEMOS_PASSWORD` (server env). Gate logic: `apps/web/lib
 - Visit `/demos/<slug>` and confirm the Start button appears.
 - Confirm disabled demos show the unavailable notice when feature flags are off.
 - Confirm `DemoErrorBoundary` catches runtime errors.
+
+## GitHub Pages build
+
+`.github/workflows/pages.yml` publishes a static export to `https://<owner>.github.io/<repo>/` on every push to `main`
+(`apps/web/scripts/build-pages.mjs`). It drops server-only routes (Blobs, quotes API, revalidation, image CDN,
+middleware) and swaps `/demos/private` for the client-side version in `apps/web/pages-static/demos-private/`.
+
+- Root-relative asset URLs (`/media/...`) must go through `withBase()` from `apps/web/lib/base-path.js`; `Link` is
+  prefixed automatically.
+- On Pages the private-demos password is checked in the browser only and the demo files are public static files.

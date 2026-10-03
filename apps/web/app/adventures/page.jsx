@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { withBase } from '../../lib/base-path.js';
 import { loadAdventures } from '../../lib/content/load/adventures.js';
 
 export const metadata = {
@@ -40,7 +41,7 @@ export default async function AdventuresPage() {
                 <li key={`${adv.slug}-${i}`} className="flex min-w-0 flex-col">
                   {m.type === 'image' ? (
                     <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-apple-border-soft bg-apple-white shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
-                      <Image src={m.src} alt={m.alt} fill className="object-cover" sizes="(max-width: 640px) 100vw, 33vw" />
+                      <Image src={withBase(m.src)} alt={m.alt} fill className="object-cover" sizes="(max-width: 640px) 100vw, 33vw" />
                     </div>
                   ) : (
                     <div

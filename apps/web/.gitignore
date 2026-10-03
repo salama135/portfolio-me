@@ -42,3 +42,7 @@ yarn-error.log*
 
 # Local Netlify folder
 .netlify
+
+# GitHub Pages static export
+/out-pages/
+/.pages-build/
