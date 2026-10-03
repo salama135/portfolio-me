@@ -11,9 +11,11 @@ import { DemoErrorBoundary } from './demo-error-boundary.jsx';
  * `DemoPageShell` on the server and a `*Client` module that wraps the dynamic inner demo in `DemoLauncher` (which
  * includes `DemoErrorBoundary`). The thin `hello` demo follows the same pattern for parity.
  *
- * @param {{ Demo: import('react').ComponentType<{ reducedMotion?: boolean }>, title: string, description?: string }} props
+ * `demoProps` are forwarded to `Demo` (for one inner component shared by several routes).
+ *
+ * @param {{ Demo: import('react').ComponentType<any>, title: string, description?: string, demoProps?: object }} props
  */
-export function DemoLauncher({ Demo, title, description }) {
+export function DemoLauncher({ Demo, title, description, demoProps }) {
   const [started, setStarted] = useState(false);
 
   const reducedMotion =
@@ -37,7 +39,7 @@ export function DemoLauncher({ Demo, title, description }) {
 
   return (
     <DemoErrorBoundary>
-      <Demo reducedMotion={reducedMotion} />
+      <Demo {...demoProps} reducedMotion={reducedMotion} />
     </DemoErrorBoundary>
   );
 }

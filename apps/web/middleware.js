@@ -3,15 +3,16 @@ import { NextResponse } from 'next/server';
 export function middleware(request) {
   const response = NextResponse.next();
   
-  // Add security headers
-  response.headers.set('X-Frame-Options', 'DENY');
+  const pathname = request.nextUrl.pathname;
+
+  // Add security headers. Private demo pages are framed by their own demo route, so allow same origin there.
+  const framed = /^\/demos\/private\/[a-z0-9-]+\/raw$/.test(pathname);
+  response.headers.set('X-Frame-Options', framed ? 'SAMEORIGIN' : 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  
+
   // Add custom header to track middleware execution
   response.headers.set('X-Middleware-Executed', 'true');
-  
-  const pathname = request.nextUrl.pathname;
   
   // Logging for demonstration (in production, use proper logging service)
   console.log(`[Middleware] ${request.method} ${pathname} - ${new Date().toISOString()}`);

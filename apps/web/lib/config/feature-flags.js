@@ -12,6 +12,7 @@ const CATEGORY_ENV = {
   mobile: 'NEXT_PUBLIC_DEMO_MOBILE',
   web_sports: 'NEXT_PUBLIC_DEMO_WEB_SPORTS',
   games: 'NEXT_PUBLIC_DEMO_IDENTICAL_GAME',
+  private: 'NEXT_PUBLIC_DEMO_PRIVATE',
 };
 
 function envIsOn(key) {
